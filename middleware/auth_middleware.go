@@ -51,7 +51,8 @@ func (m *ManagerMiddleware) identityHandler(c *gin.Context) any {
 	claims := jwt.ExtractClaims(c)
 	role, _ := claims["role"]
 	return &domain.User{
-		ID:        claims["id"].(string),
+		UserID:    claims["id"].(string),
+		Username:  claims["username"].(string),
 		Email:     claims["email"].(string),
 		UserRoles: role.([]domain.UserRole),
 	}

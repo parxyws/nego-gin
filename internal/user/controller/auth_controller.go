@@ -21,6 +21,36 @@ func NewAuthController(authService user.AuthService) user.AuthController {
 	return &AuthControllerImpl{authService: authService}
 }
 
+func (a *AuthControllerImpl) Register(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthControllerImpl) ValidateUser(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthControllerImpl) RefreshToken(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthControllerImpl) ForgotPassword(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthControllerImpl) ResetPassword(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthControllerImpl) ResendVerification(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (a *AuthControllerImpl) RegisterNewUser(c *gin.Context) {
 	req := new(dto.UserRegisterRequest)
 

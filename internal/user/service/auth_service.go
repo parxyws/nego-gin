@@ -20,6 +20,7 @@ import (
 	"github.com/parxyws/nego-gin/pkg/util"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/gomail.v2"
 )
 
 type AuthServiceImpl struct {
@@ -29,10 +30,68 @@ type AuthServiceImpl struct {
 	roleRepository     user.RoleRepository
 	rdb                *redis.Client
 	jwtMiddleware      *jwt.GinJWTMiddleware
+	mailDialer         *gomail.Dialer
 }
 
-func NewAuthService(cfg *config.Config, userRepository user.UserRepository, userRoleRepository user.UserRoleRepository, roleRepository user.RoleRepository, rdb *redis.Client) user.AuthService {
-	return &AuthServiceImpl{cfg: cfg, userRepository: userRepository, userRoleRepository: userRoleRepository, roleRepository: roleRepository, rdb: rdb}
+func NewAuthService(cfg *config.Config, userRepository user.UserRepository, userRoleRepository user.UserRoleRepository, roleRepository user.RoleRepository, rdb *redis.Client, mailDialer *gomail.Dialer) user.AuthService {
+	return &AuthServiceImpl{cfg: cfg, userRepository: userRepository, userRoleRepository: userRoleRepository, roleRepository: roleRepository, rdb: rdb, mailDialer: mailDialer}
+}
+
+func (a *AuthServiceImpl) RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.JwtToken, error) {
+	token, err := a.jwtMiddleware.TokenGeneratorWithRevocation(ctx, payload, entity.RefreshToken)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.JwtToken{
+		AccessToken:  token.AccessToken,
+		RefreshToken: token.RefreshToken,
+	}, nil
+}
+
+func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, email string) error {
+	_request := &domain.User{Email: email}
+	_, err := a.userRepository.ReadByEmail(ctx, _request)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *AuthServiceImpl) ResetPassword(ctx context.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error {
+	token := strings.TrimSpace(entity.ReferenceID)
+
+	email, err := a.rdb.Get(ctx, "user-ref"+token).Result()
+	if err != nil {
+		return fmt.Errorf("AuthService.ResendVerification - %w", err)
+	}
+
+	if err := a.rdb.Del(ctx, "otp"+token).Err(); err != nil {
+		return fmt.Errorf("AuthService.ValidateUser - %w", err)
+	}
+
+	otp, err := util.GenerateRandomInteger()
+	if err != nil {
+		return fmt.Errorf("AuthService.ResendVerification - %w", err)
+	}
+
+	if err := a.rdb.Set(ctx, "otp"+token, otp, 10*time.Minute).Err(); err != nil {
+		return fmt.Errorf("AuthService.Register - %w", err)
+	}
+
+	m := util.GenerateOTPMailMessage(a.cfg, email, otp)
+
+	if err := a.mailDialer.DialAndSend(m); err != nil {
+		return fmt.Errorf("AuthService.ResendVerification - %w", err)
+	}
+
+	return nil
 }
 
 func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegisterRequest) (*dto.UserRegisterResponse, error) {
@@ -72,6 +131,12 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
+	m := util.GenerateOTPMailMessage(a.cfg, _user.Email, otp)
+
+	if err := a.mailDialer.DialAndSend(m); err != nil {
+		return nil, fmt.Errorf("AuthService.ResendVerification - %w", err)
+	}
+
 	return &dto.UserRegisterResponse{
 		ReferenceID: identifier,
 	}, nil
@@ -84,9 +149,11 @@ func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserVali
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
-
 	if val != entity.OTP {
 		return fmt.Errorf("AuthService.ValidateUser - invalid token")
+	}
+	if err := a.rdb.Del(ctx, "otp"+token).Err(); err != nil {
+		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
 	email, err := a.rdb.Get(ctx, "user-ref"+token).Result()

@@ -4,16 +4,17 @@ import (
 	"context"
 
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
+	"github.com/parxyws/nego-gin/middleware"
 )
 
 type AuthService interface {
 	Register(ctx context.Context, entity *dto.UserRegisterRequest) (*dto.UserRegisterResponse, error)
 	ValidateUser(ctx context.Context, entity *dto.UserValidateAccRequest) error
 	Login(ctx context.Context, entity *dto.UserLoginRequest) (*dto.UserResponse, error)
-	RefreshToken(ctx context.Context)
-	ForgotPassword(ctx context.Context)
+	RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.JwtToken, error)
+	ForgotPassword(ctx context.Context, email string) error
 	ResetPassword(ctx context.Context)
-	ResendVerification(ctx context.Context)
+	ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error
 }
 
 type RoleService interface {
