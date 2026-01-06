@@ -1,0 +1,76 @@
+services:
+  postgres-master:
+    image: postgres:16-alpine
+    container_name: master_nego_db
+    ports:
+      - "5540:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nego_db
+    command: >
+      postgres
+      -c wal_replica=replica
+      -c hot_standby=on
+      -c max_wal_sender=3
+      -c max_replication_slots=3
+      -c hot_standby_feedback=on
+    volumes:
+      - postgres-master-db-volume:/var/lib/postgresql/data/
+    networks:
+      - network_db
+
+
+  postgres-replica-1:
+    image: postgres:16-alpine
+    container_name: replica_nego_db
+    depends_on:
+      - postgres-master
+    ports:
+      - "5541:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: nego_db
+    volumes:
+      - postgres-replica-db-volume:/var/lib/postgresql/data/
+    networks:
+      - network_db
+
+  redis:
+    image: redis:8.4.0
+    container_name: redis_db
+    restart: always
+    command: redis-server --appendonly yes --requirepass cmjpqcqbc000104kzca2o86rw
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - network_db
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio_db
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: WqYNmSnOBT
+    volumes:
+      - minio_data:/data
+    command: server --console-address ":9001" /data
+    networks:
+      - network_db
+
+networks:
+  network_db:
+    driver: bridge
+
+volumes:
+  minio_data:
+  postgres-db-volume:
+  redis-data:

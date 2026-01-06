@@ -1,0 +1,43 @@
+server:
+  Host: "127.0.0.1"
+  Port: 3000
+  ReadTimeout: 5
+  WriteTimeout: 5
+  SSL: false
+  JWTSecretKey: ""
+
+postgres:
+  Host: ""
+  Port: 5432
+  User: ""
+  Password: ""
+  NameDB: ""
+
+aws:
+  Endpoint: ""
+  MinioAccessKey: ""
+  MinioSecretKey: ""
+  UseSSL: false
+
+redis:
+  Host: ""
+  Port: 6380
+  Password: ""
+  Db: 0
+
+mail:
+  Host: ""
+  Port: 465
+  User: ""
+  Password: ""
+
+admin:
+  User: ""
+  Email: ""
+  Password: ""
+
+logger:
+  Level: trace # Required [trace, debug, info, warn, error, fatal, panic]
+  Caller: true # Required [true, false]
+  Encoding: text # Optional [json, text], default json
+  Development: true
