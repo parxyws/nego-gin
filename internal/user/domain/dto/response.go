@@ -30,3 +30,7 @@ type JwtToken struct {
 type UserRegisterResponse struct {
 	ReferenceID string `json:"reference_id"`
 }
+
+type UserForgotPasswordResponse struct {
+	ReferenceID string `json:"reference_id"`
+}

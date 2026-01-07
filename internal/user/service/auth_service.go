@@ -51,17 +51,44 @@ func (a *AuthServiceImpl) RefreshToken(ctx context.Context, entity *dto.JwtToken
 
 func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, email string) error {
 	_request := &domain.User{Email: email}
-	_, err := a.userRepository.ReadByEmail(ctx, _request)
+	result, err := a.userRepository.ReadByEmail(ctx, _request)
 	if err != nil {
 		return err
+	}
+
+	otp, err := util.GenerateRandomInteger()
+	if err != nil {
+		return err
+	}
+
+	identifier := base64.StdEncoding.EncodeToString([]byte(result.Email))
+
+	if err := a.rdb.Set(ctx, "otp"+identifier, otp, 10*time.Minute).Err(); err != nil {
+		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
+	}
+
+	if err := a.rdb.Set(ctx, "user-ref"+identifier, result.Email, 10*time.Minute).Err(); err != nil {
+		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
+	}
+
+	m := util.GenerateOTPMailMessage(a.cfg, result.Email, otp)
+
+	if err := a.mailDialer.DialAndSend(m); err != nil {
+		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
 	}
 
 	return nil
 }
 
 func (a *AuthServiceImpl) ResetPassword(ctx context.Context) {
-	//TODO implement me
-	panic("implement me")
+	_request := &domain.User{}
+
+	_, err := a.userRepository.UpdateUser(ctx, _request)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error {
@@ -163,6 +190,10 @@ func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserVali
 
 	_request := &domain.User{
 		Email: email,
+	}
+
+	if err := a.rdb.Del(ctx, "user-ref"+token).Err(); err != nil {
+		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
 	result, err := a.userRepository.ReadByEmail(ctx, _request)
