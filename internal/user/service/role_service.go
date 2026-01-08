@@ -19,18 +19,18 @@ func NewRoleService(roleRepository user.RoleRepository, userRoleRepository user.
 }
 
 func (r *RoleServiceImpl) RegisterRole(ctx context.Context, entity *dto.RoleRegisterRequest) (*dto.RoleResponse, error) {
-	_role := &domain.Role{
+	newRole := &domain.Role{
 		RoleName:    entity.RoleName,
 		Description: entity.Description,
 	}
 
-	res, err := r.roleRepository.CreateRole(ctx, _role)
+	res, err := r.roleRepository.CreateRole(ctx, newRole)
 	if err != nil {
 		return nil, fmt.Errorf("RoleService.RegisterRole - %w", err)
 	}
 
 	return &dto.RoleResponse{
-		ID:          res.ID,
+		ID:          res.RoleID,
 		RoleName:    res.RoleName,
 		Description: res.Description,
 		CreatedAt:   res.CreatedAt,
@@ -40,8 +40,8 @@ func (r *RoleServiceImpl) RegisterRole(ctx context.Context, entity *dto.RoleRegi
 
 func (r *RoleServiceImpl) CheckDeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) ([]dto.RoleResponse, error) {
 	roleIDs := make([]int32, len(entity))
-	for i, v := range entity {
-		roleIDs[i] = v.ID
+	for idx, deleteRequest := range entity {
+		roleIDs[idx] = deleteRequest.ID
 	}
 
 	countMap, err := r.userRoleRepository.CountUserRoleByRoleID(ctx, roleIDs)
@@ -56,10 +56,10 @@ func (r *RoleServiceImpl) CheckDeleteRole(ctx context.Context, entity []dto.Role
 
 	responses := make([]dto.RoleResponse, 0, len(roles))
 	for _, role := range roles {
-		userCount := countMap[role.ID]
+		userCount := countMap[role.RoleID]
 
 		response := dto.RoleResponse{
-			ID:          role.ID,
+			ID:          role.RoleID,
 			RoleName:    role.RoleName,
 			Description: role.Description,
 			UserCount:   userCount,
@@ -74,15 +74,15 @@ func (r *RoleServiceImpl) CheckDeleteRole(ctx context.Context, entity []dto.Role
 
 func (r *RoleServiceImpl) DeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) error {
 
-	_role := make([]domain.Role, len(entity))
-	for i, v := range entity {
-		_role[i] = domain.Role{
-			ID:       v.ID,
-			RoleName: v.RoleName,
+	rolesToDelete := make([]domain.Role, len(entity))
+	for idx, deleteRequest := range entity {
+		rolesToDelete[idx] = domain.Role{
+			RoleID:   deleteRequest.ID,
+			RoleName: deleteRequest.RoleName,
 		}
 	}
 
-	if err := r.roleRepository.DeleteRole(ctx, _role); err != nil {
+	if err := r.roleRepository.DeleteRole(ctx, rolesToDelete); err != nil {
 		return fmt.Errorf("RoleService.DeleteRole - %w", err)
 	}
 	return nil
@@ -98,7 +98,7 @@ func (r *RoleServiceImpl) GetAllRoles(ctx context.Context) ([]dto.RoleResponse, 
 	roles := make([]dto.RoleResponse, len(res))
 	for i, role := range res {
 		roles[i] = dto.RoleResponse{
-			ID:          role.ID,
+			ID:          role.RoleID,
 			RoleName:    role.RoleName,
 			Description: role.Description,
 			CreatedAt:   role.CreatedAt,

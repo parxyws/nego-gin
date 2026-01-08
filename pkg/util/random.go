@@ -9,10 +9,10 @@ import (
 
 func GenerateRandomInteger() (string, error) {
 
-	n, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt64))
+	randomNum, err := rand.Int(rand.Reader, big.NewInt(math.MaxInt64))
 	if err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("%d", n.Int64()), nil
+	return fmt.Sprintf("%d", randomNum.Int64()), nil
 }

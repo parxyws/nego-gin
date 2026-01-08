@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"database/sql"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -50,40 +51,31 @@ func (a *AuthServiceImpl) RefreshToken(ctx context.Context, entity *dto.JwtToken
 }
 
 func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, email string) error {
-	_request := &domain.User{Email: email}
-	result, err := a.userRepository.ReadByEmail(ctx, _request)
+	userRequest := &domain.User{Email: email}
+	_, err := a.userRepository.ReadByEmail(ctx, userRequest)
 	if err != nil {
 		return err
 	}
 
-	otp, err := util.GenerateRandomInteger()
-	if err != nil {
+	token := ulid.MustNew(ulid.Now(), ulid.Monotonic(rand.Reader, 0)).String()
+	identifier := base64.RawURLEncoding.EncodeToString([]byte(email))
+
+	if err := a.rdb.Set(ctx, "token-"+identifier, token, 0).Err(); err != nil {
 		return err
 	}
 
-	identifier := base64.StdEncoding.EncodeToString([]byte(result.Email))
-
-	if err := a.rdb.Set(ctx, "otp"+identifier, otp, 10*time.Minute).Err(); err != nil {
-		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
-	}
-
-	if err := a.rdb.Set(ctx, "user-ref"+identifier, result.Email, 10*time.Minute).Err(); err != nil {
-		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
-	}
-
-	m := util.GenerateOTPMailMessage(a.cfg, result.Email, otp)
-
-	if err := a.mailDialer.DialAndSend(m); err != nil {
-		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
+	mailMessage := util.GenerateLinkMailMessage(a.cfg, email, identifier)
+	if err := a.mailDialer.DialAndSend(mailMessage); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 func (a *AuthServiceImpl) ResetPassword(ctx context.Context) {
-	_request := &domain.User{}
+	userRequest := &domain.User{}
 
-	_, err := a.userRepository.UpdateUser(ctx, _request)
+	_, err := a.userRepository.UpdateUser(ctx, userRequest)
 	if err != nil {
 		return
 	}
@@ -92,9 +84,14 @@ func (a *AuthServiceImpl) ResetPassword(ctx context.Context) {
 }
 
 func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error {
+	var userData *domain.User
 	token := strings.TrimSpace(entity.ReferenceID)
 
-	email, err := a.rdb.Get(ctx, "user-ref"+token).Result()
+	data, err := a.rdb.Get(ctx, "user-ref"+token).Result()
+	if err := json.Unmarshal([]byte(data), &userData); err != nil {
+		return err
+	}
+
 	if err != nil {
 		return fmt.Errorf("AuthService.ResendVerification - %w", err)
 	}
@@ -112,9 +109,9 @@ func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.Us
 		return fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	m := util.GenerateOTPMailMessage(a.cfg, email, otp)
+	mailMessage := util.GenerateOTPMailMessage(a.cfg, userData, otp)
 
-	if err := a.mailDialer.DialAndSend(m); err != nil {
+	if err := a.mailDialer.DialAndSend(mailMessage); err != nil {
 		return fmt.Errorf("AuthService.ResendVerification - %w", err)
 	}
 
@@ -129,7 +126,7 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 
 	id := ulid.MustNew(ulid.Now(), ulid.Monotonic(rand.Reader, 0))
 
-	_user := &domain.User{
+	newUser := &domain.User{
 		UserID:       id.String(),
 		Username:     entity.Username,
 		PasswordHash: string(password),
@@ -138,7 +135,7 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 		UpdatedAt:    time.Now(),
 	}
 
-	_, err = a.userRepository.CreateUser(ctx, _user)
+	registeredUser, err := a.userRepository.CreateUser(ctx, newUser)
 	if err != nil {
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
@@ -148,19 +145,23 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	identifier := base64.StdEncoding.EncodeToString([]byte(_user.Email))
+	identifier := base64.StdEncoding.EncodeToString([]byte(newUser.Email))
 
 	if err := a.rdb.Set(ctx, "otp"+identifier, otp, 10*time.Minute).Err(); err != nil {
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	if err := a.rdb.Set(ctx, "user-ref"+identifier, _user.Email, 10*time.Minute).Err(); err != nil {
+	userData, err := json.Marshal(registeredUser)
+	if err != nil {
+		return nil, fmt.Errorf("AuthService.Register - %w", err)
+	}
+	if err := a.rdb.Set(ctx, "user-ref"+identifier, userData, 10*time.Minute).Err(); err != nil {
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	m := util.GenerateOTPMailMessage(a.cfg, _user.Email, otp)
+	mailMessage := util.GenerateOTPMailMessage(a.cfg, newUser, otp)
 
-	if err := a.mailDialer.DialAndSend(m); err != nil {
+	if err := a.mailDialer.DialAndSend(mailMessage); err != nil {
 		return nil, fmt.Errorf("AuthService.ResendVerification - %w", err)
 	}
 
@@ -170,33 +171,33 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 }
 
 func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserValidateAccRequest) error {
-	token := strings.TrimSpace(entity.ReferenceID)
+	referenceToken := strings.TrimSpace(entity.ReferenceID)
 
-	val, err := a.rdb.Get(ctx, "otp"+token).Result()
+	otpValue, err := a.rdb.Get(ctx, "otp"+referenceToken).Result()
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
-	if val != entity.OTP {
+	if otpValue != entity.OTP {
 		return fmt.Errorf("AuthService.ValidateUser - invalid token")
 	}
-	if err := a.rdb.Del(ctx, "otp"+token).Err(); err != nil {
+	if err := a.rdb.Del(ctx, "otp"+referenceToken).Err(); err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
-	email, err := a.rdb.Get(ctx, "user-ref"+token).Result()
+	userEmail, err := a.rdb.Get(ctx, "user-ref"+referenceToken).Result()
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
-	_request := &domain.User{
-		Email: email,
+	userRequest := &domain.User{
+		Email: userEmail,
 	}
 
-	if err := a.rdb.Del(ctx, "user-ref"+token).Err(); err != nil {
+	if err := a.rdb.Del(ctx, "user-ref"+referenceToken).Err(); err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
-	result, err := a.userRepository.ReadByEmail(ctx, _request)
+	result, err := a.userRepository.ReadByEmail(ctx, userRequest)
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
@@ -206,16 +207,16 @@ func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserVali
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
-	_role, err := a.roleRepository.ReadAllRole(ctx)
+	allRoles, err := a.roleRepository.ReadAllRole(ctx)
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
-	index := make(map[string]domain.Role)
-	for _, role := range _role {
-		index[role.RoleName] = role
+	roleIndex := make(map[string]domain.Role)
+	for _, role := range allRoles {
+		roleIndex[role.RoleName] = role
 	}
 
-	_, err = a.userRoleRepository.CreateUserRole(ctx, &domain.UserRole{UserID: result.UserID, RoleID: index["customer"].RoleID})
+	_, err = a.userRoleRepository.CreateUserRole(ctx, &domain.UserRole{UserID: result.UserID, RoleID: roleIndex["customer"].RoleID})
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
@@ -224,12 +225,12 @@ func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserVali
 }
 
 func (a *AuthServiceImpl) Login(ctx context.Context, entity *dto.UserLoginRequest) (*dto.UserResponse, error) {
-	_request := &domain.User{
+	loginRequest := &domain.User{
 		Username:     entity.Username,
 		PasswordHash: entity.Password,
 	}
 
-	result, err := a.userRepository.ReadByUsername(ctx, _request)
+	result, err := a.userRepository.ReadByUsername(ctx, loginRequest)
 	if err != nil {
 		return nil, fmt.Errorf("AuthService.Login - %w", err)
 	}
@@ -251,19 +252,19 @@ func (a *AuthServiceImpl) Login(ctx context.Context, entity *dto.UserLoginReques
 		return nil, fmt.Errorf("AuthService.Login - %w", err)
 	}
 
-	var roles []string
-	for i, v := range role {
-		roles[i] = v.Role.RoleName
+	var roleNames []string
+	for idx, userRole := range role {
+		roleNames[idx] = userRole.Role.RoleName
 	}
 
-	payload := &middleware.JwtPayload{
+	jwtPayload := &middleware.JwtPayload{
 		ID:       result.UserID,
 		Username: result.Username,
 		Email:    result.Email,
-		Role:     roles,
+		Role:     roleNames,
 	}
 
-	token, err := a.jwtMiddleware.TokenGenerator(ctx, payload)
+	authToken, err := a.jwtMiddleware.TokenGenerator(ctx, jwtPayload)
 	if err != nil {
 		return nil, fmt.Errorf("AuthService.Login - %w", err)
 	}
@@ -275,8 +276,8 @@ func (a *AuthServiceImpl) Login(ctx context.Context, entity *dto.UserLoginReques
 		LastName:  result.LastName,
 		Email:     result.Email,
 		Jwt: dto.JwtToken{
-			AccessToken:  token.AccessToken,
-			RefreshToken: token.AccessToken,
+			AccessToken:  authToken.AccessToken,
+			RefreshToken: authToken.AccessToken,
 		},
 	}, nil
 }

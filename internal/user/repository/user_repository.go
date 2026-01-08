@@ -68,16 +68,16 @@ func (u *UserRepositoryImpl) UpdateUser(ctx context.Context, entity *domain.User
 func (u *UserRepositoryImpl) DeleteUser(ctx context.Context, entity *domain.User) error {
 	tx := u.DB.WithContext(ctx)
 	return tx.Transaction(func(tx *gorm.DB) error {
-		data := new(domain.User)
-		if err := tx.Where("email = ?", entity.Email).First(data).Error; err != nil {
+		existingUser := new(domain.User)
+		if err := tx.Where("email = ?", entity.Email).First(existingUser).Error; err != nil {
 			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
 		}
 
-		if err := bcrypt.CompareHashAndPassword([]byte(data.PasswordHash), []byte(entity.PasswordHash)); err != nil {
+		if err := bcrypt.CompareHashAndPassword([]byte(existingUser.PasswordHash), []byte(entity.PasswordHash)); err != nil {
 			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
 		}
 
-		if err := tx.Delete(data).Error; err != nil {
+		if err := tx.Delete(existingUser).Error; err != nil {
 			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
 		}
 
@@ -86,34 +86,34 @@ func (u *UserRepositoryImpl) DeleteUser(ctx context.Context, entity *domain.User
 }
 
 func (u *UserRepositoryImpl) ReadByUsername(ctx context.Context, entity *domain.User) (*domain.User, error) {
-	data := new(domain.User)
+	foundUser := new(domain.User)
 	tx := u.DB.WithContext(ctx)
 
-	if err := tx.Where("username = ?", entity.Username).First(data).Error; err != nil {
+	if err := tx.Where("username = ?", entity.Username).First(foundUser).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadByUsername - %w", err)
 	}
 
-	return data, nil
+	return foundUser, nil
 }
 
 func (u *UserRepositoryImpl) ReadByEmail(ctx context.Context, entity *domain.User) (*domain.User, error) {
-	data := new(domain.User)
+	foundUser := new(domain.User)
 	tx := u.DB.WithContext(ctx)
-	if err := tx.Where("email = ?", entity.Email).First(data).Error; err != nil {
+	if err := tx.Where("email = ?", entity.Email).First(foundUser).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadByEmail - %w", err)
 	}
 
-	return data, nil
+	return foundUser, nil
 }
 
 func (u *UserRepositoryImpl) ReadById(ctx context.Context, entity *domain.User) (*domain.User, error) {
-	data := new(domain.User)
+	foundUser := new(domain.User)
 	tx := u.DB.WithContext(ctx)
-	if err := tx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(data, "id = ?", entity.UserID).Error; err != nil {
+	if err := tx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(foundUser, "id = ?", entity.UserID).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadById - %w", err)
 	}
 
-	return data, nil
+	return foundUser, nil
 }
 
 func (u *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, id string, sortOrderDesc bool, limit int, createdAt string) ([]domain.User, error) {

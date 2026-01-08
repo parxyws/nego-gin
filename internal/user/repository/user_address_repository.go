@@ -69,13 +69,13 @@ func (u *UserAddressRepositoryImpl) UpdateUserAddress(ctx context.Context, entit
 }
 
 func (u *UserAddressRepositoryImpl) ReadUserAddress(ctx context.Context, entity *domain.UserAddress) (*domain.UserAddress, error) {
-	_address := new(domain.UserAddress)
+	foundAddress := new(domain.UserAddress)
 	tx := u.DB.WithContext(ctx)
-	if err := tx.Take(_address, "address_id = ? AND user_id = ?", entity.AddressID, entity.UserID).Error; err != nil {
+	if err := tx.Take(foundAddress, "address_id = ? AND user_id = ?", entity.AddressID, entity.UserID).Error; err != nil {
 		return nil, fmt.Errorf("UserAddressRepositoryImpl.ReadUserAddress - %w", err)
 	}
 
-	return _address, nil
+	return foundAddress, nil
 }
 
 func (u *UserAddressRepositoryImpl) ReadAllUserAddress(ctx context.Context, entity *domain.UserAddress) ([]domain.UserAddress, error) {
