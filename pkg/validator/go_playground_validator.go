@@ -10,6 +10,10 @@ import (
 
 var Validate *validator.Validate
 
+func init() {
+	Validate = validator.New()
+}
+
 func ValidateStruct(ctx context.Context, domain interface{}) error {
 	return Validate.StructCtx(ctx, domain)
 }

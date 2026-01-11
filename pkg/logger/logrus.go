@@ -20,7 +20,7 @@ var fieldsLogrusLevelMap = map[string]logrus.Level{
 	"panic": logrus.PanicLevel,
 }
 
-func NewLogrusLogger(cfg *config.Config) logrus.FieldLogger {
+func NewLogrusLogger(cfg *config.Config) *logrus.Logger {
 	logger := logrus.New()
 
 	level, exist := fieldsLogrusLevelMap[cfg.Logger.Level]

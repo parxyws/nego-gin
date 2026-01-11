@@ -35,7 +35,6 @@ CREATE TABLE users
     avatar_url         TEXT,
     account_status     VARCHAR(20)  NOT NULL DEFAULT 'active', -- ('active', 'suspended', 'banned', 'pending')
     is_verified        TIMESTAMP    NULL,
-    verification_token UUID,                                   -- UUID for security tokens
     last_login         TIMESTAMP,
     created_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,

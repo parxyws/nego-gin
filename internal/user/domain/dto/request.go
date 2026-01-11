@@ -12,19 +12,30 @@ type RoleDeleteRequest struct {
 }
 
 type UserRegisterRequest struct {
-	FirstName string `json:"first_name" validate:"required,max=100,alpha"`
+	FirstName string `json:"first_name" validate:"required,max=100"`
 	LastName  string `json:"last_name" validate:"required,max=100"`
-	Username  string `json:"username" validate:"required,max=100,alpha"`
+	Username  string `json:"username" validate:"required,max=100"`
 	Email     string `json:"email" validate:"required,max=100,email"`
 	Password  string `json:"password" validate:"required,min=8,max=100"`
 }
 
 type UserValidateAccRequest struct {
-	ReferenceID string `json:"reference_id"`
-	OTP         string `json:"otp"`
+	ReferenceID string `json:"reference_id" validate:"required,min=10"`
+	OTP         string `json:"otp" validate:"required,max=8"`
 }
 
 type UserLoginRequest struct {
-	Username string `json:"username" validate:"required,max=100,alpha"`
+	Username string `json:"username" validate:"required,max=100"`
 	Password string `json:"password" validate:"required,min=8,max=100"`
+}
+
+type ForgotPasswordRequest struct {
+	Email string `json:"email" validate:"required,email"`
+}
+
+type ResetPasswordRequest struct {
+	Email           string `json:"email" validate:"required,email"`
+	OTP             string `json:"otp" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required,min=8"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=NewPassword"`
 }

@@ -7,7 +7,6 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	jwt2 "github.com/golang-jwt/jwt/v5"
-	"github.com/parxyws/nego-gin/internal/user/domain"
 )
 
 type JwtPayload struct {
@@ -17,13 +16,22 @@ type JwtPayload struct {
 	Role     []string `json:"role"`
 }
 
-func (m *ManagerMiddleware) InitJwtParams() *jwt.GinJWTMiddleware {
+func (m *ManagerMiddleware) JWTAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
+	authMiddleware, err := jwt.New(m.initJwtParams())
+	if err != nil {
+		return nil, err
+	}
+
+	return authMiddleware, nil
+}
+
+func (m *ManagerMiddleware) initJwtParams() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{
 		Realm:           "ego",
 		Key:             []byte("secret"),
 		Timeout:         time.Hour,
 		MaxRefresh:      time.Hour,
-		IdentityKey:     "id",
+		IdentityKey:     "user",
 		PayloadFunc:     m.payloadHandler,
 		IdentityHandler: m.identityHandler,
 		Authorizer:      m.authorizer,
@@ -49,12 +57,13 @@ func (m *ManagerMiddleware) payloadHandler(data any) jwt2.MapClaims {
 
 func (m *ManagerMiddleware) identityHandler(c *gin.Context) any {
 	claims := jwt.ExtractClaims(c)
-	role, _ := claims["role"]
-	return &domain.User{
-		UserID:    claims["id"].(string),
-		Username:  claims["username"].(string),
-		Email:     claims["email"].(string),
-		UserRoles: role.([]domain.UserRole),
+	roleSlice, _ := claims["role"]
+
+	return &JwtPayload{
+		ID:       claims["id"].(string),
+		Username: claims["username"].(string),
+		Email:    claims["email"].(string),
+		Role:     roleSlice.([]string),
 	}
 }
 
@@ -80,3 +89,26 @@ func (m *ManagerMiddleware) unauthorized(c *gin.Context, code int, message strin
 	})
 	return
 }
+
+//func logoutResponse() func(c *gin.Context) {
+//	return func(c *gin.Context) {
+//		// This demonstrates that claims are now accessible during logout
+//		claims := jwt.ExtractClaims(c)
+//		user, exists := c.Get(identityKey)
+//
+//		response := gin.H{
+//			"code":    http.StatusOK,
+//			"message": "Successfully logged out",
+//		}
+//
+//		// Show that we can access user information during logout
+//		if len(claims) > 0 {
+//			response["logged_out_user"] = claims[identityKey]
+//		}
+//		if exists {
+//			response["user_info"] = user.(*User).UserName
+//		}
+//
+//		c.JSON(http.StatusOK, response)
+//	}
+//}

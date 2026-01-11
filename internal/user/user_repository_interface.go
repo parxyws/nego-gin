@@ -35,6 +35,7 @@ type UserRepository interface {
 	ReadByUsername(ctx context.Context, entity *domain.User) (*domain.User, error)
 	ReadByEmail(ctx context.Context, entity *domain.User) (*domain.User, error)
 	ReadById(ctx context.Context, entity *domain.User) (*domain.User, error)
+	ReadByIdMinimal(ctx context.Context, entity *domain.User) (*domain.User, error)
 	ReadAllByRoles(ctx context.Context, id string, sortOrderDesc bool, limit int, createdAt string) ([]domain.User, error)
 }
 

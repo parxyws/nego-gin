@@ -11,9 +11,9 @@ type AuthService interface {
 	Register(ctx context.Context, entity *dto.UserRegisterRequest) (*dto.UserRegisterResponse, error)
 	ValidateUser(ctx context.Context, entity *dto.UserValidateAccRequest) error
 	Login(ctx context.Context, entity *dto.UserLoginRequest) (*dto.UserResponse, error)
-	RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.JwtToken, error)
-	ForgotPassword(ctx context.Context, email string) error
-	ResetPassword(ctx context.Context)
+	RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.UserResponse, error)
+	ForgotPassword(ctx context.Context, request *dto.ForgotPasswordRequest) error
+	ResetPassword(ctx context.Context, request *dto.ResetPasswordRequest) error
 	ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error
 }
 

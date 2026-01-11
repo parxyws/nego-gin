@@ -8,12 +8,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/oklog/ulid/v2"
 	"github.com/parxyws/nego-gin/config"
+	"github.com/parxyws/nego-gin/internal/shared/app_error"
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
@@ -38,49 +40,93 @@ func NewAuthService(cfg *config.Config, userRepository user.UserRepository, user
 	return &AuthServiceImpl{cfg: cfg, userRepository: userRepository, userRoleRepository: userRoleRepository, roleRepository: roleRepository, rdb: rdb, mailDialer: mailDialer}
 }
 
-func (a *AuthServiceImpl) RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.JwtToken, error) {
+func (a *AuthServiceImpl) RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.UserResponse, error) {
+	request := &domain.User{
+		UserID: payload.ID,
+	}
+	result, err := a.userRepository.ReadByIdMinimal(ctx, request)
 	token, err := a.jwtMiddleware.TokenGeneratorWithRevocation(ctx, payload, entity.RefreshToken)
 	if err != nil {
 		return nil, err
 	}
 
-	return &dto.JwtToken{
-		AccessToken:  token.AccessToken,
-		RefreshToken: token.RefreshToken,
+	return &dto.UserResponse{
+		UserID:    result.UserID,
+		Username:  result.Username,
+		FirstName: result.FirstName,
+		LastName:  result.LastName,
+		Email:     result.Email,
+		Jwt: dto.JwtToken{
+			AccessToken:  token.AccessToken,
+			RefreshToken: token.RefreshToken,
+		},
 	}, nil
 }
 
-func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, email string) error {
-	userRequest := &domain.User{Email: email}
-	_, err := a.userRepository.ReadByEmail(ctx, userRequest)
+func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, request *dto.ForgotPasswordRequest) error {
+	userRequest := &domain.User{Email: request.Email}
+	foundUser, err := a.userRepository.ReadByEmail(ctx, userRequest)
 	if err != nil {
-		return err
+		return app_error.ErrNotFound
 	}
 
-	token := ulid.MustNew(ulid.Now(), ulid.Monotonic(rand.Reader, 0)).String()
-	identifier := base64.RawURLEncoding.EncodeToString([]byte(email))
-
-	if err := a.rdb.Set(ctx, "token-"+identifier, token, 0).Err(); err != nil {
-		return err
+	otp, err := util.GenerateRandomInteger(6)
+	if err != nil {
+		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
 	}
 
-	mailMessage := util.GenerateLinkMailMessage(a.cfg, email, identifier)
-	if err := a.mailDialer.DialAndSend(mailMessage); err != nil {
-		return err
+	if err := a.rdb.Set(ctx, "forgot-otp:"+request.Email, otp, 15*time.Minute).Err(); err != nil {
+		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
 	}
+
+	mailMessage, err := util.GenerateOTPMailMessage(a.cfg, foundUser, otp)
+	if err != nil {
+		return fmt.Errorf("AuthService.ForgotPassword - %w", err)
+	}
+
+	// Async email sending
+	go func() {
+		_ = a.mailDialer.DialAndSend(mailMessage)
+	}()
 
 	return nil
 }
 
-func (a *AuthServiceImpl) ResetPassword(ctx context.Context) {
-	userRequest := &domain.User{}
-
-	_, err := a.userRepository.UpdateUser(ctx, userRequest)
+func (a *AuthServiceImpl) ResetPassword(ctx context.Context, request *dto.ResetPasswordRequest) error {
+	otpValue, err := a.rdb.Get(ctx, "forgot-otp:"+request.Email).Result()
+	if errors.Is(err, redis.Nil) {
+		return app_error.NewAppError(http.StatusBadRequest, "OTP expired or invalid", nil)
+	}
 	if err != nil {
-		return
+		return fmt.Errorf("AuthService.ResetPassword - %w", err)
 	}
 
-	return
+	if otpValue != request.OTP {
+		return app_error.NewAppError(http.StatusBadRequest, "Invalid OTP", nil)
+	}
+
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return fmt.Errorf("AuthService.ResetPassword - %w", err)
+	}
+
+	foundUser, err := a.userRepository.ReadByEmail(ctx, &domain.User{Email: request.Email})
+	if err != nil {
+		return app_error.ErrNotFound
+	}
+
+	_, err = a.userRepository.UpdateUser(ctx, &domain.User{
+		UserID:       foundUser.UserID,
+		PasswordHash: string(passwordHash),
+		UpdatedAt:    time.Now(),
+	})
+	if err != nil {
+		return fmt.Errorf("AuthService.ResetPassword - %w", err)
+	}
+
+	_ = a.rdb.Del(ctx, "forgot-otp:"+request.Email).Err()
+
+	return nil
 }
 
 func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error {
@@ -100,7 +146,7 @@ func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.Us
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
-	otp, err := util.GenerateRandomInteger()
+	otp, err := util.GenerateRandomInteger(6)
 	if err != nil {
 		return fmt.Errorf("AuthService.ResendVerification - %w", err)
 	}
@@ -109,11 +155,14 @@ func (a *AuthServiceImpl) ResendVerification(ctx context.Context, entity *dto.Us
 		return fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	mailMessage := util.GenerateOTPMailMessage(a.cfg, userData, otp)
-
-	if err := a.mailDialer.DialAndSend(mailMessage); err != nil {
+	mailMessage, err := util.GenerateOTPMailMessage(a.cfg, userData, otp)
+	if err != nil {
 		return fmt.Errorf("AuthService.ResendVerification - %w", err)
 	}
+
+	go func() {
+		_ = a.mailDialer.DialAndSend(mailMessage)
+	}()
 
 	return nil
 }
@@ -140,12 +189,12 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	otp, err := util.GenerateRandomInteger()
+	otp, err := util.GenerateRandomInteger(6)
 	if err != nil {
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	identifier := base64.StdEncoding.EncodeToString([]byte(newUser.Email))
+	identifier := base64.StdEncoding.EncodeToString([]byte(newUser.UserID))
 
 	if err := a.rdb.Set(ctx, "otp"+identifier, otp, 10*time.Minute).Err(); err != nil {
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
@@ -159,11 +208,14 @@ func (a *AuthServiceImpl) Register(ctx context.Context, entity *dto.UserRegister
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	mailMessage := util.GenerateOTPMailMessage(a.cfg, newUser, otp)
-
-	if err := a.mailDialer.DialAndSend(mailMessage); err != nil {
-		return nil, fmt.Errorf("AuthService.ResendVerification - %w", err)
+	mailMessage, err := util.GenerateOTPMailMessage(a.cfg, newUser, otp)
+	if err != nil {
+		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
+
+	go func() {
+		_ = a.mailDialer.DialAndSend(mailMessage)
+	}()
 
 	return &dto.UserRegisterResponse{
 		ReferenceID: identifier,
@@ -174,42 +226,43 @@ func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserVali
 	referenceToken := strings.TrimSpace(entity.ReferenceID)
 
 	otpValue, err := a.rdb.Get(ctx, "otp"+referenceToken).Result()
+	if errors.Is(err, redis.Nil) {
+		return fmt.Errorf("AuthService.ValidateUser - reference token expired or invalid")
+	}
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 	if otpValue != entity.OTP {
 		return fmt.Errorf("AuthService.ValidateUser - invalid token")
 	}
-	if err := a.rdb.Del(ctx, "otp"+referenceToken).Err(); err != nil {
-		return fmt.Errorf("AuthService.ValidateUser - %w", err)
-	}
 
-	userEmail, err := a.rdb.Get(ctx, "user-ref"+referenceToken).Result()
+	userData, err := a.rdb.Get(ctx, "user-ref"+referenceToken).Result()
+	if errors.Is(err, redis.Nil) {
+		return fmt.Errorf("AuthService.ValidateUser - reference token expired or invalid")
+	}
 	if err != nil {
-		return fmt.Errorf("AuthService.ValidateUser - %w", err)
+		return fmt.Errorf("AuthService.ValidateUser - failed to get user data: %w", err)
 	}
 
-	userRequest := &domain.User{
-		Email: userEmail,
+	// Unmarshal JSON string to User struct
+	var _user *domain.User
+	if err := json.Unmarshal([]byte(userData), &_user); err != nil {
+		return fmt.Errorf("AuthService.ValidateUser - failed to unmarshal user data: %w", err)
 	}
 
-	if err := a.rdb.Del(ctx, "user-ref"+referenceToken).Err(); err != nil {
-		return fmt.Errorf("AuthService.ValidateUser - %w", err)
-	}
-
-	result, err := a.userRepository.ReadByEmail(ctx, userRequest)
+	result, err := a.userRepository.ReadByEmail(ctx, _user)
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
 	_, err = a.userRepository.UpdateUser(ctx, &domain.User{UserID: result.UserID, IsVerified: sql.NullTime{Time: time.Now(), Valid: true}})
 	if err != nil {
-		return fmt.Errorf("AuthService.ValidateUser - %w", err)
+		return fmt.Errorf("AuthService.ValidateUser.UpdateUser - %w", err)
 	}
 
 	allRoles, err := a.roleRepository.ReadAllRole(ctx)
 	if err != nil {
-		return fmt.Errorf("AuthService.ValidateUser - %w", err)
+		return fmt.Errorf("AuthService.ValidateUser.ReadAllRole - %w", err)
 	}
 	roleIndex := make(map[string]domain.Role)
 	for _, role := range allRoles {
@@ -218,6 +271,14 @@ func (a *AuthServiceImpl) ValidateUser(ctx context.Context, entity *dto.UserVali
 
 	_, err = a.userRoleRepository.CreateUserRole(ctx, &domain.UserRole{UserID: result.UserID, RoleID: roleIndex["customer"].RoleID})
 	if err != nil {
+		return fmt.Errorf("AuthService.ValidateUser.CreateUserRole - %w", err)
+	}
+
+	if err := a.rdb.Del(ctx, "otp"+referenceToken).Err(); err != nil {
+		return fmt.Errorf("AuthService.ValidateUser - %w", err)
+	}
+
+	if err := a.rdb.Del(ctx, "user-ref"+referenceToken).Err(); err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
 
@@ -253,8 +314,8 @@ func (a *AuthServiceImpl) Login(ctx context.Context, entity *dto.UserLoginReques
 	}
 
 	var roleNames []string
-	for idx, userRole := range role {
-		roleNames[idx] = userRole.Role.RoleName
+	for _, userRole := range role {
+		roleNames = append(roleNames, userRole.Role.RoleName)
 	}
 
 	jwtPayload := &middleware.JwtPayload{

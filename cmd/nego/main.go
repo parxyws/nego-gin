@@ -1,8 +1,15 @@
 package main
 
 import (
+	"log"
+
 	"github.com/parxyws/nego-gin/config"
+	"github.com/parxyws/nego-gin/internal/server"
+	"github.com/parxyws/nego-gin/pkg/database/aws"
 	"github.com/parxyws/nego-gin/pkg/database/psql"
+	"github.com/parxyws/nego-gin/pkg/database/rds"
+	"github.com/parxyws/nego-gin/pkg/logger"
+	"github.com/parxyws/nego-gin/pkg/mail"
 )
 
 func main() {
@@ -11,9 +18,33 @@ func main() {
 		panic(err)
 	}
 
-	_, err = psql.NewDB(cfg)
+	db, err := psql.NewDB(cfg)
 	if err != nil {
 		panic(err)
+	}
+
+	minio, err := aws.NewAWSClient(cfg)
+	if err != nil {
+		panic(err)
+	}
+
+	redis := rds.NewRedis(cfg)
+
+	logrus := logger.NewLogrusLogger(cfg)
+
+	gomail := mail.NewGoMailDialer(cfg)
+
+	s := server.NewServer(&server.ServerConfig{
+		Cfg:       cfg,
+		Db:        db,
+		Rds:       redis,
+		AwsClient: minio,
+		Logger:    logrus,
+		Mail:      gomail,
+	})
+
+	if err := s.Init(); err != nil {
+		log.Fatal(err)
 	}
 
 }

@@ -13,11 +13,11 @@ import (
 
 func NewDB(config *config.Config) (*gorm.DB, error) {
 
-	username := config.WriteDB.User
-	password := config.WriteDB.Password
-	host := config.WriteDB.Host
-	port := config.WriteDB.Port
-	dbname := config.WriteDB.NameDB
+	username := config.MasterDB.User
+	password := config.MasterDB.Password
+	host := config.MasterDB.Host
+	port := config.MasterDB.Port
+	dbname := config.MasterDB.NameDB
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", username, password, host, port, dbname)
 
@@ -29,11 +29,11 @@ func NewDB(config *config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	readUsername := config.ReadDB.User
-	readPassword := config.ReadDB.Password
-	readHost := config.ReadDB.Host
-	readPort := config.ReadDB.Port
-	readDBName := config.ReadDB.NameDB
+	readUsername := config.SlaveDB.User
+	readPassword := config.SlaveDB.Password
+	readHost := config.SlaveDB.Host
+	readPort := config.SlaveDB.Port
+	readDBName := config.SlaveDB.NameDB
 
 	readDSN := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", readUsername, readPassword, readHost, readPort, readDBName)
 	err = db.Use(dbresolver.Register(dbresolver.Config{

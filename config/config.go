@@ -10,14 +10,14 @@ import (
 )
 
 type Config struct {
-	Server  ServerConfig
-	WriteDB PostgresWriteConfig
-	ReadDB  PostgresReadConfig
-	AWS     AwsConfig
-	Logger  LoggerConfig
-	Redis   RedisConfig
-	Mail    MailConfig
-	Admin   AdminConfig
+	Server   ServerConfig
+	MasterDB PostgresMasterConfig
+	SlaveDB  PostgresSlaveConfig
+	AWS      AwsConfig
+	Logger   LoggerConfig
+	Redis    RedisConfig
+	Mail     MailConfig
+	Admin    AdminConfig
 }
 
 type ServerConfig struct {
@@ -29,7 +29,7 @@ type ServerConfig struct {
 	JWTSecretKey string
 }
 
-type PostgresWriteConfig struct {
+type PostgresMasterConfig struct {
 	User     string
 	Password string
 	Host     string
@@ -37,7 +37,7 @@ type PostgresWriteConfig struct {
 	NameDB   string
 }
 
-type PostgresReadConfig struct {
+type PostgresSlaveConfig struct {
 	User     string
 	Password string
 	Host     string

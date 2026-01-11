@@ -45,7 +45,7 @@ func (u *UserRepositoryImpl) CreateUser(ctx context.Context, entity *domain.User
 func (u *UserRepositoryImpl) UpdateUser(ctx context.Context, entity *domain.User) (*domain.User, error) {
 	tx := u.DB.WithContext(ctx)
 	err := tx.Transaction(func(tx *gorm.DB) error {
-		result := tx.Model(&domain.User{}).Where("id = ?", entity.UserID).Updates(entity)
+		result := tx.Model(&domain.User{}).Where("user_id = ?", entity.UserID).Updates(entity)
 
 		if result.RowsAffected == 0 {
 			return gorm.ErrInvalidData
@@ -109,8 +109,18 @@ func (u *UserRepositoryImpl) ReadByEmail(ctx context.Context, entity *domain.Use
 func (u *UserRepositoryImpl) ReadById(ctx context.Context, entity *domain.User) (*domain.User, error) {
 	foundUser := new(domain.User)
 	tx := u.DB.WithContext(ctx)
-	if err := tx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(foundUser, "id = ?", entity.UserID).Error; err != nil {
+	if err := tx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(foundUser, "user_id = ?", entity.UserID).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadById - %w", err)
+	}
+
+	return foundUser, nil
+}
+
+func (u *UserRepositoryImpl) ReadByIdMinimal(ctx context.Context, entity *domain.User) (*domain.User, error) {
+	foundUser := new(domain.User)
+	tx := u.DB.WithContext(ctx)
+	if err := tx.Model(&domain.User{}).Take(foundUser, "user_id = ?", entity.UserID).Error; err != nil {
+		return nil, fmt.Errorf("UserRepository.ReadByIdMinimal - %w", err)
 	}
 
 	return foundUser, nil
@@ -123,7 +133,7 @@ func (u *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, id string, sort
 	orderPattern := clause.OrderBy{
 		Columns: []clause.OrderByColumn{
 			{Column: clause.Column{Name: "created_at"}, Desc: sortOrderDesc},
-			{Column: clause.Column{Name: "id"}, Desc: sortOrderDesc},
+			{Column: clause.Column{Name: "user_id"}, Desc: sortOrderDesc},
 		},
 	}
 
@@ -132,7 +142,7 @@ func (u *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, id string, sort
 	if createdAt != "" {
 		q = q.Where(`
 			(created_at < ?)
-			OR (created_at = ? AND id < ?)
+			OR (created_at = ? AND user_id < ?)
 		`, createdAt, createdAt, id)
 	}
 

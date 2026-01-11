@@ -1,29 +1,26 @@
 services:
   postgres-master:
-    image: postgres:16-alpine
+    image: docker.io/bitnami/postgresql:latest
     container_name: master_nego_db
     ports:
       - "5540:5432"
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nego_db
-    command: >
-      postgres
-      -c wal_replica=replica
-      -c hot_standby=on
-      -c max_wal_sender=3
-      -c max_replication_slots=3
-      -c hot_standby_feedback=on
+      POSTGRESQL_REPLICATION_MODE: master
+      POSTGRESQL_REPLICATION_USER: replication_user
+      POSTGRESQL_REPLICATION_PASSWORD: replication_password
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: postgres
+      POSTGRESQL_DATABASE: nego_db
+      POSTGRESQL_PGAUDIT_LOG: READ,WRITE
+      POSTGRESQL_LOG_HOSTNAME: "true"
     volumes:
-      - postgres-master-db-volume:/var/lib/postgresql/data/
+      - postgres-master-db-volume:/bitnami/postgresql
     networks:
       - network_db
 
-
-  postgres-replica-1:
-    image: postgres:16-alpine
+  postgres-replica1:
+    image: docker.io/bitnami/postgresql:latest
     container_name: replica_nego_db
     depends_on:
       - postgres-master
@@ -31,11 +28,15 @@ services:
       - "5541:5432"
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nego_db
+      POSTGRESQL_REPLICATION_MODE: slave
+      POSTGRESQL_REPLICATION_USER: replication_user
+      POSTGRESQL_REPLICATION_PASSWORD: replication_password
+      POSTGRESQL_MASTER_HOST: postgres-master
+      POSTGRESQL_MASTER_PORT_NUMBER: 5432  # Internal port, not the mapped port!
+      POSTGRESQL_USERNAME: postgres
+      POSTGRESQL_PASSWORD: postgres  # Needed for slave too
     volumes:
-      - postgres-replica-db-volume:/var/lib/postgresql/data/
+      - postgres-replica1-db-volume:/bitnami/postgresql
     networks:
       - network_db
 
@@ -72,5 +73,6 @@ networks:
 
 volumes:
   minio_data:
-  postgres-db-volume:
+  postgres-master-db-volume:
+  postgres-replica1-db-volume:
   redis-data:

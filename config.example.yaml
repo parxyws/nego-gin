@@ -6,7 +6,14 @@ server:
   SSL: false
   JWTSecretKey: ""
 
-postgres:
+masterDB:
+  Host: ""
+  Port: 5432
+  User: ""
+  Password: ""
+  NameDB: ""
+
+slaveDB:
   Host: ""
   Port: 5432
   User: ""

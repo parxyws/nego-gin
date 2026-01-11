@@ -1,4 +1,4 @@
-package _server
+package server
 
 import (
 	"errors"
