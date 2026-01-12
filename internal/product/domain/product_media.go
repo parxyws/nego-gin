@@ -2,10 +2,10 @@ package domain
 
 import "time"
 
-const TableNameProductMedium = "product_media"
+const TableNameProductMedia = "product_media"
 
-type ProductMedium struct {
-	MediaID      string    `gorm:"column:media_id;primaryKey" json:"media_id"`
+type ProductMedia struct {
+	MediaID      int32     `gorm:"column:media_id;primaryKey;autoIncrement:true" json:"media_id"`
 	ProductID    string    `gorm:"column:product_id;not null" json:"product_id"`
 	MediaType    string    `gorm:"column:media_type;not null" json:"media_type"`
 	MediaURL     string    `gorm:"column:media_url;not null" json:"media_url"`
@@ -16,6 +16,6 @@ type ProductMedium struct {
 	CreatedAt    time.Time `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
-func (*ProductMedium) TableName() string {
-	return TableNameProductMedium
+func (*ProductMedia) TableName() string {
+	return TableNameProductMedia
 }

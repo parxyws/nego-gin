@@ -5,6 +5,7 @@ import (
 
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
 	"github.com/parxyws/nego-gin/middleware"
+	"github.com/parxyws/nego-gin/pkg/database/aws"
 )
 
 type AuthService interface {
@@ -25,6 +26,11 @@ type RoleService interface {
 }
 
 type UserService interface {
-	ReadCurrentUser(ctx context.Context)
-	ReadAllUser(ctx context.Context)
+	GetCurrentUser(ctx context.Context, entity middleware.JwtPayload) (*dto.UserResponse, error)
+	UpdateCurrentUser(ctx context.Context, entity middleware.JwtPayload, request *dto.UpdateCurrentUserRequest) (*dto.UserResponse, error)
+	UpdateAvatar(ctx context.Context, entity middleware.JwtPayload, avatar *aws.UploadInput) (*dto.UserResponse, error)
+	DeleteCurrentUser(ctx context.Context, entity middleware.JwtPayload) error
+	GetUser(ctx context.Context, entity middleware.JwtPayload, request *dto.GetUserProfileRequest) (*dto.UserProfileResponse, error)
+
+	//GetUserListOfAddresses(ctx context.Context, entity middleware.JwtPayload) (*dto.UserResponse, error)
 }

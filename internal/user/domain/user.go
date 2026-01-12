@@ -36,5 +36,3 @@ type User struct {
 func (u *User) TableName() string {
 	return TableNameUser
 }
-
-//gentool -db "postgres" -dsn "postgres://postgres:postgres@localhost:5540/nego_db?sslmode=disable" -fieldWithTypeTag true -fieldWithIndexTag true -fieldNullable true

@@ -35,6 +35,7 @@ type Product struct {
 	DeletedAt         gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
+// TableName Product's table name
 func (*Product) TableName() string {
 	return TableNameProduct
 }

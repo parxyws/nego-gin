@@ -45,7 +45,6 @@ func NewDB(config *config.Config) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	// Connection pool settings for master
 	sqlDB, err := db.DB()
 	if err != nil {
 		return nil, err
@@ -60,3 +59,4 @@ func NewDB(config *config.Config) (*gorm.DB, error) {
 }
 
 // migrate -database "postgres://postgres:postgres@localhost:5540/nego_db?sslmode=disable" -path db/migrations up
+// gentool -db "postgres" -dsn "postgres://postgres:postgres@localhost:5540/nego_db?sslmode=disable" -fieldWithTypeTag true -fieldWithIndexTag true -fieldNullable true

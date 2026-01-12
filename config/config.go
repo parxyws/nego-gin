@@ -27,6 +27,7 @@ type ServerConfig struct {
 	WriteTimeout time.Duration
 	SSL          bool
 	JWTSecretKey string
+	Mode         string
 }
 
 type PostgresMasterConfig struct {

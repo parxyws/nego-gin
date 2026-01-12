@@ -56,6 +56,15 @@ func NewServer(config *ServerConfig) *Server {
 }
 
 func (s *Server) Init() error {
+
+	if s.cfg.Server.Mode == gin.ReleaseMode {
+		gin.SetMode(gin.ReleaseMode)
+	} else if s.cfg.Server.Mode == gin.DebugMode {
+		gin.SetMode(gin.DebugMode)
+	} else {
+		gin.SetMode(gin.TestMode)
+	}
+
 	s.app = gin.New()
 
 	if err := s.Boostrap(); err != nil {

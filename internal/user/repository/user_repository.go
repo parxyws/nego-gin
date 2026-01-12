@@ -6,7 +6,6 @@ import (
 
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -68,19 +67,9 @@ func (u *UserRepositoryImpl) UpdateUser(ctx context.Context, entity *domain.User
 func (u *UserRepositoryImpl) DeleteUser(ctx context.Context, entity *domain.User) error {
 	tx := u.DB.WithContext(ctx)
 	return tx.Transaction(func(tx *gorm.DB) error {
-		existingUser := new(domain.User)
-		if err := tx.Where("email = ?", entity.Email).First(existingUser).Error; err != nil {
+		if err := tx.Delete(entity).Error; err != nil {
 			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
 		}
-
-		if err := bcrypt.CompareHashAndPassword([]byte(existingUser.PasswordHash), []byte(entity.PasswordHash)); err != nil {
-			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
-		}
-
-		if err := tx.Delete(existingUser).Error; err != nil {
-			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
-		}
-
 		return nil
 	})
 }

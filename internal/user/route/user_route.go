@@ -2,20 +2,20 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/parxyws/nego-gin/config"
+	"github.com/parxyws/nego-gin/internal/user"
 )
 
-func UserRoute(route *gin.Engine, cfg *config.Config) {
-	user := route.Group("/users")
+func UserRoute(route *gin.Engine, controller user.UserController) {
+	users := route.Group("/users")
 	{
-		user.GET("/me")
-		user.PUT("/me")
-		user.PATCH("/me/avatar")
-		user.DELETE("/me")
-		user.GET("/:userId")
-		user.GET("/:userId/ratings")
+		users.GET("/me", controller.GetCurrentUser)
+		users.PUT("/me")
+		users.PATCH("/me/avatar")
+		users.DELETE("/me")
+		users.GET("/:userId")
+		users.GET("/:userId/ratings")
 
-		address := user.Group("/me/addresses")
+		address := users.Group("/me/addresses")
 		{
 			address.GET("/")
 			address.POST("/")

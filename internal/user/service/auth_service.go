@@ -15,7 +15,6 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/oklog/ulid/v2"
 	"github.com/parxyws/nego-gin/config"
-	"github.com/parxyws/nego-gin/internal/shared/app_error"
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
@@ -67,7 +66,7 @@ func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, request *dto.Forgo
 	userRequest := &domain.User{Email: request.Email}
 	foundUser, err := a.userRepository.ReadByEmail(ctx, userRequest)
 	if err != nil {
-		return app_error.ErrNotFound
+		return util.ErrNotFound
 	}
 
 	otp, err := util.GenerateRandomInteger(6)
@@ -95,14 +94,14 @@ func (a *AuthServiceImpl) ForgotPassword(ctx context.Context, request *dto.Forgo
 func (a *AuthServiceImpl) ResetPassword(ctx context.Context, request *dto.ResetPasswordRequest) error {
 	otpValue, err := a.rdb.Get(ctx, "forgot-otp:"+request.Email).Result()
 	if errors.Is(err, redis.Nil) {
-		return app_error.NewAppError(http.StatusBadRequest, "OTP expired or invalid", nil)
+		return util.NewAppError(http.StatusBadRequest, "OTP expired or invalid", nil)
 	}
 	if err != nil {
 		return fmt.Errorf("AuthService.ResetPassword - %w", err)
 	}
 
 	if otpValue != request.OTP {
-		return app_error.NewAppError(http.StatusBadRequest, "Invalid OTP", nil)
+		return util.NewAppError(http.StatusBadRequest, "Invalid OTP", nil)
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.NewPassword), bcrypt.DefaultCost)
@@ -112,7 +111,7 @@ func (a *AuthServiceImpl) ResetPassword(ctx context.Context, request *dto.ResetP
 
 	foundUser, err := a.userRepository.ReadByEmail(ctx, &domain.User{Email: request.Email})
 	if err != nil {
-		return app_error.ErrNotFound
+		return util.ErrNotFound
 	}
 
 	_, err = a.userRepository.UpdateUser(ctx, &domain.User{

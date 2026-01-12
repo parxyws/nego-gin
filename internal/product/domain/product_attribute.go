@@ -12,6 +12,7 @@ type ProductAttribute struct {
 	CreatedAt      time.Time `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 }
 
+// TableName ProductAttribute's table name
 func (*ProductAttribute) TableName() string {
 	return TableNameProductAttribute
 }

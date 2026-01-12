@@ -39,3 +39,14 @@ type ResetPasswordRequest struct {
 	NewPassword     string `json:"new_password" validate:"required,min=8"`
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=NewPassword"`
 }
+
+type UpdateCurrentUserRequest struct {
+	FirstName   string `json:"first_name" validate:"required,max=100"`
+	LastName    string `json:"last_name" validate:"required,max=100"`
+	Username    string `json:"username" validate:"required,max=100"`
+	PhoneNumber string `json:"phone_number,omitempty"`
+}
+
+type GetUserProfileRequest struct {
+	UserID string `json:"user_id" validate:"required,max=100"`
+}
