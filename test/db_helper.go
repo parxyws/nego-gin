@@ -7,7 +7,7 @@ import (
 
 	"github.com/parxyws/nego-gin/config"
 	"github.com/parxyws/nego-gin/pkg/database/psql"
-	"github.com/parxyws/nego-gin/pkg/database/rd"
+	"github.com/parxyws/nego-gin/pkg/database/rds"
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )

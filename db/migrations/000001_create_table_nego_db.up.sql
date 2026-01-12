@@ -25,20 +25,20 @@ CREATE TABLE permissions
 
 CREATE TABLE users
 (
-    user_id            CHAR(26) PRIMARY KEY,
-    email              VARCHAR(255) NOT NULL UNIQUE,
-    password_hash      VARCHAR(255) NOT NULL,
-    username           VARCHAR(100) NOT NULL UNIQUE,
-    first_name         VARCHAR(100),
-    last_name          VARCHAR(100),
-    phone              VARCHAR(20),
-    avatar_url         TEXT,
-    account_status     VARCHAR(20)  NOT NULL DEFAULT 'active', -- ('active', 'suspended', 'banned', 'pending')
-    is_verified        TIMESTAMP    NULL,
-    last_login         TIMESTAMP,
-    created_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at         TIMESTAMP NULL
+    user_id        CHAR(26) PRIMARY KEY,
+    email          VARCHAR(255) NOT NULL UNIQUE,
+    password_hash  VARCHAR(255) NOT NULL,
+    username       VARCHAR(100) NOT NULL UNIQUE,
+    first_name     VARCHAR(100),
+    last_name      VARCHAR(100),
+    phone          VARCHAR(20),
+    avatar_url     TEXT,
+    account_status VARCHAR(20)  NOT NULL DEFAULT 'active', -- ('active', 'suspended', 'banned', 'pending')
+    is_verified    TIMESTAMP NULL,
+    last_login     TIMESTAMP,
+    created_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at     TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at     TIMESTAMP NULL
 );
 
 CREATE TABLE role_permissions
@@ -100,6 +100,22 @@ CREATE TABLE categories
     deleted_at         TIMESTAMP NULL
 );
 
+CREATE TABLE shop_categories
+(
+    shop_category_id        SERIAL PRIMARY KEY,
+    seller_id               CHAR(26)     NOT NULL REFERENCES users (user_id) ON DELETE CASCADE,
+    parent_shop_category_id INTEGER      REFERENCES shop_categories (shop_category_id) ON DELETE SET NULL,
+    category_name           VARCHAR(100) NOT NULL,
+    slug                    VARCHAR(100) NOT NULL,
+    description             TEXT,
+    is_active               BOOLEAN      NOT NULL DEFAULT TRUE,
+    sort_order              INTEGER               DEFAULT 0,
+    created_at              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at              TIMESTAMP NULL,
+    UNIQUE (seller_id, slug)
+);
+
 CREATE TABLE tags
 (
     tag_id     SERIAL PRIMARY KEY,
@@ -113,7 +129,8 @@ CREATE TABLE products
 (
     product_id          CHAR(26) PRIMARY KEY,
     seller_id           CHAR(26)     NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
-    category_id         INTEGER      NOT NULL REFERENCES categories (category_id) ON DELETE RESTRICT,
+    category_id         INTEGER      REFERENCES categories (category_id) ON DELETE SET NULL,
+    shop_category_id    INTEGER      REFERENCES shop_categories (shop_category_id) ON DELETE SET NULL,
     product_type        VARCHAR(20)  NOT NULL CHECK (product_type IN ('standard', 'auction')),
     sku                 VARCHAR(100) NOT NULL UNIQUE,
     name                VARCHAR(255) NOT NULL,
@@ -213,6 +230,7 @@ CREATE TABLE auctions
 (
     auction_id          CHAR(26) PRIMARY KEY,
     product_id          CHAR(26)       NOT NULL UNIQUE REFERENCES products (product_id) ON DELETE RESTRICT,
+    user_id             CHAR(26)       NOT NULL REFERENCES users (user_id) ON DELETE RESTRICT,
 
     -- Pricing
     starting_price      DECIMAL(10, 2) NOT NULL CHECK (starting_price > 0),
@@ -526,9 +544,15 @@ CREATE INDEX idx_categories_parent ON categories (parent_category_id);
 CREATE INDEX idx_categories_slug ON categories (slug);
 CREATE INDEX idx_categories_deleted_at ON categories (deleted_at) WHERE deleted_at IS NULL;
 
+-- Shop Categories
+CREATE INDEX idx_shop_categories_seller ON shop_categories (seller_id);
+CREATE INDEX idx_shop_categories_parent ON shop_categories (parent_shop_category_id);
+CREATE INDEX idx_shop_categories_deleted_at ON shop_categories (deleted_at) WHERE deleted_at IS NULL;
+
 -- Products (ULID - time-ordered by default)
 CREATE INDEX idx_products_seller ON products (seller_id);
 CREATE INDEX idx_products_category ON products (category_id);
+CREATE INDEX idx_products_shop_category ON products (shop_category_id);
 CREATE INDEX idx_products_type_status ON products (product_type, status);
 CREATE INDEX idx_products_sku ON products (sku);
 CREATE INDEX idx_products_slug ON products (slug);

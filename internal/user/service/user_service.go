@@ -74,11 +74,36 @@ func (u *UserServiceImpl) UpdateAvatar(ctx context.Context, entity middleware.Jw
 }
 
 func (u *UserServiceImpl) DeleteCurrentUser(ctx context.Context, entity middleware.JwtPayload) error {
-	//TODO implement me
-	panic("implement me")
+	userRequest := &domain.User{
+		UserID:   entity.ID,
+		Username: entity.Username,
+		Email:    entity.Email,
+	}
+
+	err := u.userRepository.DeleteUser(ctx, userRequest)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (u *UserServiceImpl) GetUser(ctx context.Context, entity middleware.JwtPayload, request *dto.GetUserProfileRequest) (*dto.UserProfileResponse, error) {
-	//TODO implement me
-	panic("implement me")
+func (u *UserServiceImpl) GetUser(ctx context.Context, request *dto.GetUserProfileRequest) (*dto.UserProfileResponse, error) {
+	userRequest := &domain.User{
+		UserID: request.UserID,
+	}
+
+	result, err := u.userRepository.ReadById(ctx, userRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.UserProfileResponse{
+		UserID:    result.UserID,
+		Username:  result.Username,
+		FirstName: result.FirstName,
+		LastName:  result.LastName,
+		Avatar:    result.AvatarURL,
+		Email:     result.Email,
+	}, nil
 }

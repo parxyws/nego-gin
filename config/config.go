@@ -76,9 +76,11 @@ type MailConfig struct {
 }
 
 type AdminConfig struct {
-	User     string
-	Email    string
-	Password string
+	User      string
+	Email     string
+	Password  string
+	FirstName string
+	LastName  string
 }
 
 func NewAppConfig() (*Config, error) {

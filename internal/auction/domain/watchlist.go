@@ -1,0 +1,27 @@
+package domain
+
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const TableNameWatchlist = "watchlists"
+
+// Watchlist mapped from table <watchlists>
+type Watchlist struct {
+	WatchlistID         int32          `gorm:"column:watchlist_id;primaryKey;autoIncrement:true" json:"watchlist_id"`
+	UserID              string         `gorm:"column:user_id;not null" json:"user_id"`
+	ProductID           string         `gorm:"column:product_id;not null" json:"product_id"`
+	WatchlistType       string         `gorm:"column:watchlist_type;not null" json:"watchlist_type"`
+	NotifyOnOutbid      bool           `gorm:"column:notify_on_outbid;default:true" json:"notify_on_outbid"`
+	NotifyBeforeEnd     bool           `gorm:"column:notify_before_end;default:true" json:"notify_before_end"`
+	NotifyMinutesBefore int32          `gorm:"column:notify_minutes_before;default:30" json:"notify_minutes_before"`
+	CreatedAt           time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	DeletedAt           gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+}
+
+// TableName Watchlist's table name
+func (*Watchlist) TableName() string {
+	return TableNameWatchlist
+}

@@ -1,10 +1,35 @@
 package domain
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const TableNameAuction = "auctions"
+
+// Auction mapped from table <auctions>
 type Auction struct {
-	ID     string `gorm:"primaryKey"`
-	UserID string `gorm:"column:user_id"`
+	AuctionID         string         `gorm:"column:auction_id;primaryKey" json:"auction_id"`
+	ProductID         string         `gorm:"column:product_id;not null" json:"product_id"`
+	UserID            string         `gorm:"column:user_id;not null" json:"user_id"`
+	StartingPrice     float64        `gorm:"column:starting_price;not null" json:"starting_price"`
+	ReservePrice      float64        `gorm:"column:reserve_price" json:"reserve_price"`
+	BidIncrement      float64        `gorm:"column:bid_increment;not null;default:1.00" json:"bid_increment"`
+	CurrentPrice      float64        `gorm:"column:current_price;not null" json:"current_price"`
+	StartTime         time.Time      `gorm:"column:start_time;not null" json:"start_time"`
+	EndTime           time.Time      `gorm:"column:end_time;not null" json:"end_time"`
+	AutoExtendMinutes int32          `gorm:"column:auto_extend_minutes" json:"auto_extend_minutes"`
+	Status            string         `gorm:"column:status;not null;default:scheduled" json:"status"`
+	WinningBidID      string         `gorm:"column:winning_bid_id" json:"winning_bid_id"`
+	WinningBidderID   string         `gorm:"column:winning_bidder_id" json:"winning_bidder_id"`
+	FinalPrice        float64        `gorm:"column:final_price" json:"final_price"`
+	CreatedAt         time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt         time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt         gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 }
 
-func (a *Auction) TableName() string {
-	return "auctions"
+// TableName Auction's table name
+func (*Auction) TableName() string {
+	return TableNameAuction
 }

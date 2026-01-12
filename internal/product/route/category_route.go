@@ -8,15 +8,15 @@ import (
 func CategoryRoute(route *gin.RouterGroup, controller product.CategoryController) {
 	category := route.Group("/categories")
 	{
-		category.GET("/")
-		category.GET("/:categoryId")
-		category.GET("/:categoryId/products")
+		category.GET("/", controller.ListCategories)
+		category.GET("/:categoryId", controller.GetCategory)
+		category.GET("/:categoryId/products", controller.ListProductsInCategory)
 	}
 
 	admin := route.Group("/admin/categories")
 	{
-		admin.POST("/")
-		admin.PUT("/:categoryId")
-		admin.DELETE("/:categoryId")
+		admin.POST("/", controller.CreateCategory)
+		admin.PUT("/:categoryId", controller.UpdateCategory)
+		admin.DELETE("/:categoryId", controller.RemoveCategory)
 	}
 }

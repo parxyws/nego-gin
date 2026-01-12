@@ -26,7 +26,7 @@ help: ## Show this help message
 .PHONY: up
 up: ## Start all containers in detached mode
 	@echo -e "$(GREEN)Starting Docker containers...$(NC)"
-	$(DOCKER_COMPOSE) up -d
+	$(DOCKER_COMPOSE) -f docker-compose.local.yaml up -d
 
 .PHONY: down
 down: ## Stop and remove all containers

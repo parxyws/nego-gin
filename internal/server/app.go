@@ -41,8 +41,12 @@ func (s *Server) Boostrap() error {
 	}
 
 	/* ----------------------------- Route ---------------------------- */
-	app := s.app.Group("/api/v1")
-	userRoute.AuthRoute(app, AuthController)
+	api := s.app.Group("/api/v1")
+	userRoute.AuthRoute(api, AuthController)
+
+	// Note: UserController and AdminController need to be initialized when implemented
+	// userRoute.UserRoute(apiV1, UserController)
+	// userRoute.AdminRoute(apiV1, AdminController)
 
 	/* ----------------------------- Seed ---------------------------- */
 	seeder := NewSeeder(s.db, s.cfg)

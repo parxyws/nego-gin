@@ -89,3 +89,13 @@ func (p *ProductRepositoryImpl) ReadAllProduct(ctx context.Context, product *dom
 
 	return products, nil
 }
+
+func (p *ProductRepositoryImpl) ReadAllProductSlug(ctx context.Context, product *domain.Product) (*domain.Product, error) {
+	foundProduct := new(domain.Product)
+	tx := p.DB.WithContext(ctx)
+	if err := tx.Where("slug = ?", product.Slug).First(&foundProduct).Error; err != nil {
+		return nil, err
+	}
+
+	return foundProduct, nil
+}

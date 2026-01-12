@@ -11,6 +11,16 @@ type CategoryController interface {
 	RemoveCategory(c *gin.Context)
 }
 
+type ShopCategoryController interface {
+	ListShopCategories(c *gin.Context)
+	GetShopCategory(c *gin.Context)
+	CreateShopCategory(c *gin.Context)
+	UpdateShopCategory(c *gin.Context)
+	DeleteShopCategory(c *gin.Context)
+	ListShopCategoriesPublic(c *gin.Context)
+	GetShopCategoryPublic(c *gin.Context)
+}
+
 type TagController interface {
 	ListTags(c *gin.Context)
 	GetProductsByTag(c *gin.Context)
@@ -18,6 +28,7 @@ type TagController interface {
 
 type ProductController interface {
 	ListProducts(c *gin.Context)
+	ListFeaturedProducts(c *gin.Context)
 	GetProductDetails(c *gin.Context)
 	GetProductSlug(c *gin.Context)
 	CreateProduct(c *gin.Context)

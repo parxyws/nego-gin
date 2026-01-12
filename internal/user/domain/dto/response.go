@@ -43,3 +43,20 @@ type UserRegisterResponse struct {
 type UserForgotPasswordResponse struct {
 	ReferenceID string `json:"reference_id"`
 }
+
+type UserAddressResponse struct {
+	AddressID     int32     `json:"address_id"`
+	UserID        string    `json:"user_id"`
+	AddressType   string    `json:"address_type"`
+	IsDefault     bool      `json:"is_default"`
+	RecipientName string    `json:"recipient_name"`
+	AddressLine1  string    `json:"address_line1"`
+	AddressLine2  string    `json:"address_line2,omitempty"`
+	City          string    `json:"city"`
+	StateProvince string    `json:"state_province,omitempty"`
+	PostalCode    string    `json:"postal_code"`
+	CountryCode   string    `json:"country_code"`
+	Phone         string    `json:"phone,omitempty"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
+}

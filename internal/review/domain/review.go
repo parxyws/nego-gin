@@ -1,0 +1,34 @@
+package domain
+
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
+const TableNameReview = "reviews"
+
+// Review mapped from table <reviews>
+type Review struct {
+	ReviewID           string         `gorm:"column:review_id;primaryKey" json:"review_id"`
+	OrderItemID        int32          `gorm:"column:order_item_id;not null" json:"order_item_id"`
+	ProductID          string         `gorm:"column:product_id;not null" json:"product_id"`
+	ReviewerID         string         `gorm:"column:reviewer_id;not null" json:"reviewer_id"`
+	SellerID           string         `gorm:"column:seller_id;not null" json:"seller_id"`
+	ProductRating      int32          `gorm:"column:product_rating;not null" json:"product_rating"`
+	ProductReviewTitle string         `gorm:"column:product_review_title" json:"product_review_title"`
+	ProductReviewText  string         `gorm:"column:product_review_text" json:"product_review_text"`
+	SellerRating       int32          `gorm:"column:seller_rating;not null" json:"seller_rating"`
+	SellerReviewText   string         `gorm:"column:seller_review_text" json:"seller_review_text"`
+	IsVerifiedPurchase bool           `gorm:"column:is_verified_purchase;not null;default:true" json:"is_verified_purchase"`
+	IsApproved         bool           `gorm:"column:is_approved;not null" json:"is_approved"`
+	ModerationNotes    string         `gorm:"column:moderation_notes" json:"moderation_notes"`
+	CreatedAt          time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+	UpdatedAt          time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
+	DeletedAt          gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+}
+
+// TableName Review's table name
+func (*Review) TableName() string {
+	return TableNameReview
+}

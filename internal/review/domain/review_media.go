@@ -1,0 +1,21 @@
+package domain
+
+import (
+	"time"
+)
+
+const TableNameReviewMedium = "review_media"
+
+// ReviewMedium mapped from table <review_media>
+type ReviewMedium struct {
+	ReviewMediaID int32     `gorm:"column:review_media_id;primaryKey;autoIncrement:true" json:"review_media_id"`
+	ReviewID      string    `gorm:"column:review_id;not null" json:"review_id"`
+	MediaType     string    `gorm:"column:media_type;not null" json:"media_type"`
+	MediaURL      string    `gorm:"column:media_url;not null" json:"media_url"`
+	CreatedAt     time.Time `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
+}
+
+// TableName ReviewMedium's table name
+func (*ReviewMedium) TableName() string {
+	return TableNameReviewMedium
+}

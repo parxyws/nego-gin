@@ -22,6 +22,34 @@ func NewAuthController(authService user.AuthService) user.AuthController {
 	return &AuthControllerImpl{authService: authService}
 }
 
+func (a *AuthControllerImpl) Logout(c *gin.Context) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (a *AuthControllerImpl) VerifyEmail(c *gin.Context) {
+	req := new(dto.UserValidateAccRequest)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	defer cancel()
+
+	if err := c.ShouldBindJSON(req); err != nil {
+		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		return
+	}
+
+	if err := validator.ValidateStruct(ctx, req); err != nil {
+		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
+		return
+	}
+
+	if err := a.authService.ValidateUser(ctx, req); err != nil {
+		helper.Error(c, http.StatusUnauthorized, "Validation User failed", err)
+		return
+	}
+
+	helper.Success(c, http.StatusOK, "Validate success", nil)
+}
+
 func (a *AuthControllerImpl) Register(c *gin.Context) {
 	req := new(dto.UserRegisterRequest)
 	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
@@ -44,29 +72,6 @@ func (a *AuthControllerImpl) Register(c *gin.Context) {
 	}
 
 	helper.Success(c, http.StatusOK, "Register success", result)
-}
-
-func (a *AuthControllerImpl) ValidateUser(c *gin.Context) {
-	req := new(dto.UserValidateAccRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
-	defer cancel()
-
-	if err := c.ShouldBindJSON(req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
-		return
-	}
-
-	if err := validator.ValidateStruct(ctx, req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
-		return
-	}
-
-	if err := a.authService.ValidateUser(ctx, req); err != nil {
-		helper.Error(c, http.StatusUnauthorized, "Validation User failed", err)
-		return
-	}
-
-	helper.Success(c, http.StatusOK, "Validate success", nil)
 }
 
 func (a *AuthControllerImpl) Login(c *gin.Context) {

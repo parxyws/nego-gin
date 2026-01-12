@@ -12,6 +12,7 @@ type Product struct {
 	ProductID         string         `gorm:"column:product_id;primaryKey" json:"product_id"`
 	SellerID          string         `gorm:"column:seller_id;not null" json:"seller_id"`
 	CategoryID        int32          `gorm:"column:category_id;not null" json:"category_id"`
+	ShopCategoryID    int32          `gorm:"column:shop_category_id" json:"shop_category_id"`
 	ProductType       string         `gorm:"column:product_type;not null" json:"product_type"`
 	Sku               string         `gorm:"column:sku;not null" json:"sku"`
 	Name              string         `gorm:"column:name;not null" json:"name"`

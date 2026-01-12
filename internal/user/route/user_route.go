@@ -5,23 +5,23 @@ import (
 	"github.com/parxyws/nego-gin/internal/user"
 )
 
-func UserRoute(route *gin.Engine, controller user.UserController) {
-	users := route.Group("/users")
+func UserRoute(router *gin.RouterGroup, controller user.UserController) {
+	users := router.Group("/users")
 	{
 		users.GET("/me", controller.GetCurrentUser)
-		users.PUT("/me")
-		users.PATCH("/me/avatar")
-		users.DELETE("/me")
-		users.GET("/:userId")
-		users.GET("/:userId/ratings")
+		users.PUT("/me", controller.UpdateCurrentUser)
+		users.PATCH("/me/avatar", controller.UpdateAvatar)
+		users.DELETE("/me", controller.DeleteCurrentUser)
+		users.GET("/:userId", controller.GetUserProfile)
+		users.GET("/:userId/ratings", controller.GetUserSellerRatings)
 
 		address := users.Group("/me/addresses")
 		{
-			address.GET("/")
-			address.POST("/")
-			address.PUT("/:addressId")
-			address.DELETE("/:addressId")
-			address.PATCH("/:addressId/default")
+			address.GET("/", controller.GetUserListOfAddresses)
+			address.POST("/", controller.CreateUserAddress)
+			address.PUT("/:addressId", controller.UpdateUserAddress)
+			address.DELETE("/:addressId", controller.DeleteUserAddress)
+			address.PATCH("/:addressId/default", controller.SetDefaultAddress)
 		}
 	}
 }

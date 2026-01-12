@@ -30,7 +30,11 @@ type UserService interface {
 	UpdateCurrentUser(ctx context.Context, entity middleware.JwtPayload, request *dto.UpdateCurrentUserRequest) (*dto.UserResponse, error)
 	UpdateAvatar(ctx context.Context, entity middleware.JwtPayload, avatar *aws.UploadInput) (*dto.UserResponse, error)
 	DeleteCurrentUser(ctx context.Context, entity middleware.JwtPayload) error
-	GetUser(ctx context.Context, entity middleware.JwtPayload, request *dto.GetUserProfileRequest) (*dto.UserProfileResponse, error)
+	GetUser(ctx context.Context, request *dto.GetUserProfileRequest) (*dto.UserProfileResponse, error)
 
 	//GetUserListOfAddresses(ctx context.Context, entity middleware.JwtPayload) (*dto.UserResponse, error)
+}
+
+type UserAddressService interface {
+	CreateUserAddress(ctx context.Context)
 }

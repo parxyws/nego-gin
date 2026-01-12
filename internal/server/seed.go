@@ -1,9 +1,13 @@
 package server
 
 import (
+	"crypto/rand"
+	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/parxyws/nego-gin/config"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"golang.org/x/crypto/bcrypt"
@@ -103,10 +107,16 @@ func (s *Seeder) seedSuperadmin(tx *gorm.DB, existingUserID string) error {
 			return fmt.Errorf("failed to hash password: %w", err)
 		}
 
+		id := ulid.MustNew(ulid.Now(), ulid.Monotonic(rand.Reader, 0))
+
 		user = domain.User{
+			UserID:       id.String(),
 			Email:        s.cfg.Admin.Email,
 			Username:     s.cfg.Admin.User,
 			PasswordHash: string(hashedPassword),
+			FirstName:    s.cfg.Admin.FirstName,
+			LastName:     s.cfg.Admin.LastName,
+			IsVerified:   sql.NullTime{Time: time.Now(), Valid: true},
 		}
 
 		if err := tx.Create(&user).Error; err != nil {

@@ -50,3 +50,29 @@ type UpdateCurrentUserRequest struct {
 type GetUserProfileRequest struct {
 	UserID string `json:"user_id" validate:"required,max=100"`
 }
+
+type UserAddressCreateRequest struct {
+	AddressType   string `json:"address_type" validate:"required"`
+	RecipientName string `json:"recipient_name" validate:"required"`
+	AddressLine1  string `json:"address_line1" validate:"required"`
+	AddressLine2  string `json:"address_line2"`
+	City          string `json:"city" validate:"required"`
+	StateProvince string `json:"state_province"`
+	PostalCode    string `json:"postal_code" validate:"required"`
+	CountryCode   string `json:"country_code" validate:"required"`
+	Phone         string `json:"phone"`
+	IsDefault     bool   `json:"is_default"`
+}
+
+type UserAddressUpdateRequest struct {
+	AddressType   string `json:"address_type"`
+	RecipientName string `json:"recipient_name"`
+	AddressLine1  string `json:"address_line1"`
+	AddressLine2  string `json:"address_line2"`
+	City          string `json:"city"`
+	StateProvince string `json:"state_province"`
+	PostalCode    string `json:"postal_code"`
+	CountryCode   string `json:"country_code"`
+	Phone         string `json:"phone"`
+	IsDefault     bool   `json:"is_default"`
+}

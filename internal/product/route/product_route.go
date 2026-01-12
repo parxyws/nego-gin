@@ -8,14 +8,18 @@ import (
 func ProductRoute(route *gin.RouterGroup, controller product.ProductController) {
 	products := route.Group("/products")
 	{
-		products.GET("/")
-		products.GET("/featured")
-		products.GET("/:productId")
-		products.GET("/slug/:slug")
+		products.GET("/", controller.ListProducts)
+		products.GET("/featured", controller.ListSellerProducts) // Assuming this for now if no specific featured handler
+		products.GET("/:productId", controller.GetProductDetails)
+		products.GET("/slug/:slug", controller.GetProductSlug)
 	}
 
 	seller := route.Group("/sellers/products")
 	{
-		seller.POST("/")
+		seller.POST("/", controller.CreateProduct)
+		seller.PUT("/:productId", controller.UpdateProduct)
+		seller.DELETE("/:productId", controller.DeleteProduct)
+		seller.PATCH("/:productId/status", controller.UpdateProductStatus)
+		seller.GET("/", controller.ListSellerProducts)
 	}
 }

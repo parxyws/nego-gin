@@ -88,6 +88,17 @@ func (c *CategoryRepositoryImpl) ReadCategoryById(ctx context.Context, category 
 	return foundCategory, nil
 }
 
+func (c *CategoryRepositoryImpl) ReadCategoryProductById(ctx context.Context, category *domain.Category) (*domain.Category, error) {
+	foundCategory := new(domain.Category)
+	tx := c.DB.WithContext(ctx)
+
+	if err := tx.Where("category_id = ?", category.CategoryID).Preload("products").Find(foundCategory).Error; err != nil {
+		return nil, err
+	}
+
+	return foundCategory, nil
+}
+
 func (c *CategoryRepositoryImpl) ReadCategoryByName(ctx context.Context, category *domain.Category) (*domain.Category, error) {
 	foundCategory := new(domain.Category)
 	tx := c.DB.WithContext(ctx)

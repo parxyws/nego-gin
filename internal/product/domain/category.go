@@ -21,6 +21,7 @@ type Category struct {
 	CreatedAt        time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	UpdatedAt        time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt        gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	Products         []Product      `gorm:"foreignKey:category_id;references:category_id" json:"products"`
 }
 
 // TableName Category's table name

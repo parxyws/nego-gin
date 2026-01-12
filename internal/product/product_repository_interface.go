@@ -12,8 +12,18 @@ type CategoryRepository interface {
 	DeleteCategory(ctx context.Context, category *domain.Category) error
 
 	ReadCategoryById(ctx context.Context, category *domain.Category) (*domain.Category, error)
+	ReadCategoryProductById(ctx context.Context, category *domain.Category) (*domain.Category, error)
 	ReadCategoryByName(ctx context.Context, category *domain.Category) (*domain.Category, error)
 	ReadAllCategory(ctx context.Context) ([]domain.Category, error)
+}
+
+type ShopCategoryRepository interface {
+	CreateShopCategory(ctx context.Context, category *domain.ShopCategory) (*domain.ShopCategory, error)
+	UpdateShopCategory(ctx context.Context, category *domain.ShopCategory) (*domain.ShopCategory, error)
+	DeleteShopCategory(ctx context.Context, category *domain.ShopCategory) error
+	ReadShopCategoryById(ctx context.Context, category *domain.ShopCategory) (*domain.ShopCategory, error)
+	ReadShopCategoryProductById(ctx context.Context, category *domain.ShopCategory) (*domain.ShopCategory, error)
+	ReadAllShopCategory(ctx context.Context) ([]domain.ShopCategory, error)
 }
 
 type ProductRepository interface {
@@ -23,6 +33,7 @@ type ProductRepository interface {
 
 	ReadProductById(ctx context.Context, product *domain.Product) (*domain.Product, error)
 	ReadAllProduct(ctx context.Context, product *domain.Product) ([]domain.Product, error)
+	ReadAllProductSlug(ctx context.Context, product *domain.Product) (*domain.Product, error)
 }
 
 type ProductVariantRepository interface {
