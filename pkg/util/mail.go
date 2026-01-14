@@ -17,7 +17,7 @@ func GenerateOTPMailMessage(cfg *config.Config, user *domain.User, otp string) (
 	}
 
 	otpData := &OTPMessage{
-		Name: user.FirstName,
+		Name: user.FirstName + " " + user.LastName,
 		OTP:  otp,
 	}
 	filePath := path.Join("web", "template", "otp.html")
@@ -32,13 +32,13 @@ func GenerateOTPMailMessage(cfg *config.Config, user *domain.User, otp string) (
 		return nil, err
 	}
 
-	mailMessage := gomail.NewMessage()
-	mailMessage.SetHeader("From", cfg.Mail.User)
-	mailMessage.SetHeader("To", user.Email)
-	mailMessage.SetHeader("Subject", "Your OTP Verification Code")
-	mailMessage.SetBody("text/html", body.String())
+	emailMsg := gomail.NewMessage()
+	emailMsg.SetHeader("From", cfg.Mail.User)
+	emailMsg.SetHeader("To", user.Email)
+	emailMsg.SetHeader("Subject", "Your OTP Verification Code")
+	emailMsg.SetBody("text/html", body.String())
 
-	return mailMessage, nil
+	return emailMsg, nil
 }
 
 func GenerateLinkMailMessage(cfg *config.Config, to string, link string) (*gomail.Message, error) {
@@ -60,11 +60,11 @@ func GenerateLinkMailMessage(cfg *config.Config, to string, link string) (*gomai
 		return nil, err
 	}
 
-	mailMessage := gomail.NewMessage()
-	mailMessage.SetHeader("From", cfg.Mail.User)
-	mailMessage.SetHeader("To", to)
-	mailMessage.SetHeader("Subject", "Password Rest Requested")
-	mailMessage.SetBody("text/html", body.String())
+	emailMsg := gomail.NewMessage()
+	emailMsg.SetHeader("From", cfg.Mail.User)
+	emailMsg.SetHeader("To", to)
+	emailMsg.SetHeader("Subject", "Password Rest Requested")
+	emailMsg.SetBody("text/html", body.String())
 
-	return mailMessage, nil
+	return emailMsg, nil
 }

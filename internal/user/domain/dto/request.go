@@ -52,6 +52,7 @@ type GetUserProfileRequest struct {
 }
 
 type UserAddressCreateRequest struct {
+	UserId        string `json:"user_id" validate:"required,max=100"`
 	AddressType   string `json:"address_type" validate:"required"`
 	RecipientName string `json:"recipient_name" validate:"required"`
 	AddressLine1  string `json:"address_line1" validate:"required"`
@@ -65,6 +66,7 @@ type UserAddressCreateRequest struct {
 }
 
 type UserAddressUpdateRequest struct {
+	UserId        string `json:"user_id" validate:"required,max=100"`
 	AddressType   string `json:"address_type"`
 	RecipientName string `json:"recipient_name"`
 	AddressLine1  string `json:"address_line1"`

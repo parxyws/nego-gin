@@ -21,7 +21,7 @@ type UserController interface {
 	GetUserProfile(c *gin.Context)
 	GetUserSellerRatings(c *gin.Context)
 
-	GetUserListOfAddresses(c *gin.Context)
+	ListUserAddress(c *gin.Context)
 	CreateUserAddress(c *gin.Context)
 	UpdateUserAddress(c *gin.Context)
 	DeleteUserAddress(c *gin.Context)

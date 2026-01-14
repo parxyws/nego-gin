@@ -14,6 +14,7 @@ type Role struct {
 	Description string         `gorm:"column:description" json:"description"`
 	CreatedAt   time.Time      `gorm:"column:created_at;not null;default:CURRENT_TIMESTAMP" json:"created_at"`
 	DeletedAt   gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
+	Permissions []Permission   `gorm:"many2many:role_permissions;foreignKey:RoleID;joinForeignKey:role_id;References:PermissionID;joinReferences:permission_id"`
 }
 
 func (*Role) TableName() string {

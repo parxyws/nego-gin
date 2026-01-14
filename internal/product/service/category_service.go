@@ -17,15 +17,15 @@ func NewCategoryServiceImpl(ctRepo product.CategoryRepository, prdRepo product.P
 	return &CategoryServiceImpl{ctRepo: ctRepo, prdRepo: prdRepo}
 }
 
-func (c *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
-	result, err := c.ctRepo.ReadAllCategory(ctx)
+func (s *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
+	categories, err := s.ctRepo.ReadAllCategory(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	response := make([]dto.CategoryResponse, len(result))
-	for i, category := range result {
-		response[i] = dto.CategoryResponse{
+	categoriesResp := make([]dto.CategoryResponse, len(categories))
+	for i, category := range categories {
+		categoriesResp[i] = dto.CategoryResponse{
 			CategoryID:       category.CategoryID,
 			ParentCategoryID: category.ParentCategoryID,
 			CategoryName:     category.CategoryName,
@@ -37,84 +37,84 @@ func (c *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.Categor
 		}
 	}
 
-	return response, nil
+	return categoriesResp, nil
 }
 
-func (c *CategoryServiceImpl) GetCategory(ctx context.Context, categoryId int32) (*dto.CategoryResponse, error) {
-	result, err := c.ctRepo.ReadCategoryById(ctx, &domain.Category{CategoryID: categoryId})
+func (s *CategoryServiceImpl) GetCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
+	category, err := s.ctRepo.ReadCategoryById(ctx, &domain.Category{CategoryID: categoryID})
 	if err != nil {
 		return nil, err
 	}
 
 	return &dto.CategoryResponse{
-		CategoryID:       result.CategoryID,
-		ParentCategoryID: result.ParentCategoryID,
-		CategoryName:     result.CategoryName,
-		Slug:             result.Slug,
-		Description:      result.Description,
-		ImageURL:         result.ImageURL,
-		IsActive:         result.IsActive,
-		CreatedAt:        result.CreatedAt,
+		CategoryID:       category.CategoryID,
+		ParentCategoryID: category.ParentCategoryID,
+		CategoryName:     category.CategoryName,
+		Slug:             category.Slug,
+		Description:      category.Description,
+		ImageURL:         category.ImageURL,
+		IsActive:         category.IsActive,
+		CreatedAt:        category.CreatedAt,
 	}, nil
 }
 
-func (c *CategoryServiceImpl) ListProductsInCategory(ctx context.Context, categoryId int32) (*dto.CategoryResponse, error) {
-	result, err := c.ctRepo.ReadCategoryProductById(ctx, &domain.Category{CategoryID: categoryId})
+func (s *CategoryServiceImpl) ListProductsInCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
+	categoryProducts, err := s.ctRepo.ReadCategoryProductById(ctx, &domain.Category{CategoryID: categoryID})
 	if err != nil {
 		return nil, err
 	}
 
-	products := make([]dto.ProductResponse, len(result.Products))
-	for i, p := range result.Products {
+	products := make([]dto.ProductResponse, len(categoryProducts.Products))
+	for i, product := range categoryProducts.Products {
 		products[i] = dto.ProductResponse{
-			ProductID:         p.ProductID,
-			CategoryID:        p.CategoryID,
-			SellerID:          p.SellerID,
-			ProductType:       p.ProductType,
-			Sku:               p.Sku,
-			Name:              p.Name,
-			Slug:              p.Slug,
-			Description:       p.Description,
-			ShortDescription:  p.ShortDescription,
-			BasePrice:         p.BasePrice,
-			SalePrice:         p.SalePrice,
-			CostPrice:         p.CostPrice,
-			StockQuantity:     p.StockQuantity,
-			LowStockThreshold: p.LowStockThreshold,
-			IsUnlimitedStock:  p.IsUnlimitedStock,
-			Status:            p.Status,
-			IsFeatured:        p.IsFeatured,
-			WeightKg:          p.WeightKg,
-			DimensionsCm:      p.DimensionsCm,
-			Brand:             p.Brand,
-			Condition:         p.Condition,
-			ShopCategoryID:    p.ShopCategoryID,
-			CreatedAt:         p.CreatedAt,
-			UpdatedAt:         p.UpdatedAt,
+			ProductID:         product.ProductID,
+			CategoryID:        product.CategoryID,
+			SellerID:          product.SellerID,
+			ProductType:       product.ProductType,
+			Sku:               product.Sku,
+			Name:              product.Name,
+			Slug:              product.Slug,
+			Description:       product.Description,
+			ShortDescription:  product.ShortDescription,
+			BasePrice:         product.BasePrice,
+			SalePrice:         product.SalePrice,
+			CostPrice:         product.CostPrice,
+			StockQuantity:     product.StockQuantity,
+			LowStockThreshold: product.LowStockThreshold,
+			IsUnlimitedStock:  product.IsUnlimitedStock,
+			Status:            product.Status,
+			IsFeatured:        product.IsFeatured,
+			WeightKg:          product.WeightKg,
+			DimensionsCm:      product.DimensionsCm,
+			Brand:             product.Brand,
+			Condition:         product.Condition,
+			ShopCategoryID:    product.ShopCategoryID,
+			CreatedAt:         product.CreatedAt,
+			UpdatedAt:         product.UpdatedAt,
 		}
 	}
 
 	return &dto.CategoryResponse{
-		CategoryID:       result.CategoryID,
-		ParentCategoryID: result.ParentCategoryID,
-		CategoryName:     result.CategoryName,
-		Slug:             result.Slug,
-		Description:      result.Description,
-		ImageURL:         result.ImageURL,
-		IsActive:         result.IsActive,
+		CategoryID:       categoryProducts.CategoryID,
+		ParentCategoryID: categoryProducts.ParentCategoryID,
+		CategoryName:     categoryProducts.CategoryName,
+		Slug:             categoryProducts.Slug,
+		Description:      categoryProducts.Description,
+		ImageURL:         categoryProducts.ImageURL,
+		IsActive:         categoryProducts.IsActive,
 		Products:         products,
-		CreatedAt:        result.CreatedAt,
+		CreatedAt:        categoryProducts.CreatedAt,
 	}, nil
 }
 
-func (c *CategoryServiceImpl) CreateCategory(ctx context.Context, entity *dto.CategoryCreateRequest) (*dto.CategoryResponse, error) {
-	request := &domain.Category{
-		ParentCategoryID: entity.ParentCategoryID,
-		CategoryName:     entity.CategoryName,
-		Description:      entity.Description,
+func (s *CategoryServiceImpl) CreateCategory(ctx context.Context, req *dto.CategoryCreateRequest) (*dto.CategoryResponse, error) {
+	categoryRequest := &domain.Category{
+		ParentCategoryID: req.ParentCategoryID,
+		CategoryName:     req.CategoryName,
+		Description:      req.Description,
 	}
 
-	category, err := c.ctRepo.CreateCategory(ctx, request)
+	category, err := s.ctRepo.CreateCategory(ctx, categoryRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -131,15 +131,15 @@ func (c *CategoryServiceImpl) CreateCategory(ctx context.Context, entity *dto.Ca
 	}, nil
 }
 
-func (c *CategoryServiceImpl) UpdateCategory(ctx context.Context, entity *dto.CategoryUpdateRequest) (*dto.CategoryResponse, error) {
-	request := &domain.Category{
-		CategoryID:       entity.CategoryID,
-		ParentCategoryID: entity.ParentCategoryID,
-		CategoryName:     entity.CategoryName,
-		Description:      entity.Description,
+func (s *CategoryServiceImpl) UpdateCategory(ctx context.Context, req *dto.CategoryUpdateRequest) (*dto.CategoryResponse, error) {
+	categoryRequest := &domain.Category{
+		CategoryID:       req.CategoryID,
+		ParentCategoryID: req.ParentCategoryID,
+		CategoryName:     req.CategoryName,
+		Description:      req.Description,
 	}
 
-	category, err := c.ctRepo.UpdateCategory(ctx, request)
+	category, err := s.ctRepo.UpdateCategory(ctx, categoryRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -156,10 +156,10 @@ func (c *CategoryServiceImpl) UpdateCategory(ctx context.Context, entity *dto.Ca
 	}, nil
 }
 
-func (c *CategoryServiceImpl) RemoveCategory(ctx context.Context, categoryId int32) error {
-	request := &domain.Category{CategoryID: categoryId}
+func (s *CategoryServiceImpl) RemoveCategory(ctx context.Context, categoryID int32) error {
+	categoryRequest := &domain.Category{CategoryID: categoryID}
 
-	if err := c.ctRepo.DeleteCategory(ctx, request); err != nil {
+	if err := s.ctRepo.DeleteCategory(ctx, categoryRequest); err != nil {
 		return err
 	}
 

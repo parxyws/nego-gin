@@ -17,7 +17,7 @@ func UserRoute(router *gin.RouterGroup, controller user.UserController) {
 
 		address := users.Group("/me/addresses")
 		{
-			address.GET("/", controller.GetUserListOfAddresses)
+			address.GET("/", controller.ListUserAddress)
 			address.POST("/", controller.CreateUserAddress)
 			address.PUT("/:addressId", controller.UpdateUserAddress)
 			address.DELETE("/:addressId", controller.DeleteUserAddress)

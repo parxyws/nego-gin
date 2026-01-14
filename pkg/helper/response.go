@@ -13,20 +13,20 @@ type ApiResponse[T any] struct {
 	Success  bool             `json:"success"`
 	Message  string           `json:"message"`
 	Data     T                `json:"data,omitempty"`
-	Error    any              `json:"error,omitempty"`
+	Details  any              `json:"details,omitempty"`
 	Metadata *domain.Metadata `json:"metadata,omitempty"`
 }
 
-func Success(c *gin.Context, status int, message string, data any) {
-	c.JSON(status, ApiResponse[any]{
+func Success(ctx *gin.Context, status int, message string, data any) {
+	ctx.JSON(status, ApiResponse[any]{
 		Success: true,
 		Message: message,
 		Data:    data,
 	})
 }
 
-func Error(c *gin.Context, status int, message string, err error) {
-	finalStatus := status
+func Error(ctx *gin.Context, status int, message string, err error) {
+	statusCode := status
 	var errDetail any = nil
 	var detailData any = nil
 
@@ -40,16 +40,16 @@ func Error(c *gin.Context, status int, message string, err error) {
 
 		if appErr, ok := util.IsAppError(err); ok {
 			if status == http.StatusInternalServerError || status == 0 {
-				finalStatus = appErr.Code
+				statusCode = appErr.Code
 			}
 			message = appErr.Message
 		}
 	}
 
-	c.JSON(finalStatus, ApiResponse[any]{
+	ctx.JSON(statusCode, ApiResponse[any]{
 		Success: false,
 		Message: message,
-		Error:   errDetail,
+		Details: errDetail,
 		Data:    detailData,
 	})
 }

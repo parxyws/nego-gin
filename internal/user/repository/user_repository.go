@@ -18,17 +18,17 @@ func NewUserRepository(db *gorm.DB) user.UserRepository {
 	return &UserRepositoryImpl{DB: db}
 }
 
-func (u *UserRepositoryImpl) CreateUser(ctx context.Context, entity *domain.User) (*domain.User, error) {
-	tx := u.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		result := tx.Where("email = ?", entity.Email).Omit("avatar_url", "phone_num").FirstOrCreate(entity)
+func (repo *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	dbTx := repo.DB.WithContext(ctx)
+	err := dbTx.Transaction(func(tx *gorm.DB) error {
+		dbRes := tx.Where("email = ?", user.Email).Omit("avatar_url", "phone_num").FirstOrCreate(user)
 
-		if result.RowsAffected == 0 {
+		if dbRes.RowsAffected == 0 {
 			return gorm.ErrRegistered
 		}
 
-		if result.Error != nil {
-			return fmt.Errorf("UserRepository.CreateUser - %w", result.Error)
+		if dbRes.Error != nil {
+			return fmt.Errorf("UserRepository.CreateUser - %w", dbRes.Error)
 		}
 
 		return nil
@@ -38,20 +38,20 @@ func (u *UserRepositoryImpl) CreateUser(ctx context.Context, entity *domain.User
 		return nil, err
 	}
 
-	return entity, nil
+	return user, nil
 }
 
-func (u *UserRepositoryImpl) UpdateUser(ctx context.Context, entity *domain.User) (*domain.User, error) {
-	tx := u.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		result := tx.Model(&domain.User{}).Where("user_id = ?", entity.UserID).Updates(entity)
+func (repo *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
+	dbTx := repo.DB.WithContext(ctx)
+	err := dbTx.Transaction(func(tx *gorm.DB) error {
+		dbRes := tx.Model(&domain.User{}).Where("user_id = ?", user.UserID).Updates(user)
 
-		if result.RowsAffected == 0 {
+		if dbRes.RowsAffected == 0 {
 			return gorm.ErrInvalidData
 		}
 
-		if result.Error != nil {
-			return fmt.Errorf("UserRepository.CreateUser - %w", result.Error)
+		if dbRes.Error != nil {
+			return fmt.Errorf("UserRepository.CreateUser - %w", dbRes.Error)
 		}
 
 		return nil
@@ -61,63 +61,63 @@ func (u *UserRepositoryImpl) UpdateUser(ctx context.Context, entity *domain.User
 		return nil, err
 	}
 
-	return entity, nil
+	return user, nil
 }
 
-func (u *UserRepositoryImpl) DeleteUser(ctx context.Context, entity *domain.User) error {
-	tx := u.DB.WithContext(ctx)
-	return tx.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Delete(entity).Error; err != nil {
+func (repo *UserRepositoryImpl) DeleteUser(ctx context.Context, user *domain.User) error {
+	dbTx := repo.DB.WithContext(ctx)
+	return dbTx.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Delete(user).Error; err != nil {
 			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
 		}
 		return nil
 	})
 }
 
-func (u *UserRepositoryImpl) ReadByUsername(ctx context.Context, entity *domain.User) (*domain.User, error) {
+func (repo *UserRepositoryImpl) ReadByUsername(ctx context.Context, user *domain.User) (*domain.User, error) {
 	foundUser := new(domain.User)
-	tx := u.DB.WithContext(ctx)
+	dbTx := repo.DB.WithContext(ctx)
 
-	if err := tx.Where("username = ?", entity.Username).First(foundUser).Error; err != nil {
+	if err := dbTx.Where("username = ?", user.Username).First(foundUser).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadByUsername - %w", err)
 	}
 
 	return foundUser, nil
 }
 
-func (u *UserRepositoryImpl) ReadByEmail(ctx context.Context, entity *domain.User) (*domain.User, error) {
+func (repo *UserRepositoryImpl) ReadByEmail(ctx context.Context, user *domain.User) (*domain.User, error) {
 	foundUser := new(domain.User)
-	tx := u.DB.WithContext(ctx)
-	if err := tx.Where("email = ?", entity.Email).First(foundUser).Error; err != nil {
+	dbTx := repo.DB.WithContext(ctx)
+	if err := dbTx.Where("email = ?", user.Email).First(foundUser).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadByEmail - %w", err)
 	}
 
 	return foundUser, nil
 }
 
-func (u *UserRepositoryImpl) ReadById(ctx context.Context, entity *domain.User) (*domain.User, error) {
+func (repo *UserRepositoryImpl) ReadById(ctx context.Context, user *domain.User) (*domain.User, error) {
 	foundUser := new(domain.User)
-	tx := u.DB.WithContext(ctx)
-	if err := tx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(foundUser, "user_id = ?", entity.UserID).Error; err != nil {
+	dbTx := repo.DB.WithContext(ctx)
+	if err := dbTx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(foundUser, "user_id = ?", user.UserID).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadById - %w", err)
 	}
 
 	return foundUser, nil
 }
 
-func (u *UserRepositoryImpl) ReadByIdMinimal(ctx context.Context, entity *domain.User) (*domain.User, error) {
+func (repo *UserRepositoryImpl) ReadByIdMinimal(ctx context.Context, user *domain.User) (*domain.User, error) {
 	foundUser := new(domain.User)
-	tx := u.DB.WithContext(ctx)
-	if err := tx.Model(&domain.User{}).Take(foundUser, "user_id = ?", entity.UserID).Error; err != nil {
+	dbTx := repo.DB.WithContext(ctx)
+	if err := dbTx.Model(&domain.User{}).Take(foundUser, "user_id = ?", user.UserID).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadByIdMinimal - %w", err)
 	}
 
 	return foundUser, nil
 }
 
-func (u *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, id string, sortOrderDesc bool, limit int, createdAt string) ([]domain.User, error) {
+func (repo *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, userID string, sortOrderDesc bool, limit int, createdAt string) ([]domain.User, error) {
 	var users []domain.User
-	tx := u.DB.WithContext(ctx)
+	dbTx := repo.DB.WithContext(ctx)
 
 	orderPattern := clause.OrderBy{
 		Columns: []clause.OrderByColumn{
@@ -126,16 +126,16 @@ func (u *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, id string, sort
 		},
 	}
 
-	q := tx.Model(&domain.User{}).Where("is_verified IS NOT NULL").Clauses(orderPattern)
+	query := dbTx.Model(&domain.User{}).Where("is_verified IS NOT NULL").Clauses(orderPattern)
 
 	if createdAt != "" {
-		q = q.Where(`
+		query = query.Where(`
 			(created_at < ?)
 			OR (created_at = ? AND user_id < ?)
-		`, createdAt, createdAt, id)
+		`, createdAt, createdAt, userID)
 	}
 
-	if err := q.Limit(limit).Find(&users).Error; err != nil {
+	if err := query.Limit(limit).Find(&users).Error; err != nil {
 		return nil, fmt.Errorf("UserRepository.ReadAllByRoles - %w", err)
 	}
 

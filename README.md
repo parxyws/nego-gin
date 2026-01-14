@@ -1,228 +1,264 @@
-# Nego-Gin API Documentation
+# Nego-Gin API Route Protection Status
 
 ## 1. Authentication & User Management
 
 ### Auth
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `POST /api/auth/refresh-token` - Refresh access token
-- `POST /api/auth/forgot-password` - Request password reset
-- `POST /api/auth/reset-password` - Reset password with token
-- `POST /api/auth/verify-email` - Verify email with token
-- `POST /api/auth/resend-verification` - Resend verification email
+
+- `POST /api/auth/register` - **Public**
+- `POST /api/auth/login` - **Public**
+- `POST /api/auth/logout` - **Protected**
+- `POST /api/auth/refresh-token` - **Public** (with refresh token)
+- `POST /api/auth/forgot-password` - **Public**
+- `POST /api/auth/reset-password` - **Public** (with reset token)
+- `POST /api/auth/verify-email` - **Public** (with verification token)
+- `POST /api/auth/resend-verification` - **Protected**
 
 ### Users
-- `GET /api/users/me` - Get current user profile
-- `PUT /api/users/me` - Update current user profile
-- `PATCH /api/users/me/avatar` - Update avatar
-- `DELETE /api/users/me` - Delete account (soft delete)
-- `GET /api/users/:userId` - Get public user profile
-- `GET /api/users/:userId/ratings` - Get user seller ratings
+
+- `GET /api/users/me` - **Protected**
+- `PUT /api/users/me` - **Protected**
+- `PATCH /api/users/me/avatar` - **Protected**
+- `DELETE /api/users/me` - **Protected**
+- `GET /api/users/:userId` - **Public**
+- `GET /api/users/:userId/ratings` - **Public**
 
 ### User Addresses
-- `GET /api/users/me/addresses` - List user addresses
-- `POST /api/users/me/addresses` - Create address
-- `PUT /api/users/me/addresses/:addressId` - Update address
-- `DELETE /api/users/me/addresses/:addressId` - Delete address
-- `PATCH /api/users/me/addresses/:addressId/default` - Set default address
+
+- `GET /api/users/me/addresses` - **Protected**
+- `POST /api/users/me/addresses` - **Protected**
+- `PUT /api/users/me/addresses/:addressId` - **Protected**
+- `DELETE /api/users/me/addresses/:addressId` - **Protected**
+- `PATCH /api/users/me/addresses/:addressId/default` - **Protected**
 
 ### Roles & Permissions (Admin)
-- `GET /api/admin/roles` - List roles
-- `POST /api/admin/roles` - Create role
-- `PUT /api/admin/roles/:roleId` - Update role
-- `DELETE /api/admin/roles/:roleId` - Delete role
-- `GET /api/admin/permissions` - List permissions
-- `POST /api/admin/users/:userId/roles` - Assign role to user
-- `DELETE /api/admin/users/:userId/roles/:roleId` - Remove role from user
+
+- `GET /api/admin/roles` - **Protected (Admin)**
+- `POST /api/admin/roles` - **Protected (Admin)**
+- `PUT /api/admin/roles/:roleId` - **Protected (Admin)**
+- `DELETE /api/admin/roles/:roleId` - **Protected (Admin)**
+- `GET /api/admin/permissions` - **Protected (Admin)**
+- `POST /api/admin/users/:userId/roles` - **Protected (Admin)**
+- `DELETE /api/admin/users/:userId/roles/:roleId` - **Protected (Admin)**
 
 ---
 
 ## 2. Product Catalog
 
 ### Categories (Marketplace)
-- `GET /api/categories` - List all categories (tree structure)
-- `GET /api/categories/:categoryId` - Get category details
-- `GET /api/categories/:categoryId/products` - List products in category
-- `POST /api/admin/categories` - Create category (admin)
-- `PUT /api/admin/categories/:categoryId` - Update category (admin)
-- `DELETE /api/admin/categories/:categoryId` - Delete category (admin)
+
+- `GET /api/categories` - **Public**
+- `GET /api/categories/:categoryId` - **Public**
+- `GET /api/categories/:categoryId/products` - **Public**
+- `POST /api/admin/categories` - **Protected (Admin)**
+- `PUT /api/admin/categories/:categoryId` - **Protected (Admin)**
+- `DELETE /api/admin/categories/:categoryId` - **Protected (Admin)**
 
 ### Shop Categories (Seller-Specific)
-- `GET /api/sellers/shop-categories` - List seller's shop categories
-- `GET /api/sellers/shop-categories/:shopCategoryId` - Get shop category details
-- `POST /api/sellers/shop-categories` - Create shop category
-- `PUT /api/sellers/shop-categories/:shopCategoryId` - Update shop category
-- `DELETE /api/sellers/shop-categories/:shopCategoryId` - Delete shop category
-- `GET /api/shops/:sellerId/categories` - List public categories for a specific shop
-- `GET /api/shops/:sellerId/categories/:shopCategoryId` - Get public shop category details
+
+- `GET /api/sellers/shop-categories` - **Protected (Seller)**
+- `GET /api/sellers/shop-categories/:shopCategoryId` - **Protected (Seller)**
+- `POST /api/sellers/shop-categories` - **Protected (Seller)**
+- `PUT /api/sellers/shop-categories/:shopCategoryId` - **Protected (Seller)**
+- `DELETE /api/sellers/shop-categories/:shopCategoryId` - **Protected (Seller)**
+- `GET /api/shops/:sellerId/categories` - **Public**
+- `GET /api/shops/:sellerId/categories/:shopCategoryId` - **Public**
 
 ### Tags
-- `GET /api/tags` - List all tags
-- `GET /api/tags/:tagId/products` - Get products by tag
+
+- `GET /api/tags` - **Public**
+- `GET /api/tags/:tagId/products` - **Public**
 
 ### Products
-- `GET /api/products` - List products (with filters, search, pagination)
-- `GET /api/products/featured` - List featured products
-- `GET /api/products/:productId` - Get product details
-- `GET /api/products/slug/:slug` - Get product by slug
-- `POST /api/sellers/products` - Create product (seller)
-- `PUT /api/sellers/products/:productId` - Update product (seller)
-- `DELETE /api/sellers/products/:productId` - Delete product (seller)
-- `PATCH /api/sellers/products/:productId/status` - Update product status
-- `GET /api/sellers/products` - List seller's products
+
+- `GET /api/products` - **Public**
+- `GET /api/products/featured` - **Public**
+- `GET /api/products/:productId` - **Public**
+- `GET /api/products/slug/:slug` - **Public**
+- `POST /api/sellers/products` - **Protected (Seller)**
+- `PUT /api/sellers/products/:productId` - **Protected (Seller)**
+- `DELETE /api/sellers/products/:productId` - **Protected (Seller)**
+- `PATCH /api/sellers/products/:productId/status` - **Protected (Seller)**
+- `GET /api/sellers/products` - **Protected (Seller)**
 
 ### Product Variants
-- `GET /api/products/:productId/variants` - List product variants
-- `POST /api/sellers/products/:productId/variants` - Create variant
-- `PUT /api/sellers/products/:productId/variants/:variantId` - Update variant
-- `DELETE /api/sellers/products/:productId/variants/:variantId` - Delete variant
+
+- `GET /api/products/:productId/variants` - **Public**
+- `POST /api/sellers/products/:productId/variants` - **Protected (Seller)**
+- `PUT /api/sellers/products/:productId/variants/:variantId` - **Protected (Seller)**
+- `DELETE /api/sellers/products/:productId/variants/:variantId` - **Protected (Seller)**
 
 ### Product Media
-- `GET /api/products/:productId/media` - List product media
-- `POST /api/sellers/products/:productId/media` - Upload media
-- `PUT /api/sellers/products/:productId/media/:mediaId` - Update media order
-- `DELETE /api/sellers/products/:productId/media/:mediaId` - Delete media
+
+- `GET /api/products/:productId/media` - **Public**
+- `POST /api/sellers/products/:productId/media` - **Protected (Seller)**
+- `PUT /api/sellers/products/:productId/media/:mediaId` - **Protected (Seller)**
+- `DELETE /api/sellers/products/:productId/media/:mediaId` - **Protected (Seller)**
 
 ---
 
 ## 3. Auction System
 
 ### Auctions
-- `GET /api/auctions` - List active auctions (with filters)
-- `GET /api/auctions/live` - List live auctions
-- `GET /api/auctions/ending-soon` - List auctions ending soon
-- `GET /api/auctions/:auctionId` - Get auction details
-- `POST /api/sellers/auctions` - Create auction (seller)
-- `PUT /api/sellers/auctions/:auctionId` - Update auction (seller)
-- `DELETE /api/sellers/auctions/:auctionId` - Cancel auction (seller)
-- `GET /api/sellers/auctions` - List seller's auctions
+
+- `GET /api/auctions` - **Public**
+- `GET /api/auctions/live` - **Public**
+- `GET /api/auctions/ending-soon` - **Public**
+- `GET /api/auctions/:auctionId` - **Public**
+- `POST /api/sellers/auctions` - **Protected (Seller)**
+- `PUT /api/sellers/auctions/:auctionId` - **Protected (Seller)**
+- `DELETE /api/sellers/auctions/:auctionId` - **Protected (Seller)**
+- `GET /api/sellers/auctions` - **Protected (Seller)**
 
 ### Bids
-- `GET /api/auctions/:auctionId/bids` - Get auction bid history
-- `POST /api/auctions/:auctionId/bids` - Place bid
-- `GET /api/users/me/bids` - Get user's bid history
-- `GET /api/users/me/bids/active` - Get user's active bids
-- `DELETE /api/auctions/:auctionId/bids/:bidId` - Cancel bid (if allowed)
+
+- `GET /api/auctions/:auctionId/bids` - **Public**
+- `POST /api/auctions/:auctionId/bids` - **Protected**
+- `GET /api/users/me/bids` - **Protected**
+- `GET /api/users/me/bids/active` - **Protected**
+- `DELETE /api/auctions/:auctionId/bids/:bidId` - **Protected**
 
 ### Watchlists
-- `GET /api/users/me/watchlist` - Get user's watchlist
-- `POST /api/users/me/watchlist` - Add product/auction to watchlist
-- `DELETE /api/users/me/watchlist/:watchlistId` - Remove from watchlist
-- `PUT /api/users/me/watchlist/:watchlistId` - Update notification preferences
+
+- `GET /api/users/me/watchlist` - **Protected**
+- `POST /api/users/me/watchlist` - **Protected**
+- `DELETE /api/users/me/watchlist/:watchlistId` - **Protected**
+- `PUT /api/users/me/watchlist/:watchlistId` - **Protected**
 
 ---
 
 ## 4. Shopping Cart & Checkout
 
 ### Cart
-- `GET /api/cart` - Get cart (user or session)
-- `POST /api/cart/items` - Add item to cart
-- `PUT /api/cart/items/:cartItemId` - Update cart item quantity
-- `DELETE /api/cart/items/:cartItemId` - Remove item from cart
-- `DELETE /api/cart` - Clear cart
-- `POST /api/cart/merge` - Merge guest cart with user cart (after login)
+
+- `GET /api/cart` - **Public/Protected** (supports both guest and authenticated)
+- `POST /api/cart/items` - **Public/Protected** (supports both guest and authenticated)
+- `PUT /api/cart/items/:cartItemId` - **Public/Protected** (supports both guest and authenticated)
+- `DELETE /api/cart/items/:cartItemId` - **Public/Protected** (supports both guest and authenticated)
+- `DELETE /api/cart` - **Public/Protected** (supports both guest and authenticated)
+- `POST /api/cart/merge` - **Protected** (after login)
 
 ### Checkout
-- `POST /api/checkout/validate` - Validate cart before checkout
-- `POST /api/checkout` - Create order from cart
-- `POST /api/checkout/calculate` - Calculate totals (tax, shipping)
+
+- `POST /api/checkout/validate` - **Public/Protected** (supports both guest and authenticated)
+- `POST /api/checkout` - **Protected** (requires user account)
+- `POST /api/checkout/calculate` - **Public/Protected** (supports both guest and authenticated)
 
 ---
 
 ## 5. Orders
 
 ### Orders
-- `GET /api/orders` - List user's orders
-- `GET /api/orders/:orderId` - Get order details
-- `POST /api/orders/:orderId/cancel` - Cancel order
-- `GET /api/sellers/orders` - List seller's orders
-- `PATCH /api/sellers/orders/:orderId/status` - Update order status (seller)
+
+- `GET /api/orders` - **Protected**
+- `GET /api/orders/:orderId` - **Protected**
+- `POST /api/orders/:orderId/cancel` - **Protected**
+- `GET /api/sellers/orders` - **Protected (Seller)**
+- `PATCH /api/sellers/orders/:orderId/status` - **Protected (Seller)**
 
 ### Order Items
-- `GET /api/orders/:orderId/items` - List order items
+
+- `GET /api/orders/:orderId/items` - **Protected**
 
 ---
 
 ## 6. Payments
 
 ### Payments
-- `POST /api/payments` - Create payment
-- `GET /api/payments/:paymentId` - Get payment details
-- `POST /api/payments/:paymentId/confirm` - Confirm payment
-- `POST /api/payments/:paymentId/refund` - Request refund
-- `GET /api/orders/:orderId/payments` - Get order payments
-- `POST /api/webhooks/payment/:provider` - Payment provider webhooks
+
+- `POST /api/payments` - **Protected**
+- `GET /api/payments/:paymentId` - **Protected**
+- `POST /api/payments/:paymentId/confirm` - **Protected**
+- `POST /api/payments/:paymentId/refund` - **Protected**
+- `GET /api/orders/:orderId/payments` - **Protected**
+- `POST /api/webhooks/payment/:provider` - **Public** (webhook, verified by signature)
 
 ---
 
 ## 7. Shipping
 
 ### Shipments
-- `GET /api/orders/:orderId/shipments` - Get order shipments
-- `GET /api/shipments/:shipmentId` - Get shipment details
-- `GET /api/shipments/:shipmentId/tracking` - Get tracking history
-- `POST /api/sellers/orders/:orderId/shipments` - Create shipment (seller)
-- `PUT /api/sellers/shipments/:shipmentId` - Update shipment (seller)
+
+- `GET /api/orders/:orderId/shipments` - **Protected**
+- `GET /api/shipments/:shipmentId` - **Protected**
+- `GET /api/shipments/:shipmentId/tracking` - **Public** (with tracking number)
+- `POST /api/sellers/orders/:orderId/shipments` - **Protected (Seller)**
+- `PUT /api/sellers/shipments/:shipmentId` - **Protected (Seller)**
 
 ---
 
 ## 8. Reviews & Ratings
 
 ### Reviews
-- `GET /api/products/:productId/reviews` - List product reviews
-- `GET /api/sellers/:sellerId/reviews` - List seller reviews
-- `POST /api/reviews` - Create review (for order item)
-- `PUT /api/reviews/:reviewId` - Update review
-- `DELETE /api/reviews/:reviewId` - Delete review
-- `GET /api/users/me/reviews` - Get user's reviews
-- `POST /api/reviews/:reviewId/media` - Upload review media
+
+- `GET /api/products/:productId/reviews` - **Public**
+- `GET /api/sellers/:sellerId/reviews` - **Public**
+- `POST /api/reviews` - **Protected**
+- `PUT /api/reviews/:reviewId` - **Protected**
+- `DELETE /api/reviews/:reviewId` - **Protected**
+- `GET /api/users/me/reviews` - **Protected**
+- `POST /api/reviews/:reviewId/media` - **Protected**
 
 ### Review Moderation (Admin)
-- `GET /api/admin/reviews/pending` - List pending reviews
-- `PATCH /api/admin/reviews/:reviewId/approve` - Approve review
-- `PATCH /api/admin/reviews/:reviewId/reject` - Reject review
+
+- `GET /api/admin/reviews/pending` - **Protected (Admin)**
+- `PATCH /api/admin/reviews/:reviewId/approve` - **Protected (Admin)**
+- `PATCH /api/admin/reviews/:reviewId/reject` - **Protected (Admin)**
 
 ---
 
 ## 9. Notifications
 
 ### Notifications
-- `GET /api/notifications` - List user notifications
-- `GET /api/notifications/unread` - Get unread notifications
-- `PATCH /api/notifications/:notificationId/read` - Mark as read
-- `PATCH /api/notifications/read-all` - Mark all as read
-- `DELETE /api/notifications/:notificationId` - Delete notification
+
+- `GET /api/notifications` - **Protected**
+- `GET /api/notifications/unread` - **Protected**
+- `PATCH /api/notifications/:notificationId/read` - **Protected**
+- `PATCH /api/notifications/read-all` - **Protected**
+- `DELETE /api/notifications/:notificationId` - **Protected**
 
 ---
 
 ## 10. Search & Discovery
 
 ### Search
-- `GET /api/search` - Global search (products, auctions)
-- `GET /api/search/suggestions` - Search autocomplete
-- `GET /api/search/filters` - Get available filters
+
+- `GET /api/search` - **Public**
+- `GET /api/search/suggestions` - **Public**
+- `GET /api/search/filters` - **Public**
 
 ---
 
 ## 11. Analytics & Reports (Seller/Admin)
 
 ### Seller Dashboard
-- `GET /api/sellers/dashboard` - Get dashboard stats
-- `GET /api/sellers/analytics/sales` - Sales analytics
-- `GET /api/sellers/analytics/products` - Product performance
-- `GET /api/sellers/analytics/auctions` - Auction performance
+
+- `GET /api/sellers/dashboard` - **Protected (Seller)**
+- `GET /api/sellers/analytics/sales` - **Protected (Seller)**
+- `GET /api/sellers/analytics/products` - **Protected (Seller)**
+- `GET /api/sellers/analytics/auctions` - **Protected (Seller)**
 
 ### Admin Reports
-- `GET /api/admin/reports/sales` - Sales reports
-- `GET /api/admin/reports/users` - User statistics
-- `GET /api/admin/reports/auctions` - Auction statistics
-- `GET /api/admin/reports/revenue` - Revenue reports
+
+- `GET /api/admin/reports/sales` - **Protected (Admin)**
+- `GET /api/admin/reports/users` - **Protected (Admin)**
+- `GET /api/admin/reports/auctions` - **Protected (Admin)**
+- `GET /api/admin/reports/revenue` - **Protected (Admin)**
 
 ---
 
 ## 12. WebSocket/Real-time Endpoints
 
 ### Real-time Features
-- `WS /api/ws/auctions/:auctionId` - Real-time auction updates
-- `WS /api/ws/notifications` - Real-time notifications
+
+- `WS /api/ws/auctions/:auctionId` - **Public** (but authenticated users get enhanced features)
+- `WS /api/ws/notifications` - **Protected**
+
+---
+
+## Legend
+
+- **Public** - No authentication required
+- **Protected** - Requires authentication (logged-in user)
+- **Protected (Seller)** - Requires authentication + seller role
+- **Protected (Admin)** - Requires authentication + admin role
+- **Public/Protected** - Works for both guest and authenticated users (typically cart/checkout)

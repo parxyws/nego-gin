@@ -14,17 +14,19 @@ type RoleRepository interface {
 }
 
 type PermissionRepository interface {
-	CreatePermission(ctx context.Context)
-	DeletePermission(ctx context.Context)
-	ReadAllPermission(ctx context.Context)
-	ReadAllPermissionById(ctx context.Context)
+	CreatePermission(ctx context.Context, entity *domain.Permission) (*domain.Permission, error)
+	DeletePermission(ctx context.Context, entity *domain.Permission) error
+	ReadPermissionById(ctx context.Context, entity *domain.Permission) (*domain.Permission, error)
+	ReadAllPermission(ctx context.Context, entity *domain.Permission) ([]domain.Permission, error)
 }
 
 type RolePermissionRepository interface {
-	CreateRolePermission(ctx context.Context)
-	DeleteRolePermission(ctx context.Context)
-	ReadAllRolePermission(ctx context.Context)
-	ReadAllRolePermissionByRoleId(ctx context.Context)
+	CreateRolePermission(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error)
+	DeleteRolePermission(ctx context.Context, entity *domain.RolePermission) error
+	ReadRolePermissionByPermissionId(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error)
+	ReadRolePermissionByRoleId(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error)
+	ReadAllRolePermission(ctx context.Context, entity *domain.RolePermission) ([]domain.RolePermission, error)
+	ReadAllRolePermissionByRoleId(ctx context.Context, entity *domain.RolePermission) ([]domain.RolePermission, error)
 }
 
 type UserRepository interface {
@@ -50,7 +52,7 @@ type UserRoleRepository interface {
 
 type UserAddressRepository interface {
 	CreateUserAddress(ctx context.Context, entity *domain.UserAddress) (*domain.UserAddress, error)
-	DeleteUserAddress(ctx context.Context, entity []domain.UserAddress) error
+	DeleteUserAddress(ctx context.Context, entity *domain.UserAddress) error
 	UpdateUserAddress(ctx context.Context, entity *domain.UserAddress) (*domain.UserAddress, error)
 	ReadUserAddress(ctx context.Context, entity *domain.UserAddress) (*domain.UserAddress, error)
 	ReadAllUserAddress(ctx context.Context, entity *domain.UserAddress) ([]domain.UserAddress, error)

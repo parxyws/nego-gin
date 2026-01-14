@@ -11,6 +11,13 @@ import (
 
 const TableNameUser = "users"
 
+const (
+	Active    = "active"
+	Suspended = "suspended"
+	Banned    = "banned"
+	Pending   = "pending"
+)
+
 type User struct {
 	UserID        string         `gorm:"column:user_id;primaryKey" json:"user_id"`
 	Email         string         `gorm:"column:email;not null" json:"email"`

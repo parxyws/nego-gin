@@ -18,6 +18,12 @@ type AuthService interface {
 	ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error
 }
 
+type PermissionService interface {
+	RegisterPermission(ctx context.Context)
+	DeletePermission(ctx context.Context)
+	GetAllPermission(ctx context.Context)
+}
+
 type RoleService interface {
 	RegisterRole(ctx context.Context, entity *dto.RoleRegisterRequest) (*dto.RoleResponse, error)
 	CheckDeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) ([]dto.RoleResponse, error)
@@ -31,10 +37,11 @@ type UserService interface {
 	UpdateAvatar(ctx context.Context, entity middleware.JwtPayload, avatar *aws.UploadInput) (*dto.UserResponse, error)
 	DeleteCurrentUser(ctx context.Context, entity middleware.JwtPayload) error
 	GetUser(ctx context.Context, request *dto.GetUserProfileRequest) (*dto.UserProfileResponse, error)
-
-	//GetUserListOfAddresses(ctx context.Context, entity middleware.JwtPayload) (*dto.UserResponse, error)
 }
 
 type UserAddressService interface {
-	CreateUserAddress(ctx context.Context)
+	CreateUserAddress(ctx context.Context, entity *dto.UserAddressCreateRequest) (*dto.UserAddressResponse, error)
+	UpdateUserAddress(ctx context.Context, entity *dto.UserAddressUpdateRequest) (*dto.UserAddressResponse, error)
+	DeleteUserAddress(ctx context.Context, addressId int32, userId string) error
+	ListUserAddress(ctx context.Context, userId string) ([]dto.UserAddressResponse, error)
 }

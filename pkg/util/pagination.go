@@ -34,10 +34,10 @@ func DecodeCursor(cursor string) (Cursor, error) {
 		return Cursor{}, err
 	}
 
-	var page Cursor
-	if err := json.Unmarshal(decodedCursor, &page); err != nil {
+	var unmarshaledCrs Cursor
+	if err := json.Unmarshal(decodedCursor, &unmarshaledCrs); err != nil {
 		return Cursor{}, err
 	}
 
-	return page, nil
+	return unmarshaledCrs, nil
 }

@@ -34,10 +34,10 @@ func (u *UserAddressRepositoryImpl) CreateUserAddress(ctx context.Context, entit
 	return entity, nil
 }
 
-func (u *UserAddressRepositoryImpl) DeleteUserAddress(ctx context.Context, entity []domain.UserAddress) error {
+func (u *UserAddressRepositoryImpl) DeleteUserAddress(ctx context.Context, entity *domain.UserAddress) error {
 	tx := u.DB.WithContext(ctx)
 	err := tx.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Delete(entity).Error; err != nil {
+		if err := tx.Delete(entity, "address_id = ? AND user_id = ?", entity.AddressID, entity.UserID).Error; err != nil {
 			return fmt.Errorf("UserAddressRepositoryImpl.DeleteUserAddress - %w", err)
 		}
 

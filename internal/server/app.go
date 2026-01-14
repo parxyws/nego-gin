@@ -20,16 +20,21 @@ func (s *Server) Boostrap() error {
 	middlewareSetup := middleware.NewMiddlewareManager(&middleware.ConfigMiddleware{
 		Config: s.cfg,
 		Logger: s.logger,
+		DB:     s.db,
 	})
 
 	/* ----------------------------- Repository ---------------------------- */
+	//PermissionRepository := userRepository.NewPermissionRepository(s.db)
 	RoleRepository := userRepository.NewRoleRepository(s.db)
+	//RolePermissionRepository := userRepository.NewRolePermissionRepository(s.db)
 	UserRepository := userRepository.NewUserRepository(s.db)
-	//UserAddressRepository := userRepository.NewUserAddressRepository(s.db)
 	UserRoleRepository := userRepository.NewUserRoleRepository(s.db)
+	//UserAddressRepository := userRepository.NewUserAddressRepository(s.db)
 
 	/* ----------------------------- Service ---------------------------- */
+	//RoleService := userService.NewRoleService(RoleRepository, UserRoleRepository)
 	AuthService := userService.NewAuthService(s.cfg, UserRepository, UserRoleRepository, RoleRepository, s.rds, s.mail)
+	//UserService := userService.NewUserService(s.cfg, UserRepository)
 
 	/* ----------------------------- Controller ---------------------------- */
 	AuthController := userController.NewAuthController(AuthService)
