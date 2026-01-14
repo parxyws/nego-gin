@@ -12,7 +12,7 @@ type UserAddressServiceImpl struct {
 	userAddressRepository user.UserAddressRepository
 }
 
-func NewUserAddressServiceImpl(userAddressRepository user.UserAddressRepository) user.UserAddressService {
+func NewUserAddressService(userAddressRepository user.UserAddressRepository) user.UserAddressService {
 	return &UserAddressServiceImpl{userAddressRepository: userAddressRepository}
 }
 

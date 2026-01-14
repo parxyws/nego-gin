@@ -2,15 +2,16 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/parxyws/nego-gin/internal/middleware"
 	"github.com/parxyws/nego-gin/pkg/helper"
 
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
-	"github.com/parxyws/nego-gin/middleware"
 	"github.com/parxyws/nego-gin/pkg/validator"
 )
 
@@ -88,6 +89,8 @@ func (a *AuthControllerImpl) Login(c *gin.Context) {
 		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
 		return
 	}
+
+	fmt.Println(request)
 
 	result, err := a.authService.Login(ctx, request)
 	if err != nil {

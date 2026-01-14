@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/parxyws/nego-gin/internal/middleware"
 	//------------------ Repository ------------------
 	userRepository "github.com/parxyws/nego-gin/internal/user/repository"
 
@@ -12,8 +13,6 @@ import (
 
 	//------------------ Route ------------------
 	userRoute "github.com/parxyws/nego-gin/internal/user/route"
-
-	"github.com/parxyws/nego-gin/middleware"
 )
 
 func (s *Server) Boostrap() error {
@@ -23,38 +22,36 @@ func (s *Server) Boostrap() error {
 		DB:     s.db,
 	})
 
+	/* ----------------------------- Middleware ---------------------------- */
+	authMiddleware, err := middlewareSetup.JWTAuthMiddleware()
+	if err != nil {
+		return err
+	}
+
 	/* ----------------------------- Repository ---------------------------- */
 	//PermissionRepository := userRepository.NewPermissionRepository(s.db)
 	RoleRepository := userRepository.NewRoleRepository(s.db)
 	//RolePermissionRepository := userRepository.NewRolePermissionRepository(s.db)
 	UserRepository := userRepository.NewUserRepository(s.db)
 	UserRoleRepository := userRepository.NewUserRoleRepository(s.db)
-	//UserAddressRepository := userRepository.NewUserAddressRepository(s.db)
+	UserAddressRepository := userRepository.NewUserAddressRepository(s.db)
 
 	/* ----------------------------- Service ---------------------------- */
 	//RoleService := userService.NewRoleService(RoleRepository, UserRoleRepository)
-	AuthService := userService.NewAuthService(s.cfg, UserRepository, UserRoleRepository, RoleRepository, s.rds, s.mail)
-	//UserService := userService.NewUserService(s.cfg, UserRepository)
-
+	AuthService := userService.NewAuthService(s.cfg, UserRepository, UserRoleRepository, RoleRepository, s.rds, s.mail, authMiddleware)
+	UserService := userService.NewUserService(s.cfg, UserRepository)
+	UserAddressService := userService.NewUserAddressService(UserAddressRepository)
 	/* ----------------------------- Controller ---------------------------- */
 	AuthController := userController.NewAuthController(AuthService)
-
-	/* ----------------------------- Middleware ---------------------------- */
-	_, err := middlewareSetup.JWTAuthMiddleware()
-	if err != nil {
-		return err
-	}
+	UserController := userController.NewUserController(UserService, UserAddressService)
 
 	/* ----------------------------- Route ---------------------------- */
 	api := s.app.Group("/api/v1")
 	userRoute.AuthRoute(api, AuthController)
-
-	// Note: UserController and AdminController need to be initialized when implemented
-	// userRoute.UserRoute(apiV1, UserController)
-	// userRoute.AdminRoute(apiV1, AdminController)
+	userRoute.UserRoute(api, UserController)
 
 	/* ----------------------------- Seed ---------------------------- */
-	seeder := NewSeeder(s.db, s.cfg)
+	seeder := NewSeeder(s.db, s.cfg, s.app)
 	if err := seeder.Seed(); err != nil {
 		return err
 	}

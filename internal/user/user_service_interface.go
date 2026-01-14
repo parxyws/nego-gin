@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 
+	"github.com/parxyws/nego-gin/internal/middleware"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
-	"github.com/parxyws/nego-gin/middleware"
 	"github.com/parxyws/nego-gin/pkg/database/aws"
 )
 
@@ -29,6 +29,7 @@ type RoleService interface {
 	CheckDeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) ([]dto.RoleResponse, error)
 	DeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) error
 	GetAllRoles(ctx context.Context) ([]dto.RoleResponse, error)
+	UpdateRole(ctx context.Context, entity *dto.RoleUpdateRequest) (*dto.RoleResponse, error)
 }
 
 type UserService interface {

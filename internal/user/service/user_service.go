@@ -4,10 +4,10 @@ import (
 	"context"
 
 	"github.com/parxyws/nego-gin/config"
+	"github.com/parxyws/nego-gin/internal/middleware"
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
-	"github.com/parxyws/nego-gin/middleware"
 	"github.com/parxyws/nego-gin/pkg/database/aws"
 )
 

@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -51,8 +52,27 @@ func (a *AdminControllerImpl) CreateRole(c *gin.Context) {
 }
 
 func (a *AdminControllerImpl) UpdateRole(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	param := c.Param("roleId")
+	body := new(dto.RoleUpdateRequest)
+
+	paramInt, err := strconv.ParseInt(param, 10, 32)
+	if err != nil {
+		helper.Error(c, http.StatusBadRequest, "failed to retrieve param", err)
+	}
+	body.RoleId = int32(paramInt)
+	if err := c.ShouldBind(body); err != nil {
+		helper.Error(c, http.StatusBadRequest, "failed to bind body", err)
+	}
+
+	result, err := a.roleService.UpdateRole(ctx, body)
+	if err != nil {
+		helper.Error(c, http.StatusInternalServerError, "failed to update role", err)
+	}
+
+	helper.Success(c, http.StatusOK, "success to update role", result)
 }
 
 func (a *AdminControllerImpl) DeleteRole(c *gin.Context) {

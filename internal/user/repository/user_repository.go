@@ -64,6 +64,28 @@ func (repo *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.Use
 	return user, nil
 }
 
+func (repo *UserRepositoryImpl) UpdateSingleColumnUser(ctx context.Context, entity *domain.User, column string) (*domain.User, error) {
+	dbTx := repo.DB.WithContext(ctx)
+	err := dbTx.Transaction(func(tx *gorm.DB) error {
+		dbRes := tx.Model(&domain.User{}).Where("user_id = ?", entity.UserID).Update(column, entity.LastLogin)
+		if dbRes.RowsAffected == 0 {
+			return gorm.ErrRecordNotFound
+		}
+
+		if dbRes.Error != nil {
+			return fmt.Errorf("UserRepository.UpdateSingleColumnUser - %w", dbRes.Error)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return entity, nil
+}
+
 func (repo *UserRepositoryImpl) DeleteUser(ctx context.Context, user *domain.User) error {
 	dbTx := repo.DB.WithContext(ctx)
 	return dbTx.Transaction(func(tx *gorm.DB) error {

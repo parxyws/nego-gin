@@ -28,7 +28,7 @@ func (m *ManagerMiddleware) JWTAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 func (m *ManagerMiddleware) initJwtParams() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{
 		Realm:           "ego",
-		Key:             []byte("secret"),
+		Key:             []byte(m.cfg.Server.JWTSecretKey),
 		Timeout:         time.Hour,
 		MaxRefresh:      time.Hour,
 		IdentityKey:     "user",

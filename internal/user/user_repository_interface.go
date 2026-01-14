@@ -32,6 +32,7 @@ type RolePermissionRepository interface {
 type UserRepository interface {
 	CreateUser(ctx context.Context, entity *domain.User) (*domain.User, error)
 	UpdateUser(ctx context.Context, entity *domain.User) (*domain.User, error)
+	UpdateSingleColumnUser(ctx context.Context, entity *domain.User, column string) (*domain.User, error)
 	DeleteUser(ctx context.Context, entity *domain.User) error
 
 	ReadByUsername(ctx context.Context, entity *domain.User) (*domain.User, error)

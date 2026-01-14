@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/parxyws/nego-gin/internal/middleware"
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
-	"github.com/parxyws/nego-gin/middleware"
 	"github.com/parxyws/nego-gin/pkg/helper"
 	"github.com/parxyws/nego-gin/pkg/validator"
 )
@@ -19,7 +19,7 @@ type UserControllerImpl struct {
 	userAddressService user.UserAddressService
 }
 
-func NewUserControllerImpl(userService user.UserService, userAddressService user.UserAddressService) user.UserController {
+func NewUserController(userService user.UserService, userAddressService user.UserAddressService) user.UserController {
 	return &UserControllerImpl{userService: userService, userAddressService: userAddressService}
 }
 

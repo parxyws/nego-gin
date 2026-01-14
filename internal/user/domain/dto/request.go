@@ -5,8 +5,14 @@ type RoleRegisterRequest struct {
 	Description string `json:"description"`
 }
 
+type RoleUpdateRequest struct {
+	RoleId      int32  `json:"role_id"`
+	RoleName    string `json:"role_name"`
+	Description string `json:"description"`
+}
+
 type RoleDeleteRequest struct {
-	ID           int32  `json:"id"`
+	RoleId       int32  `json:"role_id"`
 	RoleName     string `json:"role_name"`
 	DropUserRole bool   `json:"drop_user_role"`
 }

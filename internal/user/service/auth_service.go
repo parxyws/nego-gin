@@ -15,10 +15,10 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/oklog/ulid/v2"
 	"github.com/parxyws/nego-gin/config"
+	"github.com/parxyws/nego-gin/internal/middleware"
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
-	"github.com/parxyws/nego-gin/middleware"
 	"github.com/parxyws/nego-gin/pkg/util"
 	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
@@ -35,8 +35,8 @@ type AuthServiceImpl struct {
 	mailDialer         *gomail.Dialer
 }
 
-func NewAuthService(cfg *config.Config, userRepository user.UserRepository, userRoleRepository user.UserRoleRepository, roleRepository user.RoleRepository, rdb *redis.Client, mailDialer *gomail.Dialer) user.AuthService {
-	return &AuthServiceImpl{cfg: cfg, userRepository: userRepository, userRoleRepository: userRoleRepository, roleRepository: roleRepository, rdb: rdb, mailDialer: mailDialer}
+func NewAuthService(cfg *config.Config, userRepository user.UserRepository, userRoleRepository user.UserRoleRepository, roleRepository user.RoleRepository, rdb *redis.Client, mailDialer *gomail.Dialer, jwtMiddleware *jwt.GinJWTMiddleware) user.AuthService {
+	return &AuthServiceImpl{cfg: cfg, userRepository: userRepository, userRoleRepository: userRoleRepository, roleRepository: roleRepository, rdb: rdb, mailDialer: mailDialer, jwtMiddleware: jwtMiddleware}
 }
 
 func (s *AuthServiceImpl) RefreshToken(ctx context.Context, tokenReq *dto.JwtToken, payload *middleware.JwtPayload) (*dto.UserResponse, error) {
@@ -212,9 +212,13 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *dto.UserRegisterReq
 		return nil, fmt.Errorf("AuthService.Register - %w", err)
 	}
 
-	go func() {
-		_ = s.mailDialer.DialAndSend(mailMessage)
-	}()
+	//go func() {
+	//	_ = s.mailDialer.DialAndSend(mailMessage)
+	//}()
+
+	if err = s.mailDialer.DialAndSend(mailMessage); err != nil {
+		return nil, fmt.Errorf("AuthService.Register - %w", err)
+	}
 
 	return &dto.UserRegisterResponse{
 		ReferenceID: identifier,
@@ -244,12 +248,12 @@ func (s *AuthServiceImpl) ValidateUser(ctx context.Context, req *dto.UserValidat
 	}
 
 	// Unmarshal JSON string to User struct
-	var unmarshaledUser *domain.User
-	if err := json.Unmarshal([]byte(userData), &unmarshaledUser); err != nil {
+	var unmarshalUser *domain.User
+	if err := json.Unmarshal([]byte(userData), &unmarshalUser); err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - failed to unmarshal user data: %w", err)
 	}
 
-	user, err := s.userRepository.ReadByEmail(ctx, unmarshaledUser)
+	user, err := s.userRepository.ReadByEmail(ctx, unmarshalUser)
 	if err != nil {
 		return fmt.Errorf("AuthService.ValidateUser - %w", err)
 	}
@@ -303,8 +307,17 @@ func (s *AuthServiceImpl) Login(ctx context.Context, req *dto.UserLoginRequest) 
 		return nil, fmt.Errorf("AuthService.Login - invalid password")
 	}
 
+	user.LastLogin = sql.NullTime{Time: time.Now(), Valid: true}
+
+	userLogin, err := s.userRepository.UpdateSingleColumnUser(ctx, user, "last_login")
+	if err != nil {
+		return nil, fmt.Errorf("AuthService.Login - %w", err)
+	}
+
+	fmt.Println(userLogin)
+
 	userRoleReq := &domain.UserRole{
-		UserID: user.UserID,
+		UserID: userLogin.UserID,
 	}
 
 	roles, err := s.userRoleRepository.ReadUserRoleByUserID(ctx, userRoleReq)
@@ -318,9 +331,9 @@ func (s *AuthServiceImpl) Login(ctx context.Context, req *dto.UserLoginRequest) 
 	}
 
 	payload := &middleware.JwtPayload{
-		ID:       user.UserID,
-		Username: user.Username,
-		Email:    user.Email,
+		ID:       userLogin.UserID,
+		Username: userLogin.Username,
+		Email:    userLogin.Email,
 		Role:     roleNames,
 	}
 
@@ -330,11 +343,11 @@ func (s *AuthServiceImpl) Login(ctx context.Context, req *dto.UserLoginRequest) 
 	}
 
 	return &dto.UserResponse{
-		UserID:    user.UserID,
-		Username:  user.Username,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Email:     user.Email,
+		UserID:    userLogin.UserID,
+		Username:  userLogin.Username,
+		FirstName: userLogin.FirstName,
+		LastName:  userLogin.LastName,
+		Email:     userLogin.Email,
 		Jwt: dto.JwtToken{
 			AccessToken:  token.AccessToken,
 			RefreshToken: token.AccessToken,
