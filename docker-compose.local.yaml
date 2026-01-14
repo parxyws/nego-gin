@@ -52,6 +52,18 @@ services:
     networks:
       - network_db
 
+  redis-limiter:
+    image: redis:8.4.0
+    container_name: redis_limiter_db
+    restart: always
+    command: redis-server --appendonly yes --requirepass cmjpqcqbc000104kzca2o86rw
+    ports:
+      - "6381:6379"
+    volumes:
+      - redis-limiter-data:/data
+    networks:
+      - network_db
+
   minio:
     image: minio/minio:latest
     container_name: minio_db
@@ -76,3 +88,4 @@ volumes:
   postgres-master-db-volume:
   postgres-replica1-db-volume:
   redis-data:
+  redis-limiter-data:
