@@ -6,6 +6,7 @@ import (
 	"github.com/parxyws/nego-gin/internal/product"
 	"github.com/parxyws/nego-gin/internal/product/domain"
 	"github.com/parxyws/nego-gin/internal/product/domain/dto"
+	"github.com/sirupsen/logrus"
 )
 
 type CategoryServiceImpl struct {
@@ -20,6 +21,7 @@ func NewCategoryServiceImpl(ctRepo product.CategoryRepository, prdRepo product.P
 func (s *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
 	categories, err := s.ctRepo.ReadAllCategory(ctx)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "CategoryService.ListCategories"}).Errorf("failed to read all categories: %v", err)
 		return nil, err
 	}
 
@@ -43,6 +45,7 @@ func (s *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.Categor
 func (s *CategoryServiceImpl) GetCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
 	category, err := s.ctRepo.ReadCategoryById(ctx, &domain.Category{CategoryID: categoryID})
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "CategoryService.GetCategory", "category_id": categoryID}).Errorf("failed to read category by id: %v", err)
 		return nil, err
 	}
 
@@ -61,6 +64,7 @@ func (s *CategoryServiceImpl) GetCategory(ctx context.Context, categoryID int32)
 func (s *CategoryServiceImpl) ListProductsInCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
 	categoryProducts, err := s.ctRepo.ReadCategoryProductById(ctx, &domain.Category{CategoryID: categoryID})
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "CategoryService.ListProductsInCategory", "category_id": categoryID}).Errorf("failed to read category products: %v", err)
 		return nil, err
 	}
 
@@ -116,8 +120,11 @@ func (s *CategoryServiceImpl) CreateCategory(ctx context.Context, req *dto.Categ
 
 	category, err := s.ctRepo.CreateCategory(ctx, categoryRequest)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "CategoryService.CreateCategory", "category_name": req.CategoryName}).Errorf("failed to create category in repo: %v", err)
 		return nil, err
 	}
+
+	logrus.WithFields(logrus.Fields{"function": "CategoryService.CreateCategory", "category_id": category.CategoryID}).Info("category created successfully")
 
 	return &dto.CategoryResponse{
 		CategoryID:       category.CategoryID,
@@ -141,8 +148,11 @@ func (s *CategoryServiceImpl) UpdateCategory(ctx context.Context, req *dto.Categ
 
 	category, err := s.ctRepo.UpdateCategory(ctx, categoryRequest)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "CategoryService.UpdateCategory", "category_id": req.CategoryID}).Errorf("failed to update category in repo: %v", err)
 		return nil, err
 	}
+
+	logrus.WithFields(logrus.Fields{"function": "CategoryService.UpdateCategory", "category_id": category.CategoryID}).Info("category updated successfully")
 
 	return &dto.CategoryResponse{
 		CategoryID:       category.CategoryID,
@@ -160,8 +170,10 @@ func (s *CategoryServiceImpl) RemoveCategory(ctx context.Context, categoryID int
 	categoryRequest := &domain.Category{CategoryID: categoryID}
 
 	if err := s.ctRepo.DeleteCategory(ctx, categoryRequest); err != nil {
+		logrus.WithFields(logrus.Fields{"function": "CategoryService.RemoveCategory", "category_id": categoryID}).Errorf("failed to delete category in repo: %v", err)
 		return err
 	}
 
+	logrus.WithFields(logrus.Fields{"function": "CategoryService.RemoveCategory", "category_id": categoryID}).Info("category deleted successfully")
 	return nil
 }

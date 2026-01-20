@@ -32,7 +32,7 @@ type UserProfileResponse struct {
 }
 
 type JwtToken struct {
-	AccessToken  string `json:"access_Token"`
+	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
 

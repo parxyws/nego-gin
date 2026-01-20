@@ -28,10 +28,10 @@ func (a *AdminControllerImpl) GetListOfRoles(c *gin.Context) {
 
 	result, err := a.roleService.GetAllRoles(ctx)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "failed to get roles", nil)
+		helper.Error(c, http.StatusInternalServerError, "Retrieve roles failed", nil)
 	}
 
-	helper.Success(c, http.StatusOK, "success to get roles list", result)
+	helper.Success(c, http.StatusOK, "Roles list fetched successfully", result)
 }
 
 func (a *AdminControllerImpl) CreateRole(c *gin.Context) {
@@ -40,15 +40,15 @@ func (a *AdminControllerImpl) CreateRole(c *gin.Context) {
 
 	body := new(dto.RoleRegisterRequest)
 	if err := c.ShouldBind(body); err != nil {
-		helper.Error(c, http.StatusBadRequest, "failed to bind body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed", err)
 	}
 
 	result, err := a.roleService.RegisterRole(ctx, body)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "failed to register role", err)
+		helper.Error(c, http.StatusInternalServerError, "Register role failed", err)
 	}
 
-	helper.Success(c, http.StatusOK, "success to register role", result)
+	helper.Success(c, http.StatusOK, "Role registered successfully", result)
 }
 
 func (a *AdminControllerImpl) UpdateRole(c *gin.Context) {
@@ -60,19 +60,19 @@ func (a *AdminControllerImpl) UpdateRole(c *gin.Context) {
 
 	paramInt, err := strconv.ParseInt(param, 10, 32)
 	if err != nil {
-		helper.Error(c, http.StatusBadRequest, "failed to retrieve param", err)
+		helper.Error(c, http.StatusBadRequest, "Validation failed: invalid role identifier", err)
 	}
 	body.RoleId = int32(paramInt)
 	if err := c.ShouldBind(body); err != nil {
-		helper.Error(c, http.StatusBadRequest, "failed to bind body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed", err)
 	}
 
 	result, err := a.roleService.UpdateRole(ctx, body)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "failed to update role", err)
+		helper.Error(c, http.StatusInternalServerError, "Update role failed", err)
 	}
 
-	helper.Success(c, http.StatusOK, "success to update role", result)
+	helper.Success(c, http.StatusOK, "Role updated successfully", result)
 }
 
 func (a *AdminControllerImpl) DeleteRole(c *gin.Context) {

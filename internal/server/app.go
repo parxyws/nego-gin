@@ -47,7 +47,7 @@ func (s *Server) Boostrap() error {
 
 	/* ----------------------------- Route ---------------------------- */
 	api := s.app.Group("/api/v1")
-	userRoute.AuthRoute(api, AuthController)
+	userRoute.AuthRoute(api, AuthController, authMiddleware)
 	userRoute.UserRoute(api, UserController)
 
 	/* ----------------------------- Seed ---------------------------- */

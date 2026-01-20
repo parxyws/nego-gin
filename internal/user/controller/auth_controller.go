@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -34,21 +33,21 @@ func (a *AuthControllerImpl) VerifyEmail(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "invalid request payload", err)
 		return
 	}
 
 	if err := validator.ValidateStruct(ctx, req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
+		helper.Error(c, http.StatusBadRequest, "validation failed", err)
 		return
 	}
 
 	if err := a.authService.ValidateUser(ctx, req); err != nil {
-		helper.Error(c, http.StatusUnauthorized, "Validation User failed", err)
+		helper.Error(c, http.StatusUnauthorized, "User verification failed", err)
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "Validate success", nil)
+	helper.Success(c, http.StatusOK, "User verified successfully", nil)
 }
 
 func (a *AuthControllerImpl) Register(c *gin.Context) {
@@ -57,22 +56,22 @@ func (a *AuthControllerImpl) Register(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "invalid request payload", err)
 		return
 	}
 
 	if err := validator.ValidateStruct(ctx, req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
+		helper.Error(c, http.StatusBadRequest, "validation failed", err)
 		return
 	}
 
 	result, err := a.authService.Register(ctx, req)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "Register failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Register user failed", err)
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "Register success", result)
+	helper.Success(c, http.StatusOK, "User registered successfully", result)
 }
 
 func (a *AuthControllerImpl) Login(c *gin.Context) {
@@ -81,7 +80,7 @@ func (a *AuthControllerImpl) Login(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
 		return
 	}
 
@@ -90,15 +89,13 @@ func (a *AuthControllerImpl) Login(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(request)
-
 	result, err := a.authService.Login(ctx, request)
 	if err != nil {
 		helper.Error(c, http.StatusInternalServerError, "Login failed", err)
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "Login success", result)
+	helper.Success(c, http.StatusOK, "Login successfully", result)
 }
 
 func (a *AuthControllerImpl) RefreshToken(c *gin.Context) {
@@ -107,13 +104,13 @@ func (a *AuthControllerImpl) RefreshToken(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(token); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
 		return
 	}
 
 	value, exists := c.Get("user")
 	if !exists {
-		helper.Error(c, http.StatusUnauthorized, "Token not found", nil)
+		helper.Error(c, http.StatusUnauthorized, "Authentication failed: token not found", nil)
 		return
 	}
 
@@ -123,7 +120,7 @@ func (a *AuthControllerImpl) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "Refresh token success", result)
+	helper.Success(c, http.StatusOK, "Token refreshed successfully", result)
 }
 
 func (a *AuthControllerImpl) ForgotPassword(c *gin.Context) {
@@ -132,7 +129,7 @@ func (a *AuthControllerImpl) ForgotPassword(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
 		return
 	}
 
@@ -142,11 +139,11 @@ func (a *AuthControllerImpl) ForgotPassword(c *gin.Context) {
 	}
 
 	if err := a.authService.ForgotPassword(ctx, req); err != nil {
-		helper.Error(c, http.StatusInternalServerError, "Forgot password failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Process forgot password failed", err)
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "OTP sent to your email", nil)
+	helper.Success(c, http.StatusOK, "OTP sent successfully", nil)
 }
 
 func (a *AuthControllerImpl) ResetPassword(c *gin.Context) {
@@ -155,7 +152,7 @@ func (a *AuthControllerImpl) ResetPassword(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
 		return
 	}
 
@@ -169,7 +166,7 @@ func (a *AuthControllerImpl) ResetPassword(c *gin.Context) {
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "Password reset success", nil)
+	helper.Success(c, http.StatusOK, "Password reset successfully", nil)
 }
 
 func (a *AuthControllerImpl) ResendVerification(c *gin.Context) {
@@ -178,7 +175,7 @@ func (a *AuthControllerImpl) ResendVerification(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
-		helper.Error(c, http.StatusBadRequest, "Invalid request body", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
 		return
 	}
 
@@ -189,9 +186,9 @@ func (a *AuthControllerImpl) ResendVerification(c *gin.Context) {
 
 	err := a.authService.ResendVerification(ctx, req)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "Resend verification failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Resend verification OTP failed", err)
 		return
 	}
 
-	helper.Success(c, http.StatusOK, "Resend verification success", nil)
+	helper.Success(c, http.StatusOK, "Verification OTP resent successfully", nil)
 }

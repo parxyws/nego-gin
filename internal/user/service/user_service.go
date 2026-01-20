@@ -9,6 +9,7 @@ import (
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
 	"github.com/parxyws/nego-gin/pkg/database/aws"
+	"github.com/sirupsen/logrus"
 )
 
 type UserServiceImpl struct {
@@ -29,6 +30,7 @@ func (u *UserServiceImpl) GetCurrentUser(ctx context.Context, entity middleware.
 
 	result, err := u.userRepository.ReadById(ctx, useRequest)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserService.GetCurrentUser", "user_id": entity.ID}).Errorf("failed to read user: %v", err)
 		return nil, err
 	}
 
@@ -54,8 +56,11 @@ func (u *UserServiceImpl) UpdateCurrentUser(ctx context.Context, entity middlewa
 
 	result, err := u.userRepository.UpdateUser(ctx, userRequest)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserService.UpdateCurrentUser", "user_id": entity.ID}).Errorf("failed to update user: %v", err)
 		return nil, err
 	}
+
+	logrus.WithFields(logrus.Fields{"function": "UserService.UpdateCurrentUser", "user_id": entity.ID}).Info("User updated successfully")
 
 	return &dto.UserResponse{
 		UserID:      result.UserID,
@@ -82,9 +87,11 @@ func (u *UserServiceImpl) DeleteCurrentUser(ctx context.Context, entity middlewa
 
 	err := u.userRepository.DeleteUser(ctx, userRequest)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserService.DeleteCurrentUser", "user_id": entity.ID}).Errorf("failed to delete user: %v", err)
 		return err
 	}
 
+	logrus.WithFields(logrus.Fields{"function": "UserService.DeleteCurrentUser", "user_id": entity.ID}).Info("User deleted successfully")
 	return nil
 }
 
@@ -95,6 +102,7 @@ func (u *UserServiceImpl) GetUser(ctx context.Context, request *dto.GetUserProfi
 
 	result, err := u.userRepository.ReadById(ctx, userRequest)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserService.GetUser", "user_id": request.UserID}).Errorf("failed to read user profile: %v", err)
 		return nil, err
 	}
 

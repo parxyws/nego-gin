@@ -27,10 +27,11 @@ func (cat *CategoryControllerImpl) ListCategories(c *gin.Context) {
 
 	result, err := cat.catService.ListCategories(ctx)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "retrieved list categories failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Retrieve category list failed", err)
+		return
 	}
 
-	helper.Success(c, http.StatusOK, "List Categories successfully retrieved", result)
+	helper.Success(c, http.StatusOK, "Category list fetched successfully", result)
 }
 
 func (cat *CategoryControllerImpl) GetCategory(c *gin.Context) {
@@ -40,16 +41,18 @@ func (cat *CategoryControllerImpl) GetCategory(c *gin.Context) {
 
 	convertReq, err := strconv.ParseInt(request, 10, 32)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "parse categoryId failed", err)
+		helper.Error(c, http.StatusBadRequest, "Validation failed: invalid category identifier", err)
+		return
 	}
 
 	result, err := cat.catService.GetCategory(ctx, int32(convertReq))
 
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "retrieved category failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Retrieve category failed", err)
+		return
 	}
 
-	helper.Success(c, http.StatusOK, "Retrieved Category successfully", result)
+	helper.Success(c, http.StatusOK, "Category fetched successfully", result)
 }
 
 func (cat *CategoryControllerImpl) ListProductsInCategory(c *gin.Context) {
@@ -59,16 +62,18 @@ func (cat *CategoryControllerImpl) ListProductsInCategory(c *gin.Context) {
 
 	convertReq, err := strconv.ParseInt(request, 10, 32)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "parse categoryId failed", err)
+		helper.Error(c, http.StatusBadRequest, "Validation failed: invalid category identifier", err)
+		return
 	}
 
 	result, err := cat.catService.ListProductsInCategory(ctx, int32(convertReq))
 
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "retrieved products failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Retrieve products in category failed", err)
+		return
 	}
 
-	helper.Success(c, http.StatusOK, "Retrieved Products successfully", result)
+	helper.Success(c, http.StatusOK, "Product list for category fetched successfully", result)
 
 }
 
@@ -78,19 +83,22 @@ func (cat *CategoryControllerImpl) CreateCategory(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		helper.Error(c, http.StatusInternalServerError, "parse category create request failed", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
+		return
 	}
 
 	if err := validator.ValidateStruct(ctx, request); err != nil {
-		helper.Error(c, http.StatusBadRequest, "parse category create request failed", err)
+		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
+		return
 	}
 
 	result, err := cat.catService.CreateCategory(ctx, request)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "retrieved category failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Create category failed", err)
+		return
 	}
 
-	helper.Success(c, http.StatusOK, "Retrieved Category successfully", result)
+	helper.Success(c, http.StatusOK, "Category created successfully", result)
 }
 
 func (cat *CategoryControllerImpl) UpdateCategory(c *gin.Context) {
@@ -99,19 +107,22 @@ func (cat *CategoryControllerImpl) UpdateCategory(c *gin.Context) {
 	defer cancel()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		helper.Error(c, http.StatusInternalServerError, "parse category update request failed", err)
+		helper.Error(c, http.StatusBadRequest, "Parse request body failed: invalid JSON format", err)
+		return
 	}
 
 	if err := validator.ValidateStruct(ctx, request); err != nil {
-		helper.Error(c, http.StatusBadRequest, "parse category update request failed", err)
+		helper.Error(c, http.StatusBadRequest, "Validation failed", err)
+		return
 	}
 
 	result, err := cat.catService.UpdateCategory(ctx, request)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "retrieved category failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Update category failed", err)
+		return
 	}
 
-	helper.Success(c, http.StatusOK, "Retrieved Category successfully", result)
+	helper.Success(c, http.StatusOK, "Category updated successfully", result)
 }
 
 func (cat *CategoryControllerImpl) RemoveCategory(c *gin.Context) {
@@ -121,12 +132,14 @@ func (cat *CategoryControllerImpl) RemoveCategory(c *gin.Context) {
 
 	convertReq, err := strconv.ParseInt(request, 10, 32)
 	if err != nil {
-		helper.Error(c, http.StatusInternalServerError, "parse categoryId failed", err)
+		helper.Error(c, http.StatusBadRequest, "Validation failed: invalid category identifier", err)
+		return
 	}
 
 	if err := cat.catService.RemoveCategory(ctx, int32(convertReq)); err != nil {
-		helper.Error(c, http.StatusInternalServerError, "retrieved category failed", err)
+		helper.Error(c, http.StatusInternalServerError, "Delete category failed", err)
+		return
 	}
 
-	helper.Success(c, http.StatusOK, "Retrieved Category successfully", nil)
+	helper.Success(c, http.StatusOK, "Category deleted successfully", nil)
 }

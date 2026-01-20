@@ -7,6 +7,7 @@ import (
 
 	"github.com/parxyws/nego-gin/config"
 	"github.com/parxyws/nego-gin/internal/user/domain"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/gomail.v2"
 )
 
@@ -20,6 +21,8 @@ func GenerateOTPMailMessage(cfg *config.Config, user *domain.User, otp string) (
 		Name: user.FirstName + " " + user.LastName,
 		OTP:  otp,
 	}
+
+	logrus.WithFields(logrus.Fields{"function": "GenerateOTPMailMessage"}).Debugf("first=%q last=%q", user.FirstName, user.LastName)
 	filePath := path.Join("web", "template", "otp.html")
 
 	tmpl, err := template.ParseFiles(filePath)

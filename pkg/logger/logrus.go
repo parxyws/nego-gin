@@ -2,12 +2,12 @@ package logger
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"runtime"
 
 	"github.com/parxyws/nego-gin/config"
 	"github.com/sirupsen/logrus"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var fieldsLogrusLevelMap = map[string]logrus.Level{
@@ -56,10 +56,24 @@ func NewLogrusLogger(cfg *config.Config) *logrus.Logger {
 		}
 	}
 
+	lumberjackLogger := &lumberjack.Logger{
+		Filename:   "./logs/application.log",
+		MaxSize:    10,
+		MaxBackups: 10,
+		MaxAge:     28,
+		Compress:   true,
+	}
+
 	logger.SetLevel(level)
 	logger.SetFormatter(formatter)
 	logger.SetReportCaller(cfg.Logger.Caller)
-	logger.SetOutput(os.Stdout)
+	logger.SetOutput(lumberjackLogger)
+
+	// Configure global logrus standard logger
+	logrus.SetLevel(level)
+	logrus.SetFormatter(formatter)
+	logrus.SetReportCaller(cfg.Logger.Caller)
+	logrus.SetOutput(lumberjackLogger)
 
 	return logger
 }

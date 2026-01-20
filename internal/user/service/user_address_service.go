@@ -6,6 +6,7 @@ import (
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
+	"github.com/sirupsen/logrus"
 )
 
 type UserAddressServiceImpl struct {
@@ -33,8 +34,11 @@ func (u *UserAddressServiceImpl) CreateUserAddress(ctx context.Context, entity *
 
 	result, err := u.userAddressRepository.CreateUserAddress(ctx, request)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserAddressService.CreateUserAddress", "user_id": entity.UserId}).Errorf("failed to create address: %v", err)
 		return nil, err
 	}
+
+	logrus.WithFields(logrus.Fields{"function": "UserAddressService.CreateUserAddress", "user_id": entity.UserId, "address_id": result.AddressID}).Info("Address created successfully")
 
 	return &dto.UserAddressResponse{
 		AddressID:     result.AddressID,
@@ -69,8 +73,11 @@ func (u *UserAddressServiceImpl) UpdateUserAddress(ctx context.Context, entity *
 
 	result, err := u.userAddressRepository.UpdateUserAddress(ctx, request)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserAddressService.UpdateUserAddress", "user_id": entity.UserId}).Errorf("failed to update address: %v", err)
 		return nil, err
 	}
+
+	logrus.WithFields(logrus.Fields{"function": "UserAddressService.UpdateUserAddress", "user_id": entity.UserId, "address_id": result.AddressID}).Info("Address updated successfully")
 
 	return &dto.UserAddressResponse{
 		AddressID:     result.AddressID,
@@ -95,9 +102,11 @@ func (u *UserAddressServiceImpl) DeleteUserAddress(ctx context.Context, addressI
 	}
 
 	if err := u.userAddressRepository.DeleteUserAddress(ctx, request); err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserAddressService.DeleteUserAddress", "user_id": userId, "address_id": addressId}).Errorf("failed to delete address: %v", err)
 		return err
 	}
 
+	logrus.WithFields(logrus.Fields{"function": "UserAddressService.DeleteUserAddress", "user_id": userId, "address_id": addressId}).Info("Address deleted successfully")
 	return nil
 }
 
@@ -108,6 +117,7 @@ func (u *UserAddressServiceImpl) ListUserAddress(ctx context.Context, userId str
 
 	result, err := u.userAddressRepository.ReadAllUserAddress(ctx, request)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserAddressService.ListUserAddress", "user_id": userId}).Errorf("failed to list addresses: %v", err)
 		return nil, err
 	}
 

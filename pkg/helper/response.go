@@ -7,6 +7,7 @@ import (
 	"github.com/parxyws/nego-gin/internal/shared/domain"
 	"github.com/parxyws/nego-gin/pkg/util"
 	"github.com/parxyws/nego-gin/pkg/validator"
+	"github.com/sirupsen/logrus"
 )
 
 type ApiResponse[T any] struct {
@@ -18,6 +19,12 @@ type ApiResponse[T any] struct {
 }
 
 func Success(ctx *gin.Context, status int, message string, data any) {
+	logrus.WithFields(logrus.Fields{
+		"status": status,
+		"path":   ctx.Request.URL.Path,
+		"method": ctx.Request.Method,
+	}).Info(message)
+
 	ctx.JSON(status, ApiResponse[any]{
 		Success: true,
 		Message: message,
@@ -44,6 +51,19 @@ func Error(ctx *gin.Context, status int, message string, err error) {
 			}
 			message = appErr.Message
 		}
+	}
+
+	logFields := logrus.Fields{
+		"status": statusCode,
+		"path":   ctx.Request.URL.Path,
+		"method": ctx.Request.Method,
+		"error":  errDetail,
+	}
+
+	if statusCode >= 500 {
+		logrus.WithFields(logFields).Error(message)
+	} else {
+		logrus.WithFields(logFields).Warn(message)
 	}
 
 	ctx.JSON(statusCode, ApiResponse[any]{

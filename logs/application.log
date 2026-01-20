@@ -1,0 +1,73 @@
+time="2026-01-15 12:06:34" level=warning msg="unverified user login attempt" file="auth_service.go:372" function=AuthService.Login username=winaoktalia
+time="2026-01-15 12:06:34" level=error msg="failed to login" file="response.go:64" error="AuthService.Login - user is not verified" method=POST path=/api/v1/auth/login status=500
+time="2026-01-19 15:37:10" level=warning msg="unverified user login attempt" file="auth_service.go:372" function=AuthService.Login username=winaoktalia
+time="2026-01-19 15:37:10" level=error msg="failed to login" file="response.go:64" error="AuthService.Login - user is not verified" method=POST path=/api/v1/auth/login status=500
+time="2026-01-19 15:57:57" level=warning msg="reference token expired or invalid" file="auth_service.go:278" function=AuthService.ValidateUser ref_id="MDFLRVlIRjBSWDRYQTk4TjlCREJKUzlBOTM="
+time="2026-01-19 15:57:57" level=warning msg="user verification failed" file="response.go:66" error="AuthService.ValidateUser - reference token expired or invalid" method=POST path=/api/v1/auth/verify-email status=401
+time="2026-01-19 15:58:01" level=warning msg="reference token expired or invalid" file="auth_service.go:278" function=AuthService.ValidateUser ref_id="MDFLRVlIRjBSWDRYQTk4TjlCREJKUzlBOTM="
+time="2026-01-19 15:58:01" level=warning msg="user verification failed" file="response.go:66" error="AuthService.ValidateUser - reference token expired or invalid" method=POST path=/api/v1/auth/verify-email status=401
+time="2026-01-19 15:58:01" level=warning msg="reference token expired or invalid" file="auth_service.go:278" function=AuthService.ValidateUser ref_id="MDFLRVlIRjBSWDRYQTk4TjlCREJKUzlBOTM="
+time="2026-01-19 15:58:01" level=warning msg="user verification failed" file="response.go:66" error="AuthService.ValidateUser - reference token expired or invalid" method=POST path=/api/v1/auth/verify-email status=401
+time="2026-01-19 15:59:06" level=warning msg="unverified user login attempt" file="auth_service.go:372" function=AuthService.Login username=winaoktalia
+time="2026-01-19 15:59:06" level=error msg="Login failed" file="response.go:64" error="AuthService.Login - user is not verified" method=POST path=/api/v1/auth/login status=500
+time="2026-01-19 15:59:16" level=warning msg="user already exists" file="user_repository.go:28" email=kfiyyanp@gmail.com function=UserRepository.CreateUser
+time="2026-01-19 15:59:16" level=error msg="failed to create user in repo: registered" file="auth_service.go:225" email=kfiyyanp@gmail.com function=AuthService.Register
+time="2026-01-19 15:59:16" level=error msg="Register user failed" file="response.go:64" error="AuthService.Register - registered" method=POST path=/api/v1/auth/register status=500
+time="2026-01-19 16:00:20" level=info msg="user created successfully" file="user_repository.go:44" function=UserRepository.CreateUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:00:20" level=debug msg="first=\"Wina Oktalia\" last=\"Cahyadi\"" file="mail.go:25" function=GenerateOTPMailMessage
+time="2026-01-19 16:00:20" level=info msg="User registered successfully" file="auth_service.go:266" email=kfiyyanp@gmail.com function=AuthService.Register ref_id="MDFLRkFRUU1aU1pCM1I4VEQyUzI4M0g4V0s="
+time="2026-01-19 16:00:20" level=info msg="User registered successfully" file="response.go:26" method=POST path=/api/v1/auth/register status=200
+time="2026-01-19 16:00:23" level=info msg="registration otp email sent successfully" file="auth_service.go:262" email=kfiyyanp@gmail.com function=AuthService.Register.Async ref_id="MDFLRkFRUU1aU1pCM1I4VEQyUzI4M0g4V0s="
+time="2026-01-19 16:00:49" level=info msg="user updated successfully" file="user_repository.go:70" function=UserRepository.UpdateUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:00:49" level=info msg="User verified successfully" file="auth_service.go:345" function=AuthService.ValidateUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:00:49" level=info msg="User verified successfully" file="response.go:26" method=POST path=/api/v1/auth/verify-email status=200
+time="2026-01-19 16:00:54" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:00:54" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:00:54" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:01:02" level=error msg="failed to get user data from redis: redis: nil" file="auth_service.go:161" function=AuthService.ResendVerification ref_id="MDFLRkFRUU1aU1pCM1I4VEQyUzI4M0g4V0s="
+time="2026-01-19 16:01:02" level=error msg="Resend verification OTP failed" file="response.go:64" error="AuthService.ResendVerification - redis: nil" method=POST path=/api/v1/auth/resend-verification status=500
+time="2026-01-19 16:06:54" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:06:54" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:06:54" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:06:59" level=warning msg="user already exists" file="user_repository.go:28" email=kfiyyanp@gmail.com function=UserRepository.CreateUser
+time="2026-01-19 16:06:59" level=error msg="failed to create user in repo: registered" file="auth_service.go:225" email=kfiyyanp@gmail.com function=AuthService.Register
+time="2026-01-19 16:06:59" level=error msg="Register user failed" file="response.go:64" error="Create user in repository failed: registered" method=POST path=/api/v1/auth/register status=500
+time="2026-01-19 16:07:21" level=warning msg="user already exists" file="user_repository.go:28" email=kfiyyanp@gmail.com function=UserRepository.CreateUser
+time="2026-01-19 16:07:21" level=error msg="failed to create user in repo: registered" file="auth_service.go:225" email=kfiyyanp@gmail.com function=AuthService.Register
+time="2026-01-19 16:07:21" level=error msg="Register user failed" file="response.go:64" error="Create user in repository failed: registered" method=POST path=/api/v1/auth/register status=500
+time="2026-01-19 16:08:35" level=warning msg="user already exists" file="user_repository.go:28" email=kfiyyanp@gmail.com function=UserRepository.CreateUser
+time="2026-01-19 16:08:35" level=error msg="failed to create user in repo: registered" file="auth_service.go:225" email=kfiyyanp@gmail.com function=AuthService.Register
+time="2026-01-19 16:08:35" level=error msg="Register user failed" file="response.go:64" error="Create user in repository failed: registered" method=POST path=/api/v1/auth/register status=500
+time="2026-01-19 16:09:01" level=error msg="failed to get user data from redis: redis: nil" file="auth_service.go:161" function=AuthService.ResendVerification ref_id="MDFLRkFRUU1aU1pCM1I4VEQyUzI4M0g4V0s="
+time="2026-01-19 16:09:01" level=error msg="Resend verification OTP failed" file="response.go:64" error="Retrieve user data failed: redis: nil" method=POST path=/api/v1/auth/resend-verification status=500
+time="2026-01-19 16:13:28" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:13:28" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:13:28" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:14:11" level=warning msg="Authentication failed: token not found" file="response.go:66" error="<nil>" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:14:58" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:14:58" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:14:58" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:15:03" level=warning msg="Authentication failed: token not found" file="response.go:66" error="<nil>" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:15:51" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:15:51" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:15:51" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:16:05" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:16:05" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:16:05" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:19:04" level=warning msg="Authentication failed: token not found" file="response.go:66" error="<nil>" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:30:16" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:30:16" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:30:16" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:30:22" level=warning msg="Authentication failed: token not found" file="response.go:66" error="<nil>" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:30:22" level=warning msg="cookie token is empty" file="response.go:66" error="cookie token is empty" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:32:38" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:32:38" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:32:38" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 16:32:54" level=warning msg="Authentication failed: token not found" file="response.go:66" error="<nil>" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:32:54" level=warning msg="cookie token is empty" file="response.go:66" error="cookie token is empty" method=POST path=/api/v1/auth/refresh-token status=401
+time="2026-01-19 16:45:54" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 16:45:54" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 16:45:54" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+time="2026-01-19 18:00:10" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
+time="2026-01-19 18:00:10" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
+time="2026-01-19 18:00:10" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200

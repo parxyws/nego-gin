@@ -6,6 +6,7 @@ import (
 
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
@@ -24,10 +25,12 @@ func (repo *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.Use
 		dbRes := tx.Where("email = ?", user.Email).Omit("avatar_url", "phone_num").FirstOrCreate(user)
 
 		if dbRes.RowsAffected == 0 {
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.CreateUser", "email": user.Email}).Warn("user already exists")
 			return gorm.ErrRegistered
 		}
 
 		if dbRes.Error != nil {
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.CreateUser", "email": user.Email}).Errorf("failed to create user: %v", dbRes.Error)
 			return fmt.Errorf("UserRepository.CreateUser - %w", dbRes.Error)
 		}
 
@@ -38,6 +41,7 @@ func (repo *UserRepositoryImpl) CreateUser(ctx context.Context, user *domain.Use
 		return nil, err
 	}
 
+	logrus.WithFields(logrus.Fields{"function": "UserRepository.CreateUser", "user_id": user.UserID}).Info("user created successfully")
 	return user, nil
 }
 
@@ -47,11 +51,13 @@ func (repo *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.Use
 		dbRes := tx.Model(&domain.User{}).Where("user_id = ?", user.UserID).Updates(user)
 
 		if dbRes.RowsAffected == 0 {
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.UpdateUser", "user_id": user.UserID}).Warn("user not found for update")
 			return gorm.ErrInvalidData
 		}
 
 		if dbRes.Error != nil {
-			return fmt.Errorf("UserRepository.CreateUser - %w", dbRes.Error)
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.UpdateUser", "user_id": user.UserID}).Errorf("failed to update user: %v", dbRes.Error)
+			return fmt.Errorf("UserRepository.UpdateUser - %w", dbRes.Error)
 		}
 
 		return nil
@@ -61,6 +67,7 @@ func (repo *UserRepositoryImpl) UpdateUser(ctx context.Context, user *domain.Use
 		return nil, err
 	}
 
+	logrus.WithFields(logrus.Fields{"function": "UserRepository.UpdateUser", "user_id": user.UserID}).Info("user updated successfully")
 	return user, nil
 }
 
@@ -69,10 +76,12 @@ func (repo *UserRepositoryImpl) UpdateSingleColumnUser(ctx context.Context, enti
 	err := dbTx.Transaction(func(tx *gorm.DB) error {
 		dbRes := tx.Model(&domain.User{}).Where("user_id = ?", entity.UserID).Update(column, entity.LastLogin)
 		if dbRes.RowsAffected == 0 {
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.UpdateSingleColumnUser", "user_id": entity.UserID, "column": column}).Warn("user not found for single column update")
 			return gorm.ErrRecordNotFound
 		}
 
 		if dbRes.Error != nil {
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.UpdateSingleColumnUser", "user_id": entity.UserID, "column": column}).Errorf("failed to update single column: %v", dbRes.Error)
 			return fmt.Errorf("UserRepository.UpdateSingleColumnUser - %w", dbRes.Error)
 		}
 
@@ -83,17 +92,24 @@ func (repo *UserRepositoryImpl) UpdateSingleColumnUser(ctx context.Context, enti
 		return nil, err
 	}
 
+	logrus.WithFields(logrus.Fields{"function": "UserRepository.UpdateSingleColumnUser", "user_id": entity.UserID, "column": column}).Info("user single column updated successfully")
 	return entity, nil
 }
 
 func (repo *UserRepositoryImpl) DeleteUser(ctx context.Context, user *domain.User) error {
 	dbTx := repo.DB.WithContext(ctx)
-	return dbTx.Transaction(func(tx *gorm.DB) error {
+	err := dbTx.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Delete(user).Error; err != nil {
+			logrus.WithFields(logrus.Fields{"function": "UserRepository.DeleteUser", "user_id": user.UserID}).Errorf("failed to delete user: %v", err)
 			return fmt.Errorf("UserRepository.DeleteUser - %w", err)
 		}
 		return nil
 	})
+	if err != nil {
+		return err
+	}
+	logrus.WithFields(logrus.Fields{"function": "UserRepository.DeleteUser", "user_id": user.UserID}).Info("user deleted successfully")
+	return nil
 }
 
 func (repo *UserRepositoryImpl) ReadByUsername(ctx context.Context, user *domain.User) (*domain.User, error) {
@@ -101,6 +117,7 @@ func (repo *UserRepositoryImpl) ReadByUsername(ctx context.Context, user *domain
 	dbTx := repo.DB.WithContext(ctx)
 
 	if err := dbTx.Where("username = ?", user.Username).First(foundUser).Error; err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserRepository.ReadByUsername", "username": user.Username}).Warnf("failed to read user by username: %v", err)
 		return nil, fmt.Errorf("UserRepository.ReadByUsername - %w", err)
 	}
 
@@ -111,6 +128,7 @@ func (repo *UserRepositoryImpl) ReadByEmail(ctx context.Context, user *domain.Us
 	foundUser := new(domain.User)
 	dbTx := repo.DB.WithContext(ctx)
 	if err := dbTx.Where("email = ?", user.Email).First(foundUser).Error; err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserRepository.ReadByEmail", "email": user.Email}).Warnf("failed to read user by email: %v", err)
 		return nil, fmt.Errorf("UserRepository.ReadByEmail - %w", err)
 	}
 
@@ -121,6 +139,7 @@ func (repo *UserRepositoryImpl) ReadById(ctx context.Context, user *domain.User)
 	foundUser := new(domain.User)
 	dbTx := repo.DB.WithContext(ctx)
 	if err := dbTx.Model(&domain.User{}).Preload("Products").Preload("Auctions").Take(foundUser, "user_id = ?", user.UserID).Error; err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserRepository.ReadById", "user_id": user.UserID}).Warnf("failed to read user by id: %v", err)
 		return nil, fmt.Errorf("UserRepository.ReadById - %w", err)
 	}
 
@@ -131,6 +150,7 @@ func (repo *UserRepositoryImpl) ReadByIdMinimal(ctx context.Context, user *domai
 	foundUser := new(domain.User)
 	dbTx := repo.DB.WithContext(ctx)
 	if err := dbTx.Model(&domain.User{}).Take(foundUser, "user_id = ?", user.UserID).Error; err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserRepository.ReadByIdMinimal", "user_id": user.UserID}).Warnf("failed to read user minimal by id: %v", err)
 		return nil, fmt.Errorf("UserRepository.ReadByIdMinimal - %w", err)
 	}
 
@@ -158,6 +178,7 @@ func (repo *UserRepositoryImpl) ReadAllByRoles(ctx context.Context, userID strin
 	}
 
 	if err := query.Limit(limit).Find(&users).Error; err != nil {
+		logrus.WithFields(logrus.Fields{"function": "UserRepository.ReadAllByRoles", "limit": limit}).Errorf("failed to read all by roles: %v", err)
 		return nil, fmt.Errorf("UserRepository.ReadAllByRoles - %w", err)
 	}
 

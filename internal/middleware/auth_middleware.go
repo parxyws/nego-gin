@@ -1,12 +1,14 @@
 package middleware
 
 import (
+	"errors"
 	"slices"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	jwt2 "github.com/golang-jwt/jwt/v5"
+	"github.com/parxyws/nego-gin/pkg/helper"
 )
 
 type JwtPayload struct {
@@ -81,13 +83,7 @@ func (m *ManagerMiddleware) authorizer(c *gin.Context, data any) bool {
 }
 
 func (m *ManagerMiddleware) unauthorized(c *gin.Context, code int, message string) {
-	c.JSON(code, gin.H{
-		"code":    code,
-		"message": message,
-		"path":    c.Request.URL.Path,
-		"method":  c.Request.Method,
-	})
-	return
+	helper.Error(c, code, message, errors.New(message))
 }
 
 //func logoutResponse() func(c *gin.Context) {
