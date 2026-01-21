@@ -16,7 +16,7 @@ func AuthRoute(router *gin.RouterGroup, controller user.AuthController, authMidd
 		auth.POST("/forgot-password", controller.ForgotPassword)
 		auth.POST("/reset-password", controller.ResetPassword)
 
-		protected := router.Group("")
+		protected := auth.Group("/")
 		protected.Use(authMiddleware.MiddlewareFunc())
 		protected.POST("/refresh-token", controller.RefreshToken)
 		protected.POST("/logout", authMiddleware.LogoutHandler)

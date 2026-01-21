@@ -71,3 +71,582 @@ time="2026-01-19 16:45:54" level=info msg="Login successfully" file="response.go
 time="2026-01-19 18:00:10" level=info msg="user single column updated successfully" file="user_repository.go:95" column=last_login function=UserRepository.UpdateSingleColumnUser user_id=01KFAQQMZSZB3R8TD2S283H8WK
 time="2026-01-19 18:00:10" level=info msg="User logged in successfully" file="auth_service.go:412" function=AuthService.Login user_id=01KFAQQMZSZB3R8TD2S283H8WK username=winaoktalia
 time="2026-01-19 18:00:10" level=info msg="Login successfully" file="response.go:26" method=POST path=/api/v1/auth/login status=200
+{
+  "error": "invalid character '}' looking for beginning of object key string",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "invalid request payload",
+  "path": "/api/v1/auth/register",
+  "status": 400,
+  "time": "2026-01-21 14:48:25"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "user_repository.go:28",
+  "function": "UserRepository.CreateUser",
+  "level": "warning",
+  "msg": "user already exists",
+  "time": "2026-01-21 14:48:54"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:225",
+  "function": "AuthService.Register",
+  "level": "error",
+  "msg": "failed to create user in repo: registered",
+  "time": "2026-01-21 14:48:54"
+}
+{
+  "error": "Create user in repository failed: registered",
+  "file": "response.go:64",
+  "level": "error",
+  "method": "POST",
+  "msg": "Register user failed",
+  "path": "/api/v1/auth/register",
+  "status": 500,
+  "time": "2026-01-21 14:48:54"
+}
+{
+  "file": "user_repository.go:44",
+  "function": "UserRepository.CreateUser",
+  "level": "info",
+  "msg": "user created successfully",
+  "time": "2026-01-21 14:49:27",
+  "user_id": "01KFFRF93FQ6RF90AHGAKBRMDV"
+}
+{
+  "file": "mail.go:25",
+  "function": "GenerateOTPMailMessage",
+  "level": "debug",
+  "msg": "first=\"hafiyyan\" last=\"kisaragi\"",
+  "time": "2026-01-21 14:49:27"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:266",
+  "function": "AuthService.Register",
+  "level": "info",
+  "msg": "User registered successfully",
+  "ref_id": "MDFLRkZSRjkzRlE2UkY5MEFIR0FLQlJNRFY=",
+  "time": "2026-01-21 14:49:27"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "User registered successfully",
+  "path": "/api/v1/auth/register",
+  "status": 200,
+  "time": "2026-01-21 14:49:27"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:262",
+  "function": "AuthService.Register.Async",
+  "level": "info",
+  "msg": "registration otp email sent successfully",
+  "ref_id": "MDFLRkZSRjkzRlE2UkY5MEFIR0FLQlJNRFY=",
+  "time": "2026-01-21 14:49:31"
+}
+{
+  "file": "user_repository.go:44",
+  "function": "UserRepository.CreateUser",
+  "level": "info",
+  "msg": "user created successfully",
+  "time": "2026-01-21 14:57:39",
+  "user_id": "01KFFRY9X9MZFG82JDKK92THBQ"
+}
+{
+  "file": "mail.go:25",
+  "function": "GenerateOTPMailMessage",
+  "level": "debug",
+  "msg": "first=\"hafiyyan\" last=\"kisaragi\"",
+  "time": "2026-01-21 14:57:39"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:266",
+  "function": "AuthService.Register",
+  "level": "info",
+  "msg": "User registered successfully",
+  "ref_id": "MDFLRkZSWTlYOU1aRkc4MkpES0s5MlRIQlE=",
+  "time": "2026-01-21 14:57:39"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "User registered successfully",
+  "path": "/api/v1/auth/register",
+  "status": 200,
+  "time": "2026-01-21 14:57:39"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:262",
+  "function": "AuthService.Register.Async",
+  "level": "info",
+  "msg": "registration otp email sent successfully",
+  "ref_id": "MDFLRkZSWTlYOU1aRkc4MkpES0s5MlRIQlE=",
+  "time": "2026-01-21 14:57:43"
+}
+{
+  "file": "user_repository.go:44",
+  "function": "UserRepository.CreateUser",
+  "level": "info",
+  "msg": "user created successfully",
+  "time": "2026-01-21 14:59:15",
+  "user_id": "01KFFS17R46HRA6WXJY76QJ0EF"
+}
+{
+  "file": "mail.go:25",
+  "function": "GenerateOTPMailMessage",
+  "level": "debug",
+  "msg": "first=\"hafiyyan\" last=\"kisaragi\"",
+  "time": "2026-01-21 14:59:15"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:266",
+  "function": "AuthService.Register",
+  "level": "info",
+  "msg": "User registered successfully",
+  "ref_id": "MDFLRkZTMTdSNDZIUkE2V1hKWTc2UUowRUY=",
+  "time": "2026-01-21 14:59:15"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "User registered successfully",
+  "path": "/api/v1/auth/register",
+  "status": 200,
+  "time": "2026-01-21 14:59:15"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:262",
+  "function": "AuthService.Register.Async",
+  "level": "info",
+  "msg": "registration otp email sent successfully",
+  "ref_id": "MDFLRkZTMTdSNDZIUkE2V1hKWTc2UUowRUY=",
+  "time": "2026-01-21 14:59:19"
+}
+{
+  "file": "user_repository.go:70",
+  "function": "UserRepository.UpdateUser",
+  "level": "info",
+  "msg": "user updated successfully",
+  "time": "2026-01-21 15:00:51",
+  "user_id": "01KFFS17R46HRA6WXJY76QJ0EF"
+}
+{
+  "file": "auth_service.go:345",
+  "function": "AuthService.ValidateUser",
+  "level": "info",
+  "msg": "User verified successfully",
+  "time": "2026-01-21 15:00:51",
+  "user_id": "01KFFS17R46HRA6WXJY76QJ0EF"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "User verified successfully",
+  "path": "/api/v1/auth/verify-email",
+  "status": 200,
+  "time": "2026-01-21 15:00:51"
+}
+{
+  "file": "user_repository.go:44",
+  "function": "UserRepository.CreateUser",
+  "level": "info",
+  "msg": "user created successfully",
+  "time": "2026-01-21 15:05:47",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "mail.go:25",
+  "function": "GenerateOTPMailMessage",
+  "level": "debug",
+  "msg": "first=\"hafiyyan\" last=\"kisaragi\"",
+  "time": "2026-01-21 15:05:47"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:266",
+  "function": "AuthService.Register",
+  "level": "info",
+  "msg": "User registered successfully",
+  "ref_id": "MDFLRkZTRDZKUVcyNllRNzZXWFZLMUdBUlM=",
+  "time": "2026-01-21 15:05:47"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "User registered successfully",
+  "path": "/api/v1/auth/register",
+  "status": 200,
+  "time": "2026-01-21 15:05:47"
+}
+{
+  "email": "kfiyyanp@gmail.com",
+  "file": "auth_service.go:262",
+  "function": "AuthService.Register.Async",
+  "level": "info",
+  "msg": "registration otp email sent successfully",
+  "ref_id": "MDFLRkZTRDZKUVcyNllRNzZXWFZLMUdBUlM=",
+  "time": "2026-01-21 15:05:51"
+}
+{
+  "file": "user_repository.go:70",
+  "function": "UserRepository.UpdateUser",
+  "level": "info",
+  "msg": "user updated successfully",
+  "time": "2026-01-21 15:06:22",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:345",
+  "function": "AuthService.ValidateUser",
+  "level": "info",
+  "msg": "User verified successfully",
+  "time": "2026-01-21 15:06:22",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "User verified successfully",
+  "path": "/api/v1/auth/verify-email",
+  "status": 200,
+  "time": "2026-01-21 15:06:22"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 15:09:05",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 15:09:05",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 15:09:05"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 15:09:37",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 15:09:37",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 15:09:37"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 15:12:12",
+  "user_id": "01KERSFZ6VZKESWD3W8EPQPMF5"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 15:12:12",
+  "user_id": "01KERSFZ6VZKESWD3W8EPQPMF5",
+  "username": "nego_superadmin"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 15:12:12"
+}
+{
+  "error": null,
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "GET",
+  "msg": "Retrieve user context failed",
+  "path": "/api/v1/users/me",
+  "status": 400,
+  "time": "2026-01-21 15:40:58"
+}
+{
+  "error": null,
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "GET",
+  "msg": "Retrieve user context failed",
+  "path": "/api/v1/users/me",
+  "status": 400,
+  "time": "2026-01-21 15:41:09"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 15:45:55",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 15:45:55",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 15:45:55"
+}
+{
+  "error": "cookie token is empty",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "cookie token is empty",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 401,
+  "time": "2026-01-21 15:46:33"
+}
+{
+  "error": "cookie token is empty",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "cookie token is empty",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 401,
+  "time": "2026-01-21 15:54:31"
+}
+{
+  "error": "cookie token is empty",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "cookie token is empty",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 401,
+  "time": "2026-01-21 15:55:45"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 15:58:49",
+  "user_id": "01KERSFZ6VZKESWD3W8EPQPMF5"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 15:58:49",
+  "user_id": "01KERSFZ6VZKESWD3W8EPQPMF5",
+  "username": "nego_superadmin"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 15:58:49"
+}
+{
+  "error": "you don't have permission to access this resource",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "you don't have permission to access this resource",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 403,
+  "time": "2026-01-21 16:04:33"
+}
+{
+  "error": "you don't have permission to access this resource",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "you don't have permission to access this resource",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 403,
+  "time": "2026-01-21 16:06:30"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 16:19:17",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 16:19:17",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 16:19:58",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 16:19:58",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 16:20:41",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 16:20:41",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 16:20:41"
+}
+{
+  "column": "last_login",
+  "file": "user_repository.go:95",
+  "function": "UserRepository.UpdateSingleColumnUser",
+  "level": "info",
+  "msg": "user single column updated successfully",
+  "time": "2026-01-21 16:26:37",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS"
+}
+{
+  "file": "auth_service.go:412",
+  "function": "AuthService.Login",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "time": "2026-01-21 16:26:37",
+  "user_id": "01KFFSD6JQW26YQ76WXVK1GARS",
+  "username": "hafiyyankisaragi"
+}
+{
+  "file": "response.go:26",
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "status": 200,
+  "time": "2026-01-21 16:26:37"
+}
+{
+  "error": "you don't have permission to access this resource",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "you don't have permission to access this resource",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 403,
+  "time": "2026-01-21 16:27:01"
+}
+{
+  "error": "auth header is invalid",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "auth header is invalid",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 401,
+  "time": "2026-01-21 16:27:19"
+}
+{
+  "error": "auth header is invalid",
+  "file": "response.go:66",
+  "level": "warning",
+  "method": "POST",
+  "msg": "auth header is invalid",
+  "path": "/api/v1/auth/refresh-token",
+  "status": 401,
+  "time": "2026-01-21 16:28:30"
+}

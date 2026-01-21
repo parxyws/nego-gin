@@ -95,6 +95,31 @@ func (a *AuthControllerImpl) Login(c *gin.Context) {
 		return
 	}
 
+	// Set refresh token as HTTP-only cookie
+
+	c.SetCookie(
+		"refresh_token",                      // Cookie name
+		result.Jwt.RefreshToken,              // Refresh token value
+		int(time.Hour*24*7)/int(time.Second), // 7 days expiry
+		"/api/auth/refresh",                  // Only accessible to refresh endpoint
+		"",                                   // Current domain
+		true,                                 // Secure in production
+		true,                                 // HttpOnly (cannot be accessed by JavaScript)
+	)
+
+	// Return only access token in response (for Authorization header)
+	//loginResponse := struct {
+	//	AccessToken string      `json:"access_token"`
+	//	ExpiresIn   int64       `json:"expires_in"`
+	//	TokenType   string      `json:"token_type"`
+	//	User        interface{} `json:"user"`
+	//}{
+	//	AccessToken: result.Jwt.AccessToken,
+	//	ExpiresIn:   result.Jwt.ExpiresIn,
+	//	TokenType:   "Bearer",
+	//	User:        result.User,
+	//}
+
 	helper.Success(c, http.StatusOK, "Login successfully", result)
 }
 

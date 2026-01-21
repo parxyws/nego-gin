@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"slices"
 	"time"
 
@@ -29,7 +30,7 @@ func (m *ManagerMiddleware) JWTAuthMiddleware() (*jwt.GinJWTMiddleware, error) {
 
 func (m *ManagerMiddleware) initJwtParams() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{
-		Realm:           "ego",
+		Realm:           "nego API",
 		Key:             []byte(m.cfg.Server.JWTSecretKey),
 		Timeout:         time.Hour,
 		MaxRefresh:      time.Hour,
@@ -38,7 +39,7 @@ func (m *ManagerMiddleware) initJwtParams() *jwt.GinJWTMiddleware {
 		IdentityHandler: m.identityHandler,
 		Authorizer:      m.authorizer,
 		Unauthorized:    m.unauthorized,
-		TokenLookup:     "header: Authorization, query: token, cookie: jwt",
+		TokenLookup:     "header: Authorization",
 		TokenHeadName:   "Bearer",
 		TimeFunc:        time.Now,
 	}
@@ -61,11 +62,30 @@ func (m *ManagerMiddleware) identityHandler(c *gin.Context) any {
 	claims := jwt.ExtractClaims(c)
 	roleSlice, _ := claims["role"]
 
+	var roles []string
+	if roleSlice != nil {
+		switch v := roleSlice.(type) {
+		case []string:
+			roles = v
+		case []interface{}:
+			for _, item := range v {
+				if str, ok := item.(string); ok {
+					roles = append(roles, str)
+				}
+			}
+		default:
+			fmt.Printf("Unexpected type for role: %T\n", v)
+			roles = []string{}
+		}
+	} else {
+		roles = []string{}
+	}
+
 	return &JwtPayload{
 		ID:       claims["id"].(string),
 		Username: claims["username"].(string),
 		Email:    claims["email"].(string),
-		Role:     roleSlice.([]string),
+		Role:     roles,
 	}
 }
 
