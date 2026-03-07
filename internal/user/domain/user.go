@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"time"
 
-	auction "github.com/parxyws/nego-gin/internal/auction/domain"
-	product "github.com/parxyws/nego-gin/internal/product/domain"
 	"gorm.io/gorm"
 )
 
@@ -34,10 +32,9 @@ type User struct {
 	UpdatedAt     time.Time      `gorm:"column:updated_at;not null;default:CURRENT_TIMESTAMP" json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`
 
-	Products      []product.Product `gorm:"foreignKey:seller_id;references:user_id"`
-	Auctions      []auction.Auction `gorm:"foreignKey:user_id;references:user_id"`
-	UserRoles     []UserRole        `gorm:"foreignKey:user_id;references:user_id"`
-	UserAddresses []UserAddress     `gorm:"foreignKey:user_id;references:user_id"`
+	// Intra-domain relationships only
+	UserRoles     []UserRole    `gorm:"foreignKey:user_id;references:user_id"`
+	UserAddresses []UserAddress `gorm:"foreignKey:user_id;references:user_id"`
 }
 
 func (u *User) TableName() string {

@@ -7,24 +7,25 @@ import (
 	"github.com/parxyws/nego-gin/internal/user"
 	"github.com/parxyws/nego-gin/internal/user/domain"
 	"github.com/parxyws/nego-gin/internal/user/domain/dto"
-	"github.com/sirupsen/logrus"
+	"github.com/parxyws/nego-gin/pkg/logger"
 )
 
-type RoleServiceImpl struct {
+type RoleService struct {
 	roleRepository     user.RoleRepository
 	userRoleRepository user.UserRoleRepository
 }
 
 func NewRoleService(roleRepository user.RoleRepository, userRoleRepository user.UserRoleRepository) user.RoleService {
-	return &RoleServiceImpl{roleRepository: roleRepository, userRoleRepository: userRoleRepository}
+	return &RoleService{roleRepository: roleRepository, userRoleRepository: userRoleRepository}
 }
 
-func (r *RoleServiceImpl) UpdateRole(ctx context.Context, entity *dto.RoleUpdateRequest) (*dto.RoleResponse, error) {
+func (r *RoleService) UpdateRole(ctx context.Context, entity *dto.RoleUpdateRequest) (*dto.RoleResponse, error) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (r *RoleServiceImpl) RegisterRole(ctx context.Context, entity *dto.RoleRegisterRequest) (*dto.RoleResponse, error) {
+func (r *RoleService) RegisterRole(ctx context.Context, entity *dto.RoleRegisterRequest) (*dto.RoleResponse, error) {
+	log := logger.WithCtx(ctx, "service", "RoleService.RegisterRole").WithField("role_name", entity.RoleName)
 	newRole := &domain.Role{
 		RoleName:    entity.RoleName,
 		Description: entity.Description,
@@ -32,11 +33,11 @@ func (r *RoleServiceImpl) RegisterRole(ctx context.Context, entity *dto.RoleRegi
 
 	res, err := r.roleRepository.CreateRole(ctx, newRole)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "RoleService.RegisterRole", "role_name": entity.RoleName}).Errorf("failed to create role: %v", err)
+		log.Errorf("failed to create role: %v", err)
 		return nil, fmt.Errorf("Create role failed: %w", err)
 	}
 
-	logrus.WithFields(logrus.Fields{"function": "RoleService.RegisterRole", "role_id": res.RoleID, "role_name": res.RoleName}).Info("Role registered successfully")
+	log.WithField("role_id", res.RoleID).Info("Role registered successfully")
 
 	return &dto.RoleResponse{
 		ID:          res.RoleID,
@@ -47,7 +48,8 @@ func (r *RoleServiceImpl) RegisterRole(ctx context.Context, entity *dto.RoleRegi
 
 }
 
-func (r *RoleServiceImpl) CheckDeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) ([]dto.RoleResponse, error) {
+func (r *RoleService) CheckDeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) ([]dto.RoleResponse, error) {
+	log := logger.WithCtx(ctx, "service", "RoleService.CheckDeleteRole")
 	roleIDs := make([]int32, len(entity))
 	for idx, deleteRequest := range entity {
 		roleIDs[idx] = deleteRequest.RoleId
@@ -55,13 +57,13 @@ func (r *RoleServiceImpl) CheckDeleteRole(ctx context.Context, entity []dto.Role
 
 	countMap, err := r.userRoleRepository.CountUserRoleByRoleID(ctx, roleIDs)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "RoleService.CheckDeleteRole"}).Errorf("failed to count user roles: %v", err)
+		log.Errorf("failed to count user roles: %v", err)
 		return nil, fmt.Errorf("Count user roles failed: %w", err)
 	}
 
 	roles, err := r.roleRepository.ReadAllRoleById(ctx, roleIDs)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "RoleService.CheckDeleteRole"}).Errorf("failed to read roles by ids: %v", err)
+		log.Errorf("failed to read roles by ids: %v", err)
 		return nil, fmt.Errorf("Retrieve roles by IDs failed: %w", err)
 	}
 
@@ -83,7 +85,8 @@ func (r *RoleServiceImpl) CheckDeleteRole(ctx context.Context, entity []dto.Role
 	return responses, nil
 }
 
-func (r *RoleServiceImpl) DeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) error {
+func (r *RoleService) DeleteRole(ctx context.Context, entity []dto.RoleDeleteRequest) error {
+	log := logger.WithCtx(ctx, "service", "RoleService.DeleteRole")
 
 	rolesToDelete := make([]domain.Role, len(entity))
 	for idx, deleteRequest := range entity {
@@ -94,19 +97,20 @@ func (r *RoleServiceImpl) DeleteRole(ctx context.Context, entity []dto.RoleDelet
 	}
 
 	if err := r.roleRepository.DeleteRole(ctx, rolesToDelete); err != nil {
-		logrus.WithFields(logrus.Fields{"function": "RoleService.DeleteRole"}).Errorf("failed to delete roles: %v", err)
+		log.Errorf("failed to delete roles: %v", err)
 		return fmt.Errorf("Delete roles failed: %w", err)
 	}
 
-	logrus.WithFields(logrus.Fields{"function": "RoleService.DeleteRole"}).Info("Roles deleted successfully")
+	log.Info("Roles deleted successfully")
 	return nil
 
 }
 
-func (r *RoleServiceImpl) GetAllRoles(ctx context.Context) ([]dto.RoleResponse, error) {
+func (r *RoleService) GetAllRoles(ctx context.Context) ([]dto.RoleResponse, error) {
+	log := logger.WithCtx(ctx, "service", "RoleService.GetAllRoles")
 	res, err := r.roleRepository.ReadAllRole(ctx)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "RoleService.GetAllRoles"}).Errorf("failed to read all roles: %v", err)
+		log.Errorf("failed to read all roles: %v", err)
 		return nil, fmt.Errorf("Retrieve all roles failed: %w", err)
 	}
 

@@ -9,52 +9,37 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRoleRepositoryImpl struct {
+type UserRoleRepository struct {
 	DB *gorm.DB
 }
 
 func NewUserRoleRepository(db *gorm.DB) user.UserRoleRepository {
-	return &UserRoleRepositoryImpl{DB: db}
+	return &UserRoleRepository{DB: db}
 }
 
-func (u *UserRoleRepositoryImpl) CreateUserRole(ctx context.Context, entity *domain.UserRole) (*domain.UserRole, error) {
+func (u *UserRoleRepository) CreateUserRole(ctx context.Context, entity *domain.UserRole) (*domain.UserRole, error) {
 	tx := u.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		result := tx.Create(entity)
+	result := tx.Create(entity)
 
-		if result.Error != nil {
-			return fmt.Errorf("UserRoleRepository.CreateUserRole %w", result.Error)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if result.Error != nil {
+		return nil, fmt.Errorf("UserRoleRepository.CreateUserRole %w", result.Error)
 	}
 
 	return entity, nil
 }
 
-func (u *UserRoleRepositoryImpl) DeleteUserRole(ctx context.Context, entity []domain.UserRole) error {
+func (u *UserRoleRepository) DeleteUserRole(ctx context.Context, entity []domain.UserRole) error {
 	tx := u.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		result := tx.Delete(&entity)
+	result := tx.Delete(&entity)
 
-		if result.Error != nil {
-			return fmt.Errorf("UserRoleRepository.DeleteUserRole %w", result.Error)
-		}
-		return nil
-	})
-
-	if err != nil {
-		return err
+	if result.Error != nil {
+		return fmt.Errorf("UserRoleRepository.DeleteUserRole %w", result.Error)
 	}
 
 	return nil
 }
 
-func (u *UserRoleRepositoryImpl) ReadAllUserRole(ctx context.Context) ([]domain.UserRole, error) {
+func (u *UserRoleRepository) ReadAllUserRole(ctx context.Context) ([]domain.UserRole, error) {
 	var userRoles []domain.UserRole
 	tx := u.DB.WithContext(ctx)
 	if err := tx.Find(&userRoles).Error; err != nil {
@@ -64,7 +49,7 @@ func (u *UserRoleRepositoryImpl) ReadAllUserRole(ctx context.Context) ([]domain.
 	return userRoles, nil
 }
 
-func (u *UserRoleRepositoryImpl) ReadUserRoleByUserID(ctx context.Context, entity *domain.UserRole) ([]domain.UserRole, error) {
+func (u *UserRoleRepository) ReadUserRoleByUserID(ctx context.Context, entity *domain.UserRole) ([]domain.UserRole, error) {
 	var userRoles []domain.UserRole
 	tx := u.DB.WithContext(ctx)
 
@@ -75,7 +60,7 @@ func (u *UserRoleRepositoryImpl) ReadUserRoleByUserID(ctx context.Context, entit
 	return userRoles, nil
 }
 
-func (u *UserRoleRepositoryImpl) CountUserRoleByRoleID(ctx context.Context, roleIDs []int32) (map[int32]int64, error) {
+func (u *UserRoleRepository) CountUserRoleByRoleID(ctx context.Context, roleIDs []int32) (map[int32]int64, error) {
 	if len(roleIDs) == 0 {
 		return map[int32]int64{}, nil
 	}

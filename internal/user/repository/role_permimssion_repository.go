@@ -8,51 +8,35 @@ import (
 	"gorm.io/gorm"
 )
 
-type RolePermissionRepositoryImpl struct {
+type RolePermissionRepository struct {
 	DB *gorm.DB
 }
 
 func NewRolePermissionRepository(db *gorm.DB) user.RolePermissionRepository {
-	return &RolePermissionRepositoryImpl{DB: db}
+	return &RolePermissionRepository{DB: db}
 }
 
-func (r *RolePermissionRepositoryImpl) CreateRolePermission(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error) {
+func (r *RolePermissionRepository) CreateRolePermission(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error) {
 	dbTx := r.DB.WithContext(ctx)
-	err := dbTx.Transaction(func(tx *gorm.DB) error {
-		dbRes := tx.Where("role_id = ? AND permission_id", entity.RoleID, entity.PermissionID).FirstOrCreate(entity)
-		if dbRes.Error != nil {
-			return dbRes.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	dbRes := dbTx.Where("role_id = ? AND permission_id", entity.RoleID, entity.PermissionID).FirstOrCreate(entity)
+	if dbRes.Error != nil {
+		return nil, dbRes.Error
 	}
 
 	return entity, nil
 }
 
-func (r *RolePermissionRepositoryImpl) DeleteRolePermission(ctx context.Context, entity *domain.RolePermission) error {
+func (r *RolePermissionRepository) DeleteRolePermission(ctx context.Context, entity *domain.RolePermission) error {
 	dbTx := r.DB.WithContext(ctx)
-	err := dbTx.Transaction(func(tx *gorm.DB) error {
-		dbRes := tx.Delete(entity, "role_id = ? AND permission_id = ?", entity.RoleID, entity.PermissionID)
-		if dbRes.Error != nil {
-			return dbRes.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return err
+	dbRes := dbTx.Delete(entity, "role_id = ? AND permission_id = ?", entity.RoleID, entity.PermissionID)
+	if dbRes.Error != nil {
+		return dbRes.Error
 	}
 
 	return nil
 }
 
-func (r *RolePermissionRepositoryImpl) ReadRolePermissionByPermissionId(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error) {
+func (r *RolePermissionRepository) ReadRolePermissionByPermissionId(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error) {
 	rolePermission := new(domain.RolePermission)
 	dbTx := r.DB.WithContext(ctx)
 	if err := dbTx.Where("permission_id = ?", entity.PermissionID).First(rolePermission).Error; err != nil {
@@ -62,7 +46,7 @@ func (r *RolePermissionRepositoryImpl) ReadRolePermissionByPermissionId(ctx cont
 	return rolePermission, nil
 }
 
-func (r *RolePermissionRepositoryImpl) ReadRolePermissionByRoleId(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error) {
+func (r *RolePermissionRepository) ReadRolePermissionByRoleId(ctx context.Context, entity *domain.RolePermission) (*domain.RolePermission, error) {
 	rolePermission := new(domain.RolePermission)
 	dbTx := r.DB.WithContext(ctx)
 	if err := dbTx.Where("role_id = ?", entity.RoleID).First(rolePermission).Error; err != nil {
@@ -72,7 +56,7 @@ func (r *RolePermissionRepositoryImpl) ReadRolePermissionByRoleId(ctx context.Co
 	return rolePermission, nil
 }
 
-func (r *RolePermissionRepositoryImpl) ReadAllRolePermission(ctx context.Context, entity *domain.RolePermission) ([]domain.RolePermission, error) {
+func (r *RolePermissionRepository) ReadAllRolePermission(ctx context.Context, entity *domain.RolePermission) ([]domain.RolePermission, error) {
 	var rolePermissions []domain.RolePermission
 	dbTx := r.DB.WithContext(ctx)
 	if err := dbTx.Find(&rolePermissions).Error; err != nil {
@@ -82,7 +66,7 @@ func (r *RolePermissionRepositoryImpl) ReadAllRolePermission(ctx context.Context
 	return rolePermissions, nil
 }
 
-func (r *RolePermissionRepositoryImpl) ReadAllRolePermissionByRoleId(ctx context.Context, entity *domain.RolePermission) ([]domain.RolePermission, error) {
+func (r *RolePermissionRepository) ReadAllRolePermissionByRoleId(ctx context.Context, entity *domain.RolePermission) ([]domain.RolePermission, error) {
 	var rolePermissions []domain.RolePermission
 	dbTx := r.DB.WithContext(ctx)
 	if err := dbTx.Where("role_id", entity.RoleID).Find(&rolePermissions).Error; err != nil {

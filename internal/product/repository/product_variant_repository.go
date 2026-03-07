@@ -8,67 +8,43 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductVariantRepositoryImpl struct {
+type ProductVariantRepository struct {
 	DB *gorm.DB
 }
 
-func NewProductVariantRepositoryImpl(db *gorm.DB) product.ProductVariantRepository {
-	return &ProductVariantRepositoryImpl{DB: db}
+func NewProductVariantRepository(db *gorm.DB) product.ProductVariantRepository {
+	return &ProductVariantRepository{DB: db}
 }
 
-func (p *ProductVariantRepositoryImpl) CreateProductVariant(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
+func (p *ProductVariantRepository) CreateProductVariant(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
 	tx := p.DB.WithContext(ctx)
 
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		if result := tx.Create(product); result.Error != nil {
-			return result.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if result := tx.Create(product); result.Error != nil {
+		return nil, result.Error
 	}
 
 	return product, nil
 }
 
-func (p *ProductVariantRepositoryImpl) UpdateProductVariant(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
+func (p *ProductVariantRepository) UpdateProductVariant(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
 	tx := p.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		if result := tx.Updates(product); result.Error != nil {
-			return result.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if result := tx.Updates(product); result.Error != nil {
+		return nil, result.Error
 	}
 
 	return product, nil
 }
 
-func (p *ProductVariantRepositoryImpl) DeleteProductVariant(ctx context.Context, product *domain.ProductVariant) error {
+func (p *ProductVariantRepository) DeleteProductVariant(ctx context.Context, product *domain.ProductVariant) error {
 	tx := p.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		if result := tx.Delete(product); result.Error != nil {
-			return result.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return err
+	if result := tx.Delete(product); result.Error != nil {
+		return result.Error
 	}
 
 	return nil
 }
 
-func (p *ProductVariantRepositoryImpl) ReadProductVariantById(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
+func (p *ProductVariantRepository) ReadProductVariantById(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
 	foundProductVariant := new(domain.ProductVariant)
 	tx := p.DB.WithContext(ctx)
 	if err := tx.Where("variant_id = ?", product.VariantID).First(foundProductVariant).Error; err != nil {
@@ -78,7 +54,7 @@ func (p *ProductVariantRepositoryImpl) ReadProductVariantById(ctx context.Contex
 	return foundProductVariant, nil
 }
 
-func (p *ProductVariantRepositoryImpl) ReadProductVariantByName(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
+func (p *ProductVariantRepository) ReadProductVariantByName(ctx context.Context, product *domain.ProductVariant) (*domain.ProductVariant, error) {
 	foundProductVariant := new(domain.ProductVariant)
 	tx := p.DB.WithContext(ctx)
 	if err := tx.Where("variant_name = ?", product.VariantName).First(foundProductVariant).Error; err != nil {
@@ -88,7 +64,7 @@ func (p *ProductVariantRepositoryImpl) ReadProductVariantByName(ctx context.Cont
 	return foundProductVariant, nil
 }
 
-func (p *ProductVariantRepositoryImpl) ReadAllProductVariantByProductId(ctx context.Context, product *domain.ProductVariant) ([]domain.ProductVariant, error) {
+func (p *ProductVariantRepository) ReadAllProductVariantByProductId(ctx context.Context, product *domain.ProductVariant) ([]domain.ProductVariant, error) {
 	var productVariant []domain.ProductVariant
 
 	tx := p.DB.WithContext(ctx)

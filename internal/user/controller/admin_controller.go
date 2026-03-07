@@ -1,10 +1,8 @@
 package controller
 
 import (
-	"context"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/user"
@@ -12,18 +10,18 @@ import (
 	"github.com/parxyws/nego-gin/pkg/helper"
 )
 
-type AdminControllerImpl struct {
+type AdminController struct {
 	userService user.UserService
 	roleService user.RoleService
 }
 
 func NewAdminController(userService user.UserService) user.AdminController {
-	return &AdminControllerImpl{userService: userService}
+	return &AdminController{userService: userService}
 }
 
-func (a *AdminControllerImpl) GetListOfRoles(c *gin.Context) {
+func (a *AdminController) GetListOfRoles(c *gin.Context) {
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	result, err := a.roleService.GetAllRoles(ctx)
@@ -34,8 +32,8 @@ func (a *AdminControllerImpl) GetListOfRoles(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Roles list fetched successfully", result)
 }
 
-func (a *AdminControllerImpl) CreateRole(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (a *AdminController) CreateRole(c *gin.Context) {
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	body := new(dto.RoleRegisterRequest)
@@ -51,8 +49,8 @@ func (a *AdminControllerImpl) CreateRole(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Role registered successfully", result)
 }
 
-func (a *AdminControllerImpl) UpdateRole(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (a *AdminController) UpdateRole(c *gin.Context) {
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	param := c.Param("roleId")
@@ -75,22 +73,22 @@ func (a *AdminControllerImpl) UpdateRole(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Role updated successfully", result)
 }
 
-func (a *AdminControllerImpl) DeleteRole(c *gin.Context) {
+func (a *AdminController) DeleteRole(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminControllerImpl) GetListOfPermissions(c *gin.Context) {
+func (a *AdminController) GetListOfPermissions(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminControllerImpl) AssignRoleToUser(c *gin.Context) {
+func (a *AdminController) AssignRoleToUser(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (a *AdminControllerImpl) RemoveRoleFromUser(c *gin.Context) {
+func (a *AdminController) RemoveRoleFromUser(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }

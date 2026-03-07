@@ -8,67 +8,43 @@ import (
 	"gorm.io/gorm"
 )
 
-type ProductTagRepositoryImpl struct {
+type ProductTagRepository struct {
 	DB *gorm.DB
 }
 
-func NewProductTagRepositoryImpl(db *gorm.DB) product.ProductTagRepository {
-	return &ProductTagRepositoryImpl{DB: db}
+func NewProductTagRepository(db *gorm.DB) product.ProductTagRepository {
+	return &ProductTagRepository{DB: db}
 }
 
-func (p *ProductTagRepositoryImpl) CreateProductTag(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
+func (p *ProductTagRepository) CreateProductTag(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
 	tx := p.DB.WithContext(ctx)
 
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		if result := tx.Create(product); result.Error != nil {
-			return result.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if result := tx.Create(product); result.Error != nil {
+		return nil, result.Error
 	}
 
 	return product, nil
 }
 
-func (p *ProductTagRepositoryImpl) UpdateProductTag(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
+func (p *ProductTagRepository) UpdateProductTag(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
 	tx := p.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		if result := tx.Save(product); result.Error != nil {
-			return result.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if result := tx.Save(product); result.Error != nil {
+		return nil, result.Error
 	}
 
 	return product, nil
 }
 
-func (p *ProductTagRepositoryImpl) DeleteProductTag(ctx context.Context, product *domain.ProductTag) error {
+func (p *ProductTagRepository) DeleteProductTag(ctx context.Context, product *domain.ProductTag) error {
 	tx := p.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		if result := tx.Delete(product); result.Error != nil {
-			return result.Error
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return err
+	if result := tx.Delete(product); result.Error != nil {
+		return result.Error
 	}
 
 	return nil
 }
 
-func (p *ProductTagRepositoryImpl) ReadProductTagByTagId(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
+func (p *ProductTagRepository) ReadProductTagByTagId(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
 	productTag := new(domain.ProductTag)
 	tx := p.DB.WithContext(ctx)
 
@@ -79,7 +55,7 @@ func (p *ProductTagRepositoryImpl) ReadProductTagByTagId(ctx context.Context, pr
 	return productTag, nil
 }
 
-func (p *ProductTagRepositoryImpl) ReadAllProductTagByProductId(ctx context.Context, product *domain.ProductTag) ([]domain.ProductTag, error) {
+func (p *ProductTagRepository) ReadAllProductTagByProductId(ctx context.Context, product *domain.ProductTag) ([]domain.ProductTag, error) {
 	var productTags []domain.ProductTag
 	tx := p.DB.WithContext(ctx)
 

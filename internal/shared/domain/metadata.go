@@ -3,9 +3,9 @@ package domain
 import "github.com/parxyws/nego-gin/pkg/util"
 
 type Metadata struct {
-	PageLimit  int        `json:"page_limit,omitempty"`
-	SortOrder  string     `json:"sort_order,omitempty"`
-	Pagination Pagination `json:"pagination,omitempty'"`
+	PageLimit  int         `json:"page_limit,omitempty"`
+	SortOrder  string      `json:"sort_order,omitempty"`
+	Pagination *Pagination `json:"pagination,omitempty"`
 }
 
 type Pagination struct {

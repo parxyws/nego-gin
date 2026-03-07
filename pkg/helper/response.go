@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/shared/domain"
+	"github.com/parxyws/nego-gin/pkg/logger"
 	"github.com/parxyws/nego-gin/pkg/util"
 	"github.com/parxyws/nego-gin/pkg/validator"
 	"github.com/sirupsen/logrus"
@@ -19,10 +20,18 @@ type ApiResponse[T any] struct {
 }
 
 func Success(ctx *gin.Context, status int, message string, data any) {
-	logrus.WithFields(logrus.Fields{
-		"status": status,
-		"path":   ctx.Request.URL.Path,
-		"method": ctx.Request.Method,
+	requestID, _ := ctx.Get("X-Request-ID")
+	requestIDStr, _ := requestID.(string)
+
+	if requestIDStr != "" {
+		ctx.Header("X-Request-ID", requestIDStr)
+	}
+
+	logger.Log.WithFields(logrus.Fields{
+		"status":     status,
+		"path":       ctx.Request.URL.Path,
+		"method":     ctx.Request.Method,
+		"request_id": requestIDStr,
 	}).Info(message)
 
 	ctx.JSON(status, ApiResponse[any]{
@@ -53,17 +62,25 @@ func Error(ctx *gin.Context, status int, message string, err error) {
 		}
 	}
 
+	requestID, _ := ctx.Get("X-Request-ID")
+	requestIDStr, _ := requestID.(string)
+
+	if requestIDStr != "" {
+		ctx.Header("X-Request-ID", requestIDStr)
+	}
+
 	logFields := logrus.Fields{
-		"status": statusCode,
-		"path":   ctx.Request.URL.Path,
-		"method": ctx.Request.Method,
-		"error":  errDetail,
+		"status":     statusCode,
+		"path":       ctx.Request.URL.Path,
+		"method":     ctx.Request.Method,
+		"error":      errDetail,
+		"request_id": requestIDStr,
 	}
 
 	if statusCode >= 500 {
-		logrus.WithFields(logFields).Error(message)
+		logger.Log.WithFields(logFields).Error(message)
 	} else {
-		logrus.WithFields(logFields).Warn(message)
+		logger.Log.WithFields(logFields).Warn(message)
 	}
 
 	ctx.JSON(statusCode, ApiResponse[any]{

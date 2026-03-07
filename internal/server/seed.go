@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"slices"
 	"strings"
 	"time"
 
@@ -28,63 +27,68 @@ func NewSeeder(db *gorm.DB, cfg *config.Config, app *gin.Engine) *Seeder {
 }
 
 func (s *Seeder) Seed() error {
-	var existingPermissions []domain.Permission
-	if err := s.DB.Find(&existingPermissions).Error; err != nil {
-		return err
-	}
-
-	if len(existingPermissions) != 0 {
-		return nil
-	}
-
 	return s.DB.Transaction(func(tx *gorm.DB) error {
+		// Seed permissions first (as they're required for roles)
 		if err := s.seedPermission(tx); err != nil {
-			return err
+			return fmt.Errorf("failed to seed permissions: %w", err)
+		}
+
+		// Seed roles
+		if err := s.seedRoles(tx); err != nil {
+			return fmt.Errorf("failed to seed roles: %w", err)
+		}
+
+		// Seed superadmin user
+		if err := s.seedSuperadmin(tx); err != nil {
+			return fmt.Errorf("failed to seed superadmin: %w", err)
 		}
 
 		return nil
 	})
-
-	//// Check if superadmin user already exists before doing anything
-	//var existingUser domain.User
-	//err := s.DB.Where("username = ?", s.cfg.Admin.User).First(&existingUser).Error
-	//
-	//if err == nil {
-	//	// User exists, check if they have superadmin role
-	//	var userRoleCount int64
-	//	s.DB.Model(&domain.UserRole{}).
-	//		Joins("JOIN roles ON user_roles.role_id = roles.role_id").
-	//		Where("user_roles.user_id = ? AND roles.role_name = ?",
-	//			existingUser.UserID, "superadmin").
-	//		Count(&userRoleCount)
-	//
-	//	if userRoleCount > 0 {
-	//		// Superadmin exists with proper role, skip all seeding
-	//		return nil
-	//	}
-	//	// User exists but doesn't have superadmin role, continue seeding
-	//} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-	//	// Some other error occurred
-	//	return fmt.Errorf("failed to check existing user: %w", err)
-	//}
-	//// User doesn't exist or doesn't have superadmin role, proceed with seeding
-	//
-	//// Start transaction for all seeding operations
-	//return s.DB.Transaction(func(tx *gorm.DB) error {
-	//	// Seed roles first
-	//	if err := s.seedRoles(tx); err != nil {
-	//		return fmt.Errorf("failed to seed roles: %w", err)
-	//	}
-	//
-	//	// Seed user
-	//	if err := s.seedSuperadmin(tx, existingUser.UserID); err != nil {
-	//		return fmt.Errorf("failed to seed user: %w", err)
-	//	}
-	//
-	//	return nil
-	//})
 }
 
+func (s *Seeder) seedPermission(tx *gorm.DB) error {
+	var existingPermissions []domain.Permission
+	if err := tx.Find(&existingPermissions).Error; err != nil {
+		return fmt.Errorf("failed to check existing permissions: %w", err)
+	}
+
+	if len(existingPermissions) > 0 {
+		return nil
+	}
+
+	resourceMap := make(map[string]bool)
+	accesses := []string{"create", "delete", "read", "update"}
+
+	for _, r := range s.app.Routes() {
+		parts := strings.Split(r.Path, "/")
+		if len(parts) < 4 {
+			continue
+		}
+		resourceMap[parts[3]] = true
+	}
+
+	var permissions []domain.Permission
+	for resource := range resourceMap {
+		for _, access := range accesses {
+			permissions = append(permissions, domain.Permission{
+				Name:        fmt.Sprintf("%s:%s", resource, access),
+				Resource:    resource,
+				Action:      access,
+				Description: fmt.Sprintf("Permission to perform %s operations on %s resources.", access, resource),
+			})
+		}
+	}
+
+	// Only create permissions if we have any to create
+	if len(permissions) > 0 {
+		if err := tx.Create(permissions).Error; err != nil {
+			return fmt.Errorf("failed to seed permissions: %w", err)
+		}
+	}
+
+	return nil
+}
 func (s *Seeder) seedRoles(tx *gorm.DB) error {
 	roles := []domain.Role{
 		{RoleName: "superadmin", Description: "Full system access with all permissions"},
@@ -94,35 +98,34 @@ func (s *Seeder) seedRoles(tx *gorm.DB) error {
 	}
 
 	for _, role := range roles {
-		// Use Upsert approach (create if not exists, update if exists)
-		result := tx.Where(domain.Role{RoleName: role.RoleName}).
-			Assign(domain.Role{Description: role.Description}).
-			FirstOrCreate(&role)
+		// Check if role already exists
+		var existingRole domain.Role
+		err := tx.Where("role_name = ?", role.RoleName).First(&existingRole).Error
 
-		if result.Error != nil {
-			return fmt.Errorf("failed to seed role %s: %w", role.RoleName, result.Error)
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Role doesn't exist, create it
+			if err := tx.Create(&role).Error; err != nil {
+				return fmt.Errorf("failed to create role %s: %w", role.RoleName, err)
+			}
+		} else if err != nil {
+			// Some other error occurred
+			return fmt.Errorf("failed to check role %s: %w", role.RoleName, err)
 		}
+		// If no error, role already exists, skip
 	}
 
 	return nil
 }
 
-func (s *Seeder) seedSuperadmin(tx *gorm.DB, existingUserID string) error {
-	// Get superadmin role
-	var superadminRole domain.Role
-	if err := tx.Where("role_name = ?", "superadmin").First(&superadminRole).Error; err != nil {
-		return fmt.Errorf("superadmin role not found: %w", err)
-	}
+func (s *Seeder) seedSuperadmin(tx *gorm.DB) error {
+	// Check if superadmin user already exists
+	var existingUser domain.User
+	err := tx.Where("username = ?", s.cfg.Admin.User).First(&existingUser).Error
 
 	var user domain.User
 
-	if existingUserID != "" {
-		// User exists but doesn't have superadmin role, get the existing user
-		if err := tx.Where("user_id = ?", existingUserID).First(&user).Error; err != nil {
-			return fmt.Errorf("failed to find existing user: %w", err)
-		}
-	} else {
-		// Create new superadmin user
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// User doesn't exist, create new superadmin user
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(s.cfg.Admin.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return fmt.Errorf("failed to hash password: %w", err)
@@ -143,15 +146,27 @@ func (s *Seeder) seedSuperadmin(tx *gorm.DB, existingUserID string) error {
 		if err := tx.Create(&user).Error; err != nil {
 			return fmt.Errorf("failed to create user: %w", err)
 		}
+	} else if err != nil {
+		// Some other error occurred
+		return fmt.Errorf("failed to check existing user: %w", err)
+	} else {
+		// User exists, use the existing user
+		user = existingUser
+	}
+
+	// Get superadmin role
+	var superadminRole domain.Role
+	if err := tx.Where("role_name = ?", "superadmin").First(&superadminRole).Error; err != nil {
+		return fmt.Errorf("superadmin role not found: %w", err)
 	}
 
 	// Check if user already has superadmin role
 	var existingUserRole domain.UserRole
-	err := tx.Where("user_id = ? AND role_id = ?", user.UserID, superadminRole.RoleID).
+	err = tx.Where("user_id = ? AND role_id = ?", user.UserID, superadminRole.RoleID).
 		First(&existingUserRole).Error
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		// Assign superadmin role
+		// Superadmin role not assigned, create it
 		userRole := &domain.UserRole{
 			UserID: user.UserID,
 			RoleID: superadminRole.RoleID,
@@ -161,79 +176,9 @@ func (s *Seeder) seedSuperadmin(tx *gorm.DB, existingUserID string) error {
 			return fmt.Errorf("failed to assign superadmin role: %w", err)
 		}
 	} else if err != nil {
+		// Some other error occurred
 		return fmt.Errorf("failed to check existing user role: %w", err)
 	}
 
-	// Also ensure customer role is assigned (if needed)
-	var customerRole domain.Role
-	if err := tx.Where("role_name = ?", "customer").First(&customerRole).Error; err != nil {
-		return fmt.Errorf("customer role not found: %w", err)
-	}
-
-	var existingCustomerRole domain.UserRole
-	err = tx.Where("user_id = ? AND role_id = ?", user.UserID, customerRole.RoleID).
-		First(&existingCustomerRole).Error
-
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		customerUserRole := &domain.UserRole{
-			UserID: user.UserID,
-			RoleID: customerRole.RoleID,
-		}
-
-		if err := tx.Create(customerUserRole).Error; err != nil {
-			return fmt.Errorf("failed to assign customer role: %w", err)
-		}
-	} else if err != nil {
-		return fmt.Errorf("failed to check existing customer role: %w", err)
-	}
-
-	return nil
-}
-
-//func uniqueSliceElements[T comparable](inputSlice []T) []T {
-//	uniqueSlice := make([]T, 0, len(inputSlice))
-//	seen := make(map[T]bool, len(inputSlice))
-//	for _, element := range inputSlice {
-//		if !seen[element] {
-//			uniqueSlice = append(uniqueSlice, element)
-//			seen[element] = true
-//		}
-//	}
-//	return uniqueSlice
-//}
-
-func (s *Seeder) seedPermission(tx *gorm.DB) error {
-	var resources []string
-	var permissions []domain.Permission
-
-	accesses := []string{"create", "delete", "read", "update"}
-
-	for _, r := range s.app.Routes() {
-		parts := strings.Split(r.Path, "/")
-		if len(parts) < 4 {
-			continue
-		}
-
-		resources = append(resources, parts[3])
-	}
-
-	compactResources := slices.Compact(resources)
-
-	for _, resource := range compactResources {
-		for _, access := range accesses {
-			permissions = append(permissions, domain.Permission{
-				Name:        fmt.Sprintf("%s:%s", resource, access),
-				Resource:    resource,
-				Action:      access,
-				Description: fmt.Sprintf("Permission to perform %s operations on %s resources.", access, resource),
-			})
-		}
-	}
-
-	if err := tx.Create(permissions).Error; err != nil {
-		return fmt.Errorf("failed to seed permissions: %w", err)
-	}
-	//fmt.Println(slices.CompactFunc(resources, strings.EqualFold))
-	//fmt.Println(slices.Compact(resources))
 	return nil
 }

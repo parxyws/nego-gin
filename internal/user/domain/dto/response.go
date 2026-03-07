@@ -12,14 +12,14 @@ type RoleResponse struct {
 }
 
 type UserResponse struct {
-	UserID      string   `json:"user_id"`
-	Username    string   `json:"username"`
-	FirstName   string   `json:"first_name"`
-	LastName    string   `json:"last_name"`
-	Email       string   `json:"email"`
-	Avatar      string   `json:"avatar,omitempty"`
-	PhoneNumber string   `json:"phone_number,omitempty"`
-	Jwt         JwtToken `json:"jwt,omitempty"`
+	UserID      string    `json:"user_id"`
+	Username    string    `json:"username"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Email       string    `json:"email"`
+	Avatar      string    `json:"avatar,omitempty"`
+	PhoneNumber string    `json:"phone_number,omitempty"`
+	Jwt         *JwtToken `json:"jwt,omitempty"`
 }
 
 type UserProfileResponse struct {
@@ -32,8 +32,8 @@ type UserProfileResponse struct {
 }
 
 type JwtToken struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	AccessToken  string `json:"access_token,omitempty"`
+	RefreshToken string `json:"refresh_token,omitempty"`
 }
 
 type UserRegisterResponse struct {

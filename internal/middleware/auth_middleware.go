@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 	"time"
 
 	jwt "github.com/appleboy/gin-jwt/v3"
@@ -32,7 +33,7 @@ func (m *ManagerMiddleware) initJwtParams() *jwt.GinJWTMiddleware {
 	return &jwt.GinJWTMiddleware{
 		Realm:           "nego API",
 		Key:             []byte(m.cfg.Server.JWTSecretKey),
-		Timeout:         time.Hour,
+		Timeout:         time.Minute * 15,
 		MaxRefresh:      time.Hour,
 		IdentityKey:     "user",
 		PayloadFunc:     m.payloadHandler,
@@ -89,17 +90,48 @@ func (m *ManagerMiddleware) identityHandler(c *gin.Context) any {
 	}
 }
 
+// authorizer implements the JWT-layer RBAC gate.
+// It mirrors the same resource-extraction logic used by the seeder:
+// the "resource" is URL path segment 3 (index in split "/" path).
+//
+// Policy rules (derived from seed + README):
+//   - "superadmin" → passes all routes unconditionally
+//   - resource == "admin"   → requires "admin" role
+//   - resource == "sellers" → requires "vendor" role
+//   - any other resource    → any authenticated user passes
 func (m *ManagerMiddleware) authorizer(c *gin.Context, data any) bool {
 	user, ok := data.(*JwtPayload)
 	if !ok {
 		return false
 	}
 
-	if slices.Contains(user.Role, "admin") {
+	// Superadmin bypasses all role checks.
+	if slices.Contains(user.Role, "superadmin") {
 		return true
 	}
 
-	return false
+	// Extract path segment 3 — identical to how seedPermission derives resource names.
+	// e.g. "/api/admin/roles" → parts[3] == "admin"
+	//      "/api/sellers/products" → parts[3] == "sellers"
+	//      "/api/orders/..." → parts[3] == "orders"
+	parts := strings.Split(c.Request.URL.Path, "/")
+	if len(parts) < 4 {
+		// Route too shallow to determine a resource — allow any authenticated user.
+		return true
+	}
+	resource := parts[3]
+
+	switch resource {
+	case "admin":
+		// Protected (Admin): requires admin role.
+		return slices.Contains(user.Role, "admin")
+	case "sellers":
+		// Protected (Seller): requires vendor role.
+		return slices.Contains(user.Role, "vendor")
+	default:
+		// Protected: any authenticated user (customer, vendor, admin, etc.)
+		return len(user.Role) > 0
+	}
 }
 
 func (m *ManagerMiddleware) unauthorized(c *gin.Context, code int, message string) {

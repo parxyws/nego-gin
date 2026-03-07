@@ -77,7 +77,7 @@ func ReadProductImageRequest(c *gin.Context, fieldName string) (*aws.UploadInput
 		return nil, err
 	}
 
-	if image.Size > 1<<20 {
+	if image.Size > 3<<20 {
 		return nil, fmt.Errorf("file size exceeds 3 MB")
 	}
 

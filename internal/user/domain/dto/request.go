@@ -46,6 +46,10 @@ type ResetPasswordRequest struct {
 	ConfirmPassword string `json:"confirm_password" validate:"required,eqfield=NewPassword"`
 }
 
+type ResendVerificationRequest struct {
+	ReferenceID string `json:"reference_id" validate:"required"`
+}
+
 type UpdateCurrentUserRequest struct {
 	FirstName   string `json:"first_name" validate:"required,max=100"`
 	LastName    string `json:"last_name" validate:"required,max=100"`

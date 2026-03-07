@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"context"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -14,22 +14,40 @@ import (
 	"github.com/parxyws/nego-gin/pkg/validator"
 )
 
-type AuthControllerImpl struct {
+type AuthController struct {
 	authService user.AuthService
 }
 
 func NewAuthController(authService user.AuthService) user.AuthController {
-	return &AuthControllerImpl{authService: authService}
+	return &AuthController{authService: authService}
 }
 
-func (a *AuthControllerImpl) Logout(c *gin.Context) {
-	//TODO implement me
-	panic("implement me")
+func (a *AuthController) Logout(c *gin.Context) {
+	ctx, cancel := helper.GetContext(c)
+	defer cancel()
+
+	// Extract Bearer token from Authorization header
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" || len(authHeader) < 8 {
+		helper.Error(c, http.StatusUnauthorized, "Authentication failed: missing token", nil)
+		return
+	}
+	accessToken := strings.TrimPrefix(authHeader, "Bearer ")
+
+	if err := a.authService.Logout(ctx, accessToken); err != nil {
+		helper.Error(c, http.StatusInternalServerError, "Logout failed", err)
+		return
+	}
+
+	// Clear the refresh token cookie
+	c.SetCookie("refresh_token", "", -1, "/api/auth/refresh", "", true, true)
+
+	helper.Success(c, http.StatusOK, "Logged out successfully", nil)
 }
 
-func (a *AuthControllerImpl) VerifyEmail(c *gin.Context) {
+func (a *AuthController) VerifyEmail(c *gin.Context) {
 	req := new(dto.UserValidateAccRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
@@ -50,9 +68,9 @@ func (a *AuthControllerImpl) VerifyEmail(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "User verified successfully", nil)
 }
 
-func (a *AuthControllerImpl) Register(c *gin.Context) {
+func (a *AuthController) Register(c *gin.Context) {
 	req := new(dto.UserRegisterRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
@@ -74,9 +92,9 @@ func (a *AuthControllerImpl) Register(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "User registered successfully", result)
 }
 
-func (a *AuthControllerImpl) Login(c *gin.Context) {
+func (a *AuthController) Login(c *gin.Context) {
 	request := new(dto.UserLoginRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(request); err != nil {
@@ -123,9 +141,9 @@ func (a *AuthControllerImpl) Login(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Login successfully", result)
 }
 
-func (a *AuthControllerImpl) RefreshToken(c *gin.Context) {
+func (a *AuthController) RefreshToken(c *gin.Context) {
 	token := new(dto.JwtToken)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(token); err != nil {
@@ -148,9 +166,9 @@ func (a *AuthControllerImpl) RefreshToken(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Token refreshed successfully", result)
 }
 
-func (a *AuthControllerImpl) ForgotPassword(c *gin.Context) {
+func (a *AuthController) ForgotPassword(c *gin.Context) {
 	req := new(dto.ForgotPasswordRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
@@ -171,9 +189,9 @@ func (a *AuthControllerImpl) ForgotPassword(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "OTP sent successfully", nil)
 }
 
-func (a *AuthControllerImpl) ResetPassword(c *gin.Context) {
+func (a *AuthController) ResetPassword(c *gin.Context) {
 	req := new(dto.ResetPasswordRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {
@@ -194,9 +212,9 @@ func (a *AuthControllerImpl) ResetPassword(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Password reset successfully", nil)
 }
 
-func (a *AuthControllerImpl) ResendVerification(c *gin.Context) {
-	req := new(dto.UserRegisterResponse)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+func (a *AuthController) ResendVerification(c *gin.Context) {
+	req := new(dto.ResendVerificationRequest)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(req); err != nil {

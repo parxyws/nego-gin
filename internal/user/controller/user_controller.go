@@ -1,10 +1,8 @@
 package controller
 
 import (
-	"context"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/middleware"
@@ -14,18 +12,18 @@ import (
 	"github.com/parxyws/nego-gin/pkg/validator"
 )
 
-type UserControllerImpl struct {
+type UserController struct {
 	userService        user.UserService
 	userAddressService user.UserAddressService
 }
 
 func NewUserController(userService user.UserService, userAddressService user.UserAddressService) user.UserController {
-	return &UserControllerImpl{userService: userService, userAddressService: userAddressService}
+	return &UserController{userService: userService, userAddressService: userAddressService}
 }
 
-func (u *UserControllerImpl) GetCurrentUser(c *gin.Context) {
+func (u *UserController) GetCurrentUser(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -33,7 +31,7 @@ func (u *UserControllerImpl) GetCurrentUser(c *gin.Context) {
 		return
 	}
 
-	result, err := u.userService.GetCurrentUser(ctx, request.(middleware.JwtPayload))
+	result, err := u.userService.GetCurrentUser(ctx, request.(*middleware.JwtPayload))
 	if err != nil {
 		helper.Error(c, http.StatusInternalServerError, "Retrieve user data failed", err)
 		return
@@ -42,9 +40,9 @@ func (u *UserControllerImpl) GetCurrentUser(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "User data fetched successfully", result)
 }
 
-func (u *UserControllerImpl) UpdateCurrentUser(c *gin.Context) {
+func (u *UserController) UpdateCurrentUser(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -72,14 +70,14 @@ func (u *UserControllerImpl) UpdateCurrentUser(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "User profile updated successfully", result)
 }
 
-func (u *UserControllerImpl) UpdateAvatar(c *gin.Context) {
+func (u *UserController) UpdateAvatar(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *UserControllerImpl) DeleteCurrentUser(c *gin.Context) {
+func (u *UserController) DeleteCurrentUser(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -95,9 +93,9 @@ func (u *UserControllerImpl) DeleteCurrentUser(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "User account deleted successfully", nil)
 }
 
-func (u *UserControllerImpl) GetUserProfile(c *gin.Context) {
+func (u *UserController) GetUserProfile(c *gin.Context) {
 	request := c.Param("userId")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	result, err := u.userService.GetUser(ctx, &dto.GetUserProfileRequest{UserID: request})
@@ -109,14 +107,14 @@ func (u *UserControllerImpl) GetUserProfile(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "User profile fetched successfully", result)
 }
 
-func (u *UserControllerImpl) GetUserSellerRatings(c *gin.Context) {
+func (u *UserController) GetUserSellerRatings(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (u *UserControllerImpl) ListUserAddress(c *gin.Context) {
+func (u *UserController) ListUserAddress(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -133,9 +131,9 @@ func (u *UserControllerImpl) ListUserAddress(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Address list fetched successfully", result)
 }
 
-func (u *UserControllerImpl) CreateUserAddress(c *gin.Context) {
+func (u *UserController) CreateUserAddress(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -164,9 +162,9 @@ func (u *UserControllerImpl) CreateUserAddress(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Address created successfully", result)
 }
 
-func (u *UserControllerImpl) UpdateUserAddress(c *gin.Context) {
+func (u *UserController) UpdateUserAddress(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -190,9 +188,9 @@ func (u *UserControllerImpl) UpdateUserAddress(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Address updated successfully", result)
 }
 
-func (u *UserControllerImpl) DeleteUserAddress(c *gin.Context) {
+func (u *UserController) DeleteUserAddress(c *gin.Context) {
 	request, exists := c.Get("user")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if !exists {
@@ -214,7 +212,7 @@ func (u *UserControllerImpl) DeleteUserAddress(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Address deleted successfully", nil)
 }
 
-func (u *UserControllerImpl) SetDefaultAddress(c *gin.Context) {
+func (u *UserController) SetDefaultAddress(c *gin.Context) {
 	//TODO implement me
 	panic("implement me")
 }

@@ -2,6 +2,8 @@ package logger
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -9,6 +11,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
 )
+
+var Log *logrus.Logger
 
 var fieldsLogrusLevelMap = map[string]logrus.Level{
 	"trace": logrus.TraceLevel,
@@ -21,7 +25,7 @@ var fieldsLogrusLevelMap = map[string]logrus.Level{
 }
 
 func NewLogrusLogger(cfg *config.Config) *logrus.Logger {
-	logger := logrus.New()
+	Log = logrus.New()
 
 	level, exist := fieldsLogrusLevelMap[cfg.Logger.Level]
 	if !exist {
@@ -64,16 +68,18 @@ func NewLogrusLogger(cfg *config.Config) *logrus.Logger {
 		Compress:   true,
 	}
 
-	logger.SetLevel(level)
-	logger.SetFormatter(formatter)
-	logger.SetReportCaller(cfg.Logger.Caller)
-	logger.SetOutput(lumberjackLogger)
+	mw := io.MultiWriter(os.Stdout, lumberjackLogger)
+	Log.SetLevel(level)
+	Log.SetFormatter(formatter)
+	Log.SetReportCaller(cfg.Logger.Caller)
+	Log.SetOutput(mw)
 
 	// Configure global logrus standard logger
-	logrus.SetLevel(level)
-	logrus.SetFormatter(formatter)
-	logrus.SetReportCaller(cfg.Logger.Caller)
-	logrus.SetOutput(lumberjackLogger)
+	// logrus.SetLevel(level)
+	// logrus.SetFormatter(formatter)
+	// logrus.SetReportCaller(cfg.Logger.Caller)
+	// logrus.SetOutput(os.Stdout)
+	// logrus.SetOutput(lumberjackLogger)
 
-	return logger
+	return Log
 }

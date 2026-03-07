@@ -2,17 +2,8 @@ package server
 
 import (
 	"github.com/parxyws/nego-gin/internal/middleware"
-	//------------------ Repository ------------------
-	userRepository "github.com/parxyws/nego-gin/internal/user/repository"
-
-	//------------------ Service ------------------
-	userService "github.com/parxyws/nego-gin/internal/user/service"
-
-	//------------------ Controller ------------------
-	userController "github.com/parxyws/nego-gin/internal/user/controller"
-
-	//------------------ Route ------------------
-	userRoute "github.com/parxyws/nego-gin/internal/user/route"
+	productModule "github.com/parxyws/nego-gin/internal/product/module"
+	userModule "github.com/parxyws/nego-gin/internal/user/module"
 )
 
 func (s *Server) Boostrap() error {
@@ -27,32 +18,27 @@ func (s *Server) Boostrap() error {
 	if err != nil {
 		return err
 	}
+	corsMiddleware := middlewareSetup.CORSMiddleware()
+	requestIdMiddleware := middlewareSetup.RequestIDMiddleware()
 
-	/* ----------------------------- Repository ---------------------------- */
-	//PermissionRepository := userRepository.NewPermissionRepository(s.db)
-	RoleRepository := userRepository.NewRoleRepository(s.db)
-	//RolePermissionRepository := userRepository.NewRolePermissionRepository(s.db)
-	UserRepository := userRepository.NewUserRepository(s.db)
-	UserRoleRepository := userRepository.NewUserRoleRepository(s.db)
-	UserAddressRepository := userRepository.NewUserAddressRepository(s.db)
-
-	/* ----------------------------- Service ---------------------------- */
-	//RoleService := userService.NewRoleService(RoleRepository, UserRoleRepository)
-	AuthService := userService.NewAuthService(s.cfg, UserRepository, UserRoleRepository, RoleRepository, s.rds, s.mail, authMiddleware)
-	UserService := userService.NewUserService(s.cfg, UserRepository)
-	UserAddressService := userService.NewUserAddressService(UserAddressRepository)
-	/* ----------------------------- Controller ---------------------------- */
-	AuthController := userController.NewAuthController(AuthService)
-	UserController := userController.NewUserController(UserService, UserAddressService)
-
-	/* ----------------------------- Route ---------------------------- */
+	//------------------ Modules ------------------
 	api := s.app.Group("/api/v1")
-	userRoute.AuthRoute(api, AuthController, authMiddleware)
-	userRoute.UserRoute(api, UserController)
+	api.Use(corsMiddleware)
+	api.Use(requestIdMiddleware)
+
+	userModule.InitUserModule(s.db, api, s.cfg, s.rds, s.mail, authMiddleware)
+	productModule.InitProductModule(s.db, api, authMiddleware)
 
 	/* ----------------------------- Seed ---------------------------- */
 	seeder := NewSeeder(s.db, s.cfg, s.app)
 	if err := seeder.Seed(); err != nil {
+		return err
+	}
+
+	/* ------------------- Permission Cache (startup) ----------------- */
+	// Load all role→permission mappings into memory once so that
+	// RequirePermission middleware never hits the DB on the hot path.
+	if err := middlewareSetup.LoadPermissionCache(); err != nil {
 		return err
 	}
 

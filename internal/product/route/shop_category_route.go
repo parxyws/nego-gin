@@ -1,23 +1,27 @@
 package route
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/product"
 )
 
-func ShopCategoryRoute(route *gin.RouterGroup, controller product.ShopCategoryController) {
-	shopCategories := route.Group("/sellers/shop-categories")
+func ShopCategoryRoute(route *gin.RouterGroup, controller product.ShopCategoryController, authMiddleware *jwt.GinJWTMiddleware) {
+	// Seller-protected shop category management
+	sellerCategories := route.Group("/sellers/shop-categories")
+	sellerCategories.Use(authMiddleware.MiddlewareFunc())
 	{
-		shopCategories.GET("/", controller.ListShopCategories)
-		shopCategories.GET("/:shopCategoryId", controller.GetShopCategory)
-		shopCategories.POST("/", controller.CreateShopCategory)
-		shopCategories.PUT("/:shopCategoryId", controller.UpdateShopCategory)
-		shopCategories.DELETE("/:shopCategoryId", controller.DeleteShopCategory)
+		sellerCategories.GET("", controller.ListShopCategories)
+		sellerCategories.GET("/:shopCategoryId", controller.GetShopCategory)
+		sellerCategories.POST("", controller.CreateShopCategory)
+		sellerCategories.PUT("/:shopCategoryId", controller.UpdateShopCategory)
+		sellerCategories.DELETE("/:shopCategoryId", controller.DeleteShopCategory)
 	}
 
-	public := route.Group("/shops/:sellerId/categories")
+	// Public shop browsing
+	shopCategories := route.Group("/shops/:sellerId/categories")
 	{
-		public.GET("/", controller.ListShopCategories)
-		public.GET("/:shopCategoryId", controller.GetShopCategory)
+		shopCategories.GET("", controller.ListShopCategoriesPublic)
+		shopCategories.GET("/:shopCategoryId", controller.GetShopCategoryPublic)
 	}
 }

@@ -1,10 +1,8 @@
 package controller
 
 import (
-	"context"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/product"
@@ -13,16 +11,16 @@ import (
 	"github.com/parxyws/nego-gin/pkg/validator"
 )
 
-type CategoryControllerImpl struct {
+type CategoryController struct {
 	catService product.CategoryService
 }
 
-func NewCategoryControllerImpl(catService product.CategoryService) product.CategoryController {
-	return &CategoryControllerImpl{catService: catService}
+func NewCategoryController(catService product.CategoryService) product.CategoryController {
+	return &CategoryController{catService: catService}
 }
 
-func (cat *CategoryControllerImpl) ListCategories(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+func (cat *CategoryController) ListCategories(c *gin.Context) {
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	result, err := cat.catService.ListCategories(ctx)
@@ -34,9 +32,9 @@ func (cat *CategoryControllerImpl) ListCategories(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Category list fetched successfully", result)
 }
 
-func (cat *CategoryControllerImpl) GetCategory(c *gin.Context) {
+func (cat *CategoryController) GetCategory(c *gin.Context) {
 	request := c.Params.ByName("categoryId")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	convertReq, err := strconv.ParseInt(request, 10, 32)
@@ -55,9 +53,9 @@ func (cat *CategoryControllerImpl) GetCategory(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Category fetched successfully", result)
 }
 
-func (cat *CategoryControllerImpl) ListProductsInCategory(c *gin.Context) {
+func (cat *CategoryController) ListProductsInCategory(c *gin.Context) {
 	request := c.Params.ByName("categoryId")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	convertReq, err := strconv.ParseInt(request, 10, 32)
@@ -77,9 +75,9 @@ func (cat *CategoryControllerImpl) ListProductsInCategory(c *gin.Context) {
 
 }
 
-func (cat *CategoryControllerImpl) CreateCategory(c *gin.Context) {
+func (cat *CategoryController) CreateCategory(c *gin.Context) {
 	request := new(dto.CategoryCreateRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(request); err != nil {
@@ -101,9 +99,9 @@ func (cat *CategoryControllerImpl) CreateCategory(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Category created successfully", result)
 }
 
-func (cat *CategoryControllerImpl) UpdateCategory(c *gin.Context) {
+func (cat *CategoryController) UpdateCategory(c *gin.Context) {
 	request := new(dto.CategoryUpdateRequest)
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	if err := c.ShouldBindJSON(request); err != nil {
@@ -125,9 +123,9 @@ func (cat *CategoryControllerImpl) UpdateCategory(c *gin.Context) {
 	helper.Success(c, http.StatusOK, "Category updated successfully", result)
 }
 
-func (cat *CategoryControllerImpl) RemoveCategory(c *gin.Context) {
+func (cat *CategoryController) RemoveCategory(c *gin.Context) {
 	request := c.Params.ByName("categoryId")
-	ctx, cancel := context.WithTimeout(c.Request.Context(), time.Minute)
+	ctx, cancel := helper.GetContext(c)
 	defer cancel()
 
 	convertReq, err := strconv.ParseInt(request, 10, 32)

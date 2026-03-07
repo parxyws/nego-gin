@@ -12,10 +12,11 @@ type AuthService interface {
 	Register(ctx context.Context, entity *dto.UserRegisterRequest) (*dto.UserRegisterResponse, error)
 	ValidateUser(ctx context.Context, entity *dto.UserValidateAccRequest) error
 	Login(ctx context.Context, entity *dto.UserLoginRequest) (*dto.UserResponse, error)
+	Logout(ctx context.Context, accessToken string) error
 	RefreshToken(ctx context.Context, entity *dto.JwtToken, payload *middleware.JwtPayload) (*dto.UserResponse, error)
 	ForgotPassword(ctx context.Context, request *dto.ForgotPasswordRequest) error
 	ResetPassword(ctx context.Context, request *dto.ResetPasswordRequest) error
-	ResendVerification(ctx context.Context, entity *dto.UserRegisterResponse) error
+	ResendVerification(ctx context.Context, entity *dto.ResendVerificationRequest) error
 }
 
 type PermissionService interface {
@@ -33,7 +34,7 @@ type RoleService interface {
 }
 
 type UserService interface {
-	GetCurrentUser(ctx context.Context, entity middleware.JwtPayload) (*dto.UserResponse, error)
+	GetCurrentUser(ctx context.Context, entity *middleware.JwtPayload) (*dto.UserResponse, error)
 	UpdateCurrentUser(ctx context.Context, entity middleware.JwtPayload, request *dto.UpdateCurrentUserRequest) (*dto.UserResponse, error)
 	UpdateAvatar(ctx context.Context, entity middleware.JwtPayload, avatar *aws.UploadInput) (*dto.UserResponse, error)
 	DeleteCurrentUser(ctx context.Context, entity middleware.JwtPayload) error

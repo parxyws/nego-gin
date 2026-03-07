@@ -1,24 +1,28 @@
 package route
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/auction"
 )
 
-func AuctionRoute(route *gin.RouterGroup, controller auction.AuctionController) {
+func AuctionRoute(route *gin.RouterGroup, controller auction.AuctionController, authMiddleware *jwt.GinJWTMiddleware) {
+	// Public auction browsing
 	auctions := route.Group("/auctions")
 	{
-		auctions.GET("/", controller.ListActiveAuctions)
+		auctions.GET("", controller.ListActiveAuctions)
 		auctions.GET("/live", controller.ListLiveAuctions)
 		auctions.GET("/ending-soon", controller.ListAuctionsEndingSoon)
 		auctions.GET("/:auctionId", controller.GetAuctionDetails)
 	}
 
-	seller := route.Group("/sellers/auctions")
+	// Seller-protected auction management
+	sellerAuctions := route.Group("/sellers/auctions")
+	sellerAuctions.Use(authMiddleware.MiddlewareFunc())
 	{
-		seller.POST("/", controller.CreateAuction)
-		seller.PUT("/:auctionId", controller.UpdateAuction)
-		seller.DELETE("/:auctionId", controller.CancelAuction)
-		seller.GET("/", controller.ListSellerAuctions)
+		sellerAuctions.POST("", controller.CreateAuction)
+		sellerAuctions.PUT("/:auctionId", controller.UpdateAuction)
+		sellerAuctions.DELETE("/:auctionId", controller.CancelAuction)
+		sellerAuctions.GET("", controller.ListSellerAuctions)
 	}
 }

@@ -1,22 +1,26 @@
 package route
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/product"
 )
 
-func CategoryRoute(route *gin.RouterGroup, controller product.CategoryController) {
-	category := route.Group("/categories")
+func CategoryRoute(route *gin.RouterGroup, controller product.CategoryController, authMiddleware *jwt.GinJWTMiddleware) {
+	// Public category browsing
+	categories := route.Group("/categories")
 	{
-		category.GET("/", controller.ListCategories)
-		category.GET("/:categoryId", controller.GetCategory)
-		category.GET("/:categoryId/products", controller.ListProductsInCategory)
+		categories.GET("", controller.ListCategories)
+		categories.GET("/:categoryId", controller.GetCategory)
+		categories.GET("/:categoryId/products", controller.ListProductsInCategory)
 	}
 
-	admin := route.Group("/admin/categories")
+	// Admin-only category management
+	adminCategories := route.Group("/admin/categories")
+	adminCategories.Use(authMiddleware.MiddlewareFunc())
 	{
-		admin.POST("/", controller.CreateCategory)
-		admin.PUT("/:categoryId", controller.UpdateCategory)
-		admin.DELETE("/:categoryId", controller.RemoveCategory)
+		adminCategories.POST("", controller.CreateCategory)
+		adminCategories.PUT("/:categoryId", controller.UpdateCategory)
+		adminCategories.DELETE("/:categoryId", controller.RemoveCategory)
 	}
 }

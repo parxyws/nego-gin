@@ -1,20 +1,24 @@
 package route
 
 import (
+	jwt "github.com/appleboy/gin-jwt/v3"
 	"github.com/gin-gonic/gin"
 	"github.com/parxyws/nego-gin/internal/product"
 )
 
-func ProductMediaRoute(route *gin.RouterGroup, controller product.ProductMediaController) {
+func ProductMediaRoute(route *gin.RouterGroup, controller product.ProductMediaController, authMiddleware *jwt.GinJWTMiddleware) {
+	// Public — list media
 	products := route.Group("/products")
 	{
 		products.GET("/:productId/media", controller.ListProductMedia)
 	}
 
-	seller := route.Group("/sellers/products")
+	// Seller-protected — manage media
+	sellerProducts := route.Group("/sellers/products")
+	sellerProducts.Use(authMiddleware.MiddlewareFunc())
 	{
-		seller.POST("/:productId/media", controller.UploadMedia)
-		seller.PUT("/:productId/media/:mediaId", controller.UpdateProductMedia)
-		seller.DELETE("/:productId/media/:mediaId", controller.DeleteProductMedia)
+		sellerProducts.POST("/:productId/media", controller.UploadMedia)
+		sellerProducts.PUT("/:productId/media/:mediaId", controller.UpdateProductMedia)
+		sellerProducts.DELETE("/:productId/media/:mediaId", controller.DeleteProductMedia)
 	}
 }

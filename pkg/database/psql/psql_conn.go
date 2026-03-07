@@ -2,11 +2,10 @@ package psql
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"time"
 
 	"github.com/parxyws/nego-gin/config"
+	applogger "github.com/parxyws/nego-gin/pkg/logger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -23,15 +22,19 @@ func NewDB(config *config.Config) (*gorm.DB, error) {
 
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", username, password, host, port, dbname)
 
-	customLogger := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags),
-		logger.Config{
-			SlowThreshold:             200 * time.Millisecond,
-			LogLevel:                  logger.Info,
-			IgnoreRecordNotFoundError: true,
-			Colorful:                  true,
-		},
-	)
+	customLogger := applogger.NewGormLogrusLogger()
+	switch config.Logger.Level {
+	case "trace":
+		customLogger.LogLevel = logger.Info
+	case "debug":
+		customLogger.LogLevel = logger.Info
+	case "error":
+		customLogger.LogLevel = logger.Error
+	case "warn":
+		customLogger.LogLevel = logger.Warn
+	default:
+		customLogger.LogLevel = logger.Silent
+	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: customLogger,

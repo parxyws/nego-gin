@@ -9,34 +9,26 @@ import (
 	"gorm.io/gorm"
 )
 
-type RoleRepositoryImpl struct {
+type RoleRepository struct {
 	DB *gorm.DB
 }
 
 func NewRoleRepository(db *gorm.DB) user.RoleRepository {
-	return &RoleRepositoryImpl{DB: db}
+	return &RoleRepository{DB: db}
 }
 
-func (r *RoleRepositoryImpl) CreateRole(ctx context.Context, entity *domain.Role) (*domain.Role, error) {
+func (r *RoleRepository) CreateRole(ctx context.Context, entity *domain.Role) (*domain.Role, error) {
 	tx := r.DB.WithContext(ctx)
-	err := tx.Transaction(func(tx *gorm.DB) error {
-		result := tx.Where("role_name = ?", entity.RoleName).FirstOrCreate(entity)
+	result := tx.Where("role_name = ?", entity.RoleName).FirstOrCreate(entity)
 
-		if result.Error != nil {
-			return fmt.Errorf("RoleRepository.CreateRole - %w", result.Error)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return nil, err
+	if result.Error != nil {
+		return nil, fmt.Errorf("RoleRepository.CreateRole - %w", result.Error)
 	}
 
 	return entity, nil
 }
 
-func (r *RoleRepositoryImpl) DeleteRole(ctx context.Context, entity []domain.Role) error {
+func (r *RoleRepository) DeleteRole(ctx context.Context, entity []domain.Role) error {
 	tx := r.DB.WithContext(ctx)
 	if err := tx.Unscoped().Delete(entity).Error; err != nil {
 		return fmt.Errorf("RoleRepository.DeleteRole - %w", err)
@@ -45,7 +37,7 @@ func (r *RoleRepositoryImpl) DeleteRole(ctx context.Context, entity []domain.Rol
 	return nil
 }
 
-func (r *RoleRepositoryImpl) ReadAllRole(ctx context.Context) ([]domain.Role, error) {
+func (r *RoleRepository) ReadAllRole(ctx context.Context) ([]domain.Role, error) {
 	var roles []domain.Role
 	tx := r.DB.WithContext(ctx)
 
@@ -56,7 +48,7 @@ func (r *RoleRepositoryImpl) ReadAllRole(ctx context.Context) ([]domain.Role, er
 	return roles, nil
 }
 
-func (r *RoleRepositoryImpl) ReadAllRoleById(ctx context.Context, roleId []int32) ([]domain.Role, error) {
+func (r *RoleRepository) ReadAllRoleById(ctx context.Context, roleId []int32) ([]domain.Role, error) {
 	var roles []domain.Role
 	tx := r.DB.WithContext(ctx)
 	if err := tx.Where("role_id = ?", roleId).Find(&roles).Error; err != nil {

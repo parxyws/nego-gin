@@ -57,11 +57,12 @@ func NewServer(config *ServerConfig) *Server {
 
 func (s *Server) Init() error {
 
-	if s.cfg.Server.Mode == gin.ReleaseMode {
+	switch s.cfg.Server.Mode {
+	case gin.ReleaseMode:
 		gin.SetMode(gin.ReleaseMode)
-	} else if s.cfg.Server.Mode == gin.DebugMode {
+	case gin.DebugMode:
 		gin.SetMode(gin.DebugMode)
-	} else {
+	default:
 		gin.SetMode(gin.TestMode)
 	}
 
@@ -74,11 +75,13 @@ func (s *Server) Init() error {
 	addr := fmt.Sprintf("%s:%d", s.cfg.Server.Host, s.cfg.Server.Port)
 
 	srv := &http.Server{
-		Addr:    addr,
-		Handler: s.app,
+		Addr:         addr,
+		Handler:      s.app,
+		ReadTimeout:  time.Duration(s.cfg.Server.ReadTimeout) * time.Second,
+		WriteTimeout: time.Duration(s.cfg.Server.WriteTimeout) * time.Second,
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout*time.Second)
 	defer cancel()
 
 	if s.cfg.Server.SSL {

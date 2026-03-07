@@ -25,16 +25,16 @@ type ShopCategoryService interface {
 
 type TagService interface {
 	ListTags(ctx context.Context, categoryId int32) ([]dto.TagResponse, error)
-	GetProductsByTag(ctx context.Context, categoryId int32) ([]dto.ProductResponse, error)
+	GetProductsByTag(ctx context.Context, tagId int32) ([]dto.ProductResponse, error)
 }
 
 type ProductService interface {
 	ListProducts(ctx context.Context, sellerId string) ([]dto.ProductResponse, error)
 	GetProductDetails(ctx context.Context, productId string) (*dto.ProductResponse, error)
-	GetProductSlug(ctx context.Context, productId string) (*dto.ProductResponse, error)
-	CreateProduct(ctx context.Context)
-	UpdateProduct(ctx context.Context)
-	DeleteProduct(ctx context.Context)
-	UpdateProductStatus(ctx context.Context)
-	ListSellerProducts(ctx context.Context)
+	GetProductSlug(ctx context.Context, slug string) (*dto.ProductResponse, error)
+	CreateProduct(ctx context.Context, entity *dto.ProductCreateRequest) (*dto.ProductResponse, error)
+	UpdateProduct(ctx context.Context, entity *dto.ProductUpdateRequest) (*dto.ProductResponse, error)
+	DeleteProduct(ctx context.Context, productId string) error
+	UpdateProductStatus(ctx context.Context, productId string, status string) (*dto.ProductResponse, error)
+	ListSellerProducts(ctx context.Context, sellerId string) ([]dto.ProductResponse, error)
 }

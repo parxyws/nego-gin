@@ -6,22 +6,24 @@ import (
 	"github.com/parxyws/nego-gin/internal/product"
 	"github.com/parxyws/nego-gin/internal/product/domain"
 	"github.com/parxyws/nego-gin/internal/product/domain/dto"
-	"github.com/sirupsen/logrus"
+	"github.com/parxyws/nego-gin/pkg/logger"
 )
 
-type CategoryServiceImpl struct {
+type CategoryService struct {
 	ctRepo  product.CategoryRepository
 	prdRepo product.ProductRepository
 }
 
-func NewCategoryServiceImpl(ctRepo product.CategoryRepository, prdRepo product.ProductRepository) product.CategoryService {
-	return &CategoryServiceImpl{ctRepo: ctRepo, prdRepo: prdRepo}
+func NewCategoryService(ctRepo product.CategoryRepository, prdRepo product.ProductRepository) product.CategoryService {
+	return &CategoryService{ctRepo: ctRepo, prdRepo: prdRepo}
 }
 
-func (s *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
+func (s *CategoryService) ListCategories(ctx context.Context) ([]dto.CategoryResponse, error) {
+	log := logger.WithCtx(ctx, "service", "CategoryService.ListCategories")
+
 	categories, err := s.ctRepo.ReadAllCategory(ctx)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "CategoryService.ListCategories"}).Errorf("failed to read all categories: %v", err)
+		log.Errorf("failed to read all categories: %v", err)
 		return nil, err
 	}
 
@@ -39,16 +41,20 @@ func (s *CategoryServiceImpl) ListCategories(ctx context.Context) ([]dto.Categor
 		}
 	}
 
+	log.Info("category listed successfully")
 	return categoriesResp, nil
 }
 
-func (s *CategoryServiceImpl) GetCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
+func (s *CategoryService) GetCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
+	log := logger.WithCtx(ctx, "service", "CategoryService.GetCategory")
+
 	category, err := s.ctRepo.ReadCategoryById(ctx, &domain.Category{CategoryID: categoryID})
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "CategoryService.GetCategory", "category_id": categoryID}).Errorf("failed to read category by id: %v", err)
+		log.Errorf("failed to read category by id: %v", err)
 		return nil, err
 	}
 
+	log.Info("category get successfully")
 	return &dto.CategoryResponse{
 		CategoryID:       category.CategoryID,
 		ParentCategoryID: category.ParentCategoryID,
@@ -61,10 +67,12 @@ func (s *CategoryServiceImpl) GetCategory(ctx context.Context, categoryID int32)
 	}, nil
 }
 
-func (s *CategoryServiceImpl) ListProductsInCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
+func (s *CategoryService) ListProductsInCategory(ctx context.Context, categoryID int32) (*dto.CategoryResponse, error) {
+	log := logger.WithCtx(ctx, "service", "CategoryService.ListProductsInCategory")
+
 	categoryProducts, err := s.ctRepo.ReadCategoryProductById(ctx, &domain.Category{CategoryID: categoryID})
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "CategoryService.ListProductsInCategory", "category_id": categoryID}).Errorf("failed to read category products: %v", err)
+		log.Errorf("failed to read category products: %v", err)
 		return nil, err
 	}
 
@@ -98,6 +106,7 @@ func (s *CategoryServiceImpl) ListProductsInCategory(ctx context.Context, catego
 		}
 	}
 
+	log.Info("category get listed successfully")
 	return &dto.CategoryResponse{
 		CategoryID:       categoryProducts.CategoryID,
 		ParentCategoryID: categoryProducts.ParentCategoryID,
@@ -111,7 +120,9 @@ func (s *CategoryServiceImpl) ListProductsInCategory(ctx context.Context, catego
 	}, nil
 }
 
-func (s *CategoryServiceImpl) CreateCategory(ctx context.Context, req *dto.CategoryCreateRequest) (*dto.CategoryResponse, error) {
+func (s *CategoryService) CreateCategory(ctx context.Context, req *dto.CategoryCreateRequest) (*dto.CategoryResponse, error) {
+	log := logger.WithCtx(ctx, "service", "CategoryService.CreateCategory").WithField("category_name", req.CategoryName)
+
 	categoryRequest := &domain.Category{
 		ParentCategoryID: req.ParentCategoryID,
 		CategoryName:     req.CategoryName,
@@ -120,11 +131,11 @@ func (s *CategoryServiceImpl) CreateCategory(ctx context.Context, req *dto.Categ
 
 	category, err := s.ctRepo.CreateCategory(ctx, categoryRequest)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "CategoryService.CreateCategory", "category_name": req.CategoryName}).Errorf("failed to create category in repo: %v", err)
+		log.Errorf("failed to create category in repo: %v", err)
 		return nil, err
 	}
 
-	logrus.WithFields(logrus.Fields{"function": "CategoryService.CreateCategory", "category_id": category.CategoryID}).Info("category created successfully")
+	log.WithField("category_id", category.CategoryID).Info("category created successfully")
 
 	return &dto.CategoryResponse{
 		CategoryID:       category.CategoryID,
@@ -138,7 +149,9 @@ func (s *CategoryServiceImpl) CreateCategory(ctx context.Context, req *dto.Categ
 	}, nil
 }
 
-func (s *CategoryServiceImpl) UpdateCategory(ctx context.Context, req *dto.CategoryUpdateRequest) (*dto.CategoryResponse, error) {
+func (s *CategoryService) UpdateCategory(ctx context.Context, req *dto.CategoryUpdateRequest) (*dto.CategoryResponse, error) {
+	log := logger.WithCtx(ctx, "service", "CategoryService.UpdateCategory").WithField("category_id", req.CategoryID)
+
 	categoryRequest := &domain.Category{
 		CategoryID:       req.CategoryID,
 		ParentCategoryID: req.ParentCategoryID,
@@ -148,11 +161,11 @@ func (s *CategoryServiceImpl) UpdateCategory(ctx context.Context, req *dto.Categ
 
 	category, err := s.ctRepo.UpdateCategory(ctx, categoryRequest)
 	if err != nil {
-		logrus.WithFields(logrus.Fields{"function": "CategoryService.UpdateCategory", "category_id": req.CategoryID}).Errorf("failed to update category in repo: %v", err)
+		log.Errorf("failed to update category in repo: %v", err)
 		return nil, err
 	}
 
-	logrus.WithFields(logrus.Fields{"function": "CategoryService.UpdateCategory", "category_id": category.CategoryID}).Info("category updated successfully")
+	log.Info("category updated successfully")
 
 	return &dto.CategoryResponse{
 		CategoryID:       category.CategoryID,
@@ -166,14 +179,15 @@ func (s *CategoryServiceImpl) UpdateCategory(ctx context.Context, req *dto.Categ
 	}, nil
 }
 
-func (s *CategoryServiceImpl) RemoveCategory(ctx context.Context, categoryID int32) error {
+func (s *CategoryService) RemoveCategory(ctx context.Context, categoryID int32) error {
+	log := logger.WithCtx(ctx, "service", "CategoryService.RemoveCategory").WithField("category_id", categoryID)
 	categoryRequest := &domain.Category{CategoryID: categoryID}
 
 	if err := s.ctRepo.DeleteCategory(ctx, categoryRequest); err != nil {
-		logrus.WithFields(logrus.Fields{"function": "CategoryService.RemoveCategory", "category_id": categoryID}).Errorf("failed to delete category in repo: %v", err)
+		log.Errorf("failed to delete category in repo: %v", err)
 		return err
 	}
 
-	logrus.WithFields(logrus.Fields{"function": "CategoryService.RemoveCategory", "category_id": categoryID}).Info("category deleted successfully")
+	log.Info("category deleted successfully")
 	return nil
 }
