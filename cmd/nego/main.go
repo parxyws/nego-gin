@@ -28,16 +28,22 @@ func main() {
 		panic(err)
 	}
 
-	redis := rds.NewRedis(cfg)
+	authRedis := rds.NewAuthRedis(cfg)
+	sessionRedis := rds.NewSessionRedis(cfg)
+	limiterRedis := rds.NewLimiterRedis(cfg)
 
 	logrus := logger.NewLogrusLogger(cfg)
 
 	gomail := mail.NewGoMailDialer(cfg)
 
 	s := server.NewServer(&server.ServerConfig{
-		Cfg:       cfg,
-		Db:        db,
-		Rds:       redis,
+		Cfg: cfg,
+		Db:  db,
+		Rds: &rds.RedisClient{
+			AuthRedis:    authRedis,
+			SessionRedis: sessionRedis,
+			LimiterRedis: limiterRedis,
+		},
 		AwsClient: minio,
 		Logger:    logrus,
 		Mail:      gomail,

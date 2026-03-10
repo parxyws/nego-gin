@@ -1,0 +1,78 @@
+@baseUrl = http://localhost:3000/api/v1/auth
+
+### 1. Register a new user
+# @name register
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "first_name": "Test",
+  "last_name": "User",
+  "email": "test@example.com",
+  "password": "password123"
+}
+
+### 2. Verify Email
+# Note: You will need to get the reference_id from the register response and the OTP from the printed console/email
+POST {{baseUrl}}/verify-email
+Content-Type: application/json
+
+{
+  "reference_id": "REPLACE_WITH_REF_ID",
+  "otp": "REPLACE_WITH_OTP"
+}
+
+### 3. Login
+# @name login
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "password123"
+}
+
+### Extract token from login response
+@authToken = {{login.response.body.data.jwt.access_token}}
+
+### 4. Refresh Token (Public endpoint in this setup)
+POST {{baseUrl}}/refresh-token
+Content-Type: application/json
+
+{
+  "refresh_token": "REPLACE_WITH_REFRESH_TOKEN_FROM_LOGIN"
+}
+
+### 5. Forgot Password
+POST {{baseUrl}}/forgot-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### 6. Reset Password
+POST {{baseUrl}}/reset-password
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "otp": "REPLACE_WITH_OTP_FROM_CONSOLE",
+  "new_password": "newpassword123"
+}
+
+### 7. Resend Verification
+# Requires Authorization
+POST {{baseUrl}}/resend-verification
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "reference_id": "REPLACE_WITH_REF_ID"
+}
+
+### 8. Logout
+# Requires Authorization
+POST {{baseUrl}}/logout
+Authorization: Bearer {{authToken}}

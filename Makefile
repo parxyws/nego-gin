@@ -1,7 +1,8 @@
 # Makefile for Docker Compose and Golang Migrations
 
 # Variables
-DOCKER_COMPOSE = docker-compose
+DOCKER_COMPOSE = podman-compose
+DOCKER = podman
 MIGRATE = migrate
 DB_HOST = localhost
 DB_PORT = 5540
@@ -10,6 +11,7 @@ DB_USER = postgres
 DB_PASSWORD = postgres
 MIGRATIONS_DIR = ./db/migrations
 DATABASE_URL = postgres://$(DB_USER):$(DB_PASSWORD)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable
+DB_CONTAINER = master_nego_db
 
 # Colors for output
 GREEN = \033[0;32m
@@ -106,7 +108,7 @@ init: up wait-db migrate-up ## Initialize: start containers, wait for DB, and ru
 .PHONY: wait-db
 wait-db: ## Wait for database to be ready
 	@echo -e "$(YELLOW)Waiting for database to be ready...$(NC)"
-	@until docker exec $$(docker-compose ps -q db 2>/dev/null || echo "postgres") pg_isready -U $(DB_USER) 2>/dev/null; do \
+	@until $(DOCKER) exec $(DB_CONTAINER) pg_isready -U $(DB_USER) 2>/dev/null; do \
 		sleep 1; \
 	done
 	@echo -e "$(GREEN)Database is ready!$(NC)"
@@ -120,11 +122,22 @@ fresh: down clean up wait-db migrate-up ## Fresh start: clean everything and rei
 # Development helpers
 .PHONY: shell-db
 shell-db: ## Open psql shell in database container
-	docker exec -it $$(docker-compose ps -q db) psql -U $(DB_USER) -d $(DB_NAME)
+	$(DOCKER) exec -it $(DB_CONTAINER) psql -U $(DB_USER) -d $(DB_NAME)
 
 .PHONY: dump-db
 dump-db: ## Dump database to file
 	@echo -e "$(GREEN)Dumping database...$(NC)"
-	docker exec $$(docker-compose ps -q db) pg_dump -U $(DB_USER) $(DB_NAME) > dump_$$(date +%Y%m%d_%H%M%S).sql
+	$(DOCKER) exec $(DB_CONTAINER) pg_dump -U $(DB_USER) $(DB_NAME) > dump_$$(date +%Y%m%d_%H%M%S).sql
+
+# App Commands
+.PHONY: run
+run: ## Run the Go application locally
+	@echo -e "$(GREEN)Running application...$(NC)"
+	go run cmd/nego/main.go
+
+.PHONY: build-go
+build-go: ## Compile the Go application
+	@echo -e "$(GREEN)Compiling application...$(NC)"
+	go build -o tmp/main cmd/nego/main.go
 
 .DEFAULT_GOAL := help

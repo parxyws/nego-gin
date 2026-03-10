@@ -33,7 +33,7 @@ func SetupTestRedis(t *testing.T) *redis.Client {
 		t.Fatalf("failed to initialize environment: %v", err)
 	}
 
-	db := rds.NewRedis(cfg)
+	db := rds.NewAuthRedis(cfg)
 
 	return db
 }

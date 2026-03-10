@@ -23,8 +23,6 @@ func (s *ShopCategoryRepository) CreateShopCategory(ctx context.Context, categor
 	result := tx.Where("category_name = ?", category.CategoryName).FirstOrCreate(category)
 	if result.Error != nil {
 		return nil, result.Error
-	} else if result.RowsAffected == 0 {
-		return nil, result.Error
 	}
 
 	return category, nil

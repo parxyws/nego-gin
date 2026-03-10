@@ -2202,3 +2202,1293 @@
   "status": 200,
   "time": "2026-03-07 10:04:33"
 }
+{
+  "duration": "16.4995ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 16,
+  "sql": "SELECT * FROM \"permissions\" WHERE \"permissions\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "10.9251ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "961.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'admin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "507.2µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'customer' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'vendor' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "4.6607ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'superadmin_nego' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "503.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "1.4822ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BGKR5M0KN1V1RBEP4YMK2' AND role_id = 1 ORDER BY \"user_roles\".\"user_role_id\" LIMIT 1",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "7.6824ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 0,
+  "sql": "SELECT * FROM \"role_permissions\" WHERE \"role_permissions\".\"role_id\" IN (1,2,3,4)",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "20.4793ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 4,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "level": "info",
+  "msg": "permission cache loaded",
+  "roles_cached": 4,
+  "time": "2026-03-08 16:37:47"
+}
+{
+  "duration": "4.8646ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 16,
+  "sql": "SELECT * FROM \"permissions\" WHERE \"permissions\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "3.3026ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "512.7µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'admin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'customer' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'vendor' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "1.85ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'superadmin_nego' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "1.0256ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "1.2096ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BGKR5M0KN1V1RBEP4YMK2' AND role_id = 1 ORDER BY \"user_roles\".\"user_role_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "1.6277ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 0,
+  "sql": "SELECT * FROM \"role_permissions\" WHERE \"role_permissions\".\"role_id\" IN (1,2,3,4)",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "5.0553ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 4,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "level": "info",
+  "msg": "permission cache loaded",
+  "roles_cached": 4,
+  "time": "2026-03-08 17:09:46"
+}
+{
+  "duration": "13.1864ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "76c5f95e-cd0c-432c-8634-dd8cdb8c9eab",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'hafiyyankisaragi' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 17:09:52"
+}
+{
+  "duration": "7.8036ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "76c5f95e-cd0c-432c-8634-dd8cdb8c9eab",
+  "rows": 1,
+  "sql": "UPDATE \"users\" SET \"last_login\"='2026-03-08 17:09:52.249',\"updated_at\"='2026-03-08 17:09:52.25' WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:09:52"
+}
+{
+  "duration": "1.0791ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "76c5f95e-cd0c-432c-8634-dd8cdb8c9eab",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:09:52"
+}
+{
+  "duration": "25.2313ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "76c5f95e-cd0c-432c-8634-dd8cdb8c9eab",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:09:52"
+}
+{
+  "function": "AuthService.Login",
+  "layer": "service",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "request_id": "76c5f95e-cd0c-432c-8634-dd8cdb8c9eab",
+  "time": "2026-03-08 17:09:52",
+  "user_id": "01KK1BT6VVR0JNZ72FTN2GY2FX",
+  "username": "hafiyyankisaragi"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "request_id": "76c5f95e-cd0c-432c-8634-dd8cdb8c9eab",
+  "status": 200,
+  "time": "2026-03-08 17:09:52"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c08bc067-846e-4889-80ae-b5ac31d0cf6a",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:09:57"
+}
+{
+  "duration": "1.2531ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c08bc067-846e-4889-80ae-b5ac31d0cf6a",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:09:57"
+}
+{
+  "duration": "2.9147ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c08bc067-846e-4889-80ae-b5ac31d0cf6a",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:09:57"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "c08bc067-846e-4889-80ae-b5ac31d0cf6a",
+  "status": 200,
+  "time": "2026-03-08 17:09:57"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Successfully logged out",
+  "path": "/api/v1/auth/logout",
+  "request_id": "7baedb0c-5f1d-4e3d-a50a-c84cb497eda6",
+  "status": 200,
+  "time": "2026-03-08 17:10:01"
+}
+{
+  "duration": "554.7µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "1fbb81f6-b55f-4808-8b7c-dfa854d40d18",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:05"
+}
+{
+  "duration": "951.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "1fbb81f6-b55f-4808-8b7c-dfa854d40d18",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:05"
+}
+{
+  "duration": "2.175ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "1fbb81f6-b55f-4808-8b7c-dfa854d40d18",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:05"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "1fbb81f6-b55f-4808-8b7c-dfa854d40d18",
+  "status": 200,
+  "time": "2026-03-08 17:10:05"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "b417bde5-6d1d-4120-9a8c-144c8a3164c2",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "duration": "502.7µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "b417bde5-6d1d-4120-9a8c-144c8a3164c2",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "duration": "4.3447ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "b417bde5-6d1d-4120-9a8c-144c8a3164c2",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "b417bde5-6d1d-4120-9a8c-144c8a3164c2",
+  "status": 200,
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "duration": "504.6µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "86c081b7-6782-4411-b19e-445786af6ef7",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "duration": "504.6µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "86c081b7-6782-4411-b19e-445786af6ef7",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "duration": "1.3351ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "86c081b7-6782-4411-b19e-445786af6ef7",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:07"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "86c081b7-6782-4411-b19e-445786af6ef7",
+  "status": 200,
+  "time": "2026-03-08 17:10:08"
+}
+{
+  "duration": "646.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "8cffbdbf-f1a5-4b84-ac90-8e3f30dd6871",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:08"
+}
+{
+  "duration": "646.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "8cffbdbf-f1a5-4b84-ac90-8e3f30dd6871",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:08"
+}
+{
+  "duration": "2.1906ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "8cffbdbf-f1a5-4b84-ac90-8e3f30dd6871",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:08"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "8cffbdbf-f1a5-4b84-ac90-8e3f30dd6871",
+  "status": 200,
+  "time": "2026-03-08 17:10:08"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f7127cea-ad05-4fbc-b8be-1da9d8836560",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "duration": "699.2µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f7127cea-ad05-4fbc-b8be-1da9d8836560",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "duration": "2.2509ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f7127cea-ad05-4fbc-b8be-1da9d8836560",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "f7127cea-ad05-4fbc-b8be-1da9d8836560",
+  "status": 200,
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "duration": "656µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "98f51e01-1b9b-4353-9a46-800109642525",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "duration": "656µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "98f51e01-1b9b-4353-9a46-800109642525",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "duration": "1.2446ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "98f51e01-1b9b-4353-9a46-800109642525",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "98f51e01-1b9b-4353-9a46-800109642525",
+  "status": 200,
+  "time": "2026-03-08 17:10:09"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "4317e3ae-a382-4c54-b068-3ed937318138",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:10:10"
+}
+{
+  "duration": "2.5324ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "4317e3ae-a382-4c54-b068-3ed937318138",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:10:10"
+}
+{
+  "duration": "2.5324ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "4317e3ae-a382-4c54-b068-3ed937318138",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 17:10:10"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "4317e3ae-a382-4c54-b068-3ed937318138",
+  "status": 200,
+  "time": "2026-03-08 17:10:10"
+}
+{
+  "duration": "4.1064ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 16,
+  "sql": "SELECT * FROM \"permissions\" WHERE \"permissions\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "3.0743ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "598.8µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'admin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "718.5µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'customer' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'vendor' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "2.1505ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'superadmin_nego' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "724µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "946.4µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BGKR5M0KN1V1RBEP4YMK2' AND role_id = 1 ORDER BY \"user_roles\".\"user_role_id\" LIMIT 1",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "1.1922ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 0,
+  "sql": "SELECT * FROM \"role_permissions\" WHERE \"role_permissions\".\"role_id\" IN (1,2,3,4)",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "4.2707ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 4,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "level": "info",
+  "msg": "permission cache loaded",
+  "roles_cached": 4,
+  "time": "2026-03-08 17:28:33"
+}
+{
+  "duration": "3.1521ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 16,
+  "sql": "SELECT * FROM \"permissions\" WHERE \"permissions\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "2.0695ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'admin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "1.7167ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'customer' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'vendor' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "1.2846ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'superadmin_nego' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "513µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "1.3104ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BGKR5M0KN1V1RBEP4YMK2' AND role_id = 1 ORDER BY \"user_roles\".\"user_role_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "1.2794ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 0,
+  "sql": "SELECT * FROM \"role_permissions\" WHERE \"role_permissions\".\"role_id\" IN (1,2,3,4)",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "3.7926ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 4,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "level": "info",
+  "msg": "permission cache loaded",
+  "roles_cached": 4,
+  "time": "2026-03-08 17:56:28"
+}
+{
+  "duration": "3.6565ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c8e864f0-1242-4854-81dc-8c04053e0ea6",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'hafiyyankisaragi' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 17:56:33"
+}
+{
+  "duration": "5.2498ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c8e864f0-1242-4854-81dc-8c04053e0ea6",
+  "rows": 1,
+  "sql": "UPDATE \"users\" SET \"last_login\"='2026-03-08 17:56:33.953',\"updated_at\"='2026-03-08 17:56:33.953' WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:56:33"
+}
+{
+  "duration": "508.8µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c8e864f0-1242-4854-81dc-8c04053e0ea6",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 17:56:33"
+}
+{
+  "duration": "1.7532ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "c8e864f0-1242-4854-81dc-8c04053e0ea6",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 17:56:33"
+}
+{
+  "function": "AuthService.Login",
+  "layer": "service",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "request_id": "c8e864f0-1242-4854-81dc-8c04053e0ea6",
+  "time": "2026-03-08 17:56:33",
+  "user_id": "01KK1BT6VVR0JNZ72FTN2GY2FX",
+  "username": "hafiyyankisaragi"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "request_id": "c8e864f0-1242-4854-81dc-8c04053e0ea6",
+  "status": 200,
+  "time": "2026-03-08 17:56:33"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Successfully logged out",
+  "path": "/api/v1/auth/logout",
+  "request_id": "87210e01-23a8-4627-93cc-b801930a5aaa",
+  "status": 200,
+  "time": "2026-03-08 17:56:37"
+}
+{
+  "duration": "3.3826ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 16,
+  "sql": "SELECT * FROM \"permissions\" WHERE \"permissions\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "2.8253ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'admin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "0s",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'customer' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "523.3µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'vendor' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "1.711ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'superadmin_nego' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "443.7µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "944.2µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BGKR5M0KN1V1RBEP4YMK2' AND role_id = 1 ORDER BY \"user_roles\".\"user_role_id\" LIMIT 1",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "1.3728ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 0,
+  "sql": "SELECT * FROM \"role_permissions\" WHERE \"role_permissions\".\"role_id\" IN (1,2,3,4)",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "3.2925ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 4,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "level": "info",
+  "msg": "permission cache loaded",
+  "roles_cached": 4,
+  "time": "2026-03-08 19:46:52"
+}
+{
+  "duration": "3.6544ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f95e828c-c8ef-4d02-9976-1fc614dd966e",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'hafiyyankisaragi' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-08 19:47:12"
+}
+{
+  "duration": "5.5449ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f95e828c-c8ef-4d02-9976-1fc614dd966e",
+  "rows": 1,
+  "sql": "UPDATE \"users\" SET \"last_login\"='2026-03-08 19:47:12.77',\"updated_at\"='2026-03-08 19:47:12.771' WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 19:47:12"
+}
+{
+  "duration": "1.0866ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f95e828c-c8ef-4d02-9976-1fc614dd966e",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 19:47:12"
+}
+{
+  "duration": "2.5987ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "f95e828c-c8ef-4d02-9976-1fc614dd966e",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 19:47:12"
+}
+{
+  "function": "AuthService.Login",
+  "layer": "service",
+  "level": "info",
+  "msg": "User logged in successfully",
+  "request_id": "f95e828c-c8ef-4d02-9976-1fc614dd966e",
+  "time": "2026-03-08 19:47:12",
+  "user_id": "01KK1BT6VVR0JNZ72FTN2GY2FX",
+  "username": "hafiyyankisaragi"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Login successfully",
+  "path": "/api/v1/auth/login",
+  "request_id": "f95e828c-c8ef-4d02-9976-1fc614dd966e",
+  "status": 200,
+  "time": "2026-03-08 19:47:12"
+}
+{
+  "duration": "602.9µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "ece28fe9-802d-4a8f-9906-fb039d00010e",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"role_id\" = 3 AND \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-08 19:47:30"
+}
+{
+  "duration": "1.4575ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "ece28fe9-802d-4a8f-9906-fb039d00010e",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE \"user_roles\".\"user_id\" = '01KK1BT6VVR0JNZ72FTN2GY2FX'",
+  "time": "2026-03-08 19:47:30"
+}
+{
+  "duration": "3.0978ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "ece28fe9-802d-4a8f-9906-fb039d00010e",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE user_id = '01KK1BT6VVR0JNZ72FTN2GY2FX' AND \"users\".\"deleted_at\" IS NULL LIMIT 1",
+  "time": "2026-03-08 19:47:30"
+}
+{
+  "level": "info",
+  "method": "GET",
+  "msg": "User data fetched successfully",
+  "path": "/api/v1/users/me",
+  "request_id": "ece28fe9-802d-4a8f-9906-fb039d00010e",
+  "status": 200,
+  "time": "2026-03-08 19:47:30"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Successfully logged out",
+  "path": "/api/v1/auth/logout",
+  "request_id": "4e12844e-99b9-4c57-84c3-b63733f6d5f1",
+  "status": 200,
+  "time": "2026-03-08 19:47:40"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Successfully logged out",
+  "path": "/api/v1/auth/logout",
+  "request_id": "923c7378-524d-4320-8bd9-8ba0503afa4d",
+  "status": 200,
+  "time": "2026-03-08 19:48:37"
+}
+{
+  "level": "info",
+  "method": "POST",
+  "msg": "Successfully logged out",
+  "path": "/api/v1/auth/logout",
+  "request_id": "a9c48b82-8fa2-4a75-89d9-33aa67440ae7",
+  "status": 200,
+  "time": "2026-03-08 19:48:39"
+}
+{
+  "duration": "43.0179ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 16,
+  "sql": "SELECT * FROM \"permissions\" WHERE \"permissions\".\"deleted_at\" IS NULL",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "19.2693ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "629.4µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'admin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "984.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'customer' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "521.1µs",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'vendor' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "7.0118ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"users\" WHERE username = 'superadmin_nego' AND \"users\".\"deleted_at\" IS NULL ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "1.0003ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"roles\" WHERE role_name = 'superadmin' AND \"roles\".\"deleted_at\" IS NULL ORDER BY \"roles\".\"role_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "3.7961ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 1,
+  "sql": "SELECT * FROM \"user_roles\" WHERE user_id = '01KK1BGKR5M0KN1V1RBEP4YMK2' AND role_id = 1 ORDER BY \"user_roles\".\"user_role_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "7.1686ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 0,
+  "sql": "SELECT * FROM \"role_permissions\" WHERE \"role_permissions\".\"role_id\" IN (1,2,3,4)",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "29.5898ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "rows": 4,
+  "sql": "SELECT * FROM \"roles\" WHERE \"roles\".\"deleted_at\" IS NULL",
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "level": "info",
+  "msg": "permission cache loaded",
+  "roles_cached": 4,
+  "time": "2026-03-09 06:48:33"
+}
+{
+  "duration": "14.6806ms",
+  "function": "database",
+  "layer": "repository",
+  "level": "info",
+  "msg": "gorm query",
+  "request_id": "2d26503a-fce5-45d9-ba90-e7edf8a12d69",
+  "rows": 0,
+  "sql": "SELECT \"users\".\"user_id\",\"users\".\"email\",\"users\".\"password_hash\",\"users\".\"username\",\"users\".\"first_name\",\"users\".\"last_name\",\"users\".\"phone\",\"users\".\"account_status\",\"users\".\"is_verified\",\"users\".\"last_login\",\"users\".\"created_at\",\"users\".\"updated_at\",\"users\".\"deleted_at\" FROM \"users\" WHERE email = 'txdgh12@gmail.com' AND \"users\".\"deleted_at\" IS NULL AND \"users\".\"user_id\" = '01KK7XMX1T8BBXNABHNMRMC1H2' ORDER BY \"users\".\"user_id\" LIMIT 1",
+  "time": "2026-03-09 06:48:46"
+}
+{
+  "duration": "10.0496ms",
+  "error": "ERROR: duplicate key value violates unique constraint \"users_email_key\" (SQLSTATE 23505)",
+  "function": "database",
+  "layer": "repository",
+  "level": "error",
+  "msg": "gorm query failed",
+  "request_id": "2d26503a-fce5-45d9-ba90-e7edf8a12d69",
+  "rows": 0,
+  "sql": "INSERT INTO \"users\" (\"user_id\",\"email\",\"password_hash\",\"username\",\"first_name\",\"last_name\",\"phone\",\"account_status\",\"is_verified\",\"last_login\",\"deleted_at\",\"created_at\",\"updated_at\") VALUES ('01KK7XMX1T8BBXNABHNMRMC1H2','txdgh12@gmail.com','$2a$10$QMECPhLZJDqcyTfORxH39.2R5YsNe.irGHyEVC2XQ/20kbJ0plVXW','hafiyyankisaragi','Hafiyyan Kisaragi','Pratama','','active',NULL,NULL,NULL,'2026-03-09 06:48:46.266','2026-03-09 06:48:46.266') RETURNING \"created_at\",\"updated_at\"",
+  "time": "2026-03-09 06:48:46"
+}
+{
+  "email": "txdgh12@gmail.com",
+  "function": "AuthService.Register",
+  "layer": "service",
+  "level": "error",
+  "msg": "failed to create user in repo: UserRepository.CreateUser - ERROR: duplicate key value violates unique constraint \"users_email_key\" (SQLSTATE 23505)",
+  "request_id": "2d26503a-fce5-45d9-ba90-e7edf8a12d69",
+  "time": "2026-03-09 06:48:46"
+}
+{
+  "error": "create user in repository failed: UserRepository.CreateUser - ERROR: duplicate key value violates unique constraint \"users_email_key\" (SQLSTATE 23505)",
+  "level": "error",
+  "method": "POST",
+  "msg": "Register user failed",
+  "path": "/api/v1/auth/register",
+  "request_id": "2d26503a-fce5-45d9-ba90-e7edf8a12d69",
+  "status": 500,
+  "time": "2026-03-09 06:48:46"
+}

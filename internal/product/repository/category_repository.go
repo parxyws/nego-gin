@@ -22,12 +22,11 @@ func (c *CategoryRepository) CreateCategory(ctx context.Context, category *domai
 
 	result := tx.Create(&category)
 
-	if result.RowsAffected == 0 {
-		return nil, result.Error
-	}
-
 	if result.Error != nil {
 		return nil, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return nil, fmt.Errorf("CategoryRepository.CreateCategory: failed to insert category, 0 rows affected")
 	}
 
 	return category, nil
@@ -36,7 +35,7 @@ func (c *CategoryRepository) CreateCategory(ctx context.Context, category *domai
 func (c *CategoryRepository) UpdateCategory(ctx context.Context, category *domain.Category) (*domain.Category, error) {
 	tx := c.DB.WithContext(ctx)
 
-	result := tx.Save(&category)
+	result := tx.Model(&domain.Category{}).Where("category_id = ?", category.CategoryID).Updates(category)
 
 	if result.Error != nil {
 		return nil, result.Error

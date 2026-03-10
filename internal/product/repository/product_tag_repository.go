@@ -28,7 +28,7 @@ func (p *ProductTagRepository) CreateProductTag(ctx context.Context, product *do
 
 func (p *ProductTagRepository) UpdateProductTag(ctx context.Context, product *domain.ProductTag) (*domain.ProductTag, error) {
 	tx := p.DB.WithContext(ctx)
-	if result := tx.Save(product); result.Error != nil {
+	if result := tx.Model(&domain.ProductTag{}).Where("product_id = ? AND tag_id = ?", product.ProductID, product.TagID).Updates(product); result.Error != nil {
 		return nil, result.Error
 	}
 

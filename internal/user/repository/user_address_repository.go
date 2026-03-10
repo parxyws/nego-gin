@@ -37,7 +37,7 @@ func (u *UserAddressRepository) DeleteUserAddress(ctx context.Context, entity *d
 
 func (u *UserAddressRepository) UpdateUserAddress(ctx context.Context, entity *domain.UserAddress) (*domain.UserAddress, error) {
 	tx := u.DB.WithContext(ctx)
-	if err := tx.Save(entity).Error; err != nil {
+	if err := tx.Model(&domain.UserAddress{}).Where("address_id = ? AND user_id = ?", entity.AddressID, entity.UserID).Updates(entity).Error; err != nil {
 		return nil, fmt.Errorf("UserAddressRepository.UpdateUserAddress - %w", err)
 	}
 

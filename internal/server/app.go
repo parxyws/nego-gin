@@ -26,7 +26,7 @@ func (s *Server) Boostrap() error {
 	api.Use(corsMiddleware)
 	api.Use(requestIdMiddleware)
 
-	userModule.InitUserModule(s.db, api, s.cfg, s.rds, s.mail, authMiddleware)
+	userModule.InitUserModule(s.db, api, s.cfg, s.rds.AuthRedis, s.mail, authMiddleware)
 	productModule.InitProductModule(s.db, api, authMiddleware)
 
 	/* ----------------------------- Seed ---------------------------- */

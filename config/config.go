@@ -62,10 +62,12 @@ type AwsConfig struct {
 }
 
 type RedisConfig struct {
-	Host     string
-	Port     int
-	Password string
-	Db       int
+	Host      string
+	Port      int
+	Password  string
+	AuthDb    int
+	SessionDb int
+	LimiterDb int
 }
 
 type MailConfig struct {

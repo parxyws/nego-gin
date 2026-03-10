@@ -21,7 +21,7 @@ func AuthRoute(router *gin.RouterGroup, controller user.AuthController, authMidd
 		protected := auth.Group("/")
 		protected.Use(authMiddleware.MiddlewareFunc())
 		{
-			protected.POST("/logout", controller.Logout)
+			protected.POST("/logout", authMiddleware.LogoutHandler)
 			protected.POST("/resend-verification", controller.ResendVerification)
 		}
 	}

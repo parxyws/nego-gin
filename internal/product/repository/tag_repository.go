@@ -21,12 +21,12 @@ func (t *TagRepository) CreateTag(ctx context.Context, tag *domain.Tag) (*domain
 
 	result := tx.Where("tag_name = ?", tag.TagName).FirstOrCreate(tag)
 
-	if result.RowsAffected == 0 {
-		return nil, gorm.ErrRegistered
-	}
-
 	if result.Error != nil {
 		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return tag, nil // It already exists (FirstOrCreate), so we just return the found tag
 	}
 
 	return tag, nil

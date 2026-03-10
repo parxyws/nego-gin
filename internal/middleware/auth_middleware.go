@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"fmt"
+	"net/http"
 	"slices"
 	"strings"
 	"time"
@@ -40,6 +40,7 @@ func (m *ManagerMiddleware) initJwtParams() *jwt.GinJWTMiddleware {
 		IdentityHandler: m.identityHandler,
 		Authorizer:      m.authorizer,
 		Unauthorized:    m.unauthorized,
+		LogoutResponse:  m.logoutResponse,
 		TokenLookup:     "header: Authorization",
 		TokenHeadName:   "Bearer",
 		TimeFunc:        time.Now,
@@ -61,33 +62,35 @@ func (m *ManagerMiddleware) payloadHandler(data any) jwt2.MapClaims {
 
 func (m *ManagerMiddleware) identityHandler(c *gin.Context) any {
 	claims := jwt.ExtractClaims(c)
-	roleSlice, _ := claims["role"]
 
-	var roles []string
-	if roleSlice != nil {
+	payload := &JwtPayload{}
+
+	if id, ok := claims["id"].(string); ok {
+		payload.ID = id
+	}
+	if username, ok := claims["username"].(string); ok {
+		payload.Username = username
+	}
+	if email, ok := claims["email"].(string); ok {
+		payload.Email = email
+	}
+
+	if roleSlice, ok := claims["role"]; ok && roleSlice != nil {
 		switch v := roleSlice.(type) {
 		case []string:
-			roles = v
-		case []interface{}:
+			payload.Role = v
+		case []any:
+			var roles []string
 			for _, item := range v {
 				if str, ok := item.(string); ok {
 					roles = append(roles, str)
 				}
 			}
-		default:
-			fmt.Printf("Unexpected type for role: %T\n", v)
-			roles = []string{}
+			payload.Role = roles
 		}
-	} else {
-		roles = []string{}
 	}
 
-	return &JwtPayload{
-		ID:       claims["id"].(string),
-		Username: claims["username"].(string),
-		Email:    claims["email"].(string),
-		Role:     roles,
-	}
+	return payload
 }
 
 // authorizer implements the JWT-layer RBAC gate.
@@ -110,53 +113,38 @@ func (m *ManagerMiddleware) authorizer(c *gin.Context, data any) bool {
 		return true
 	}
 
-	// Extract path segment 3 — identical to how seedPermission derives resource names.
-	// e.g. "/api/admin/roles" → parts[3] == "admin"
-	//      "/api/sellers/products" → parts[3] == "sellers"
-	//      "/api/orders/..." → parts[3] == "orders"
-	parts := strings.Split(c.Request.URL.Path, "/")
-	if len(parts) < 4 {
-		// Route too shallow to determine a resource — allow any authenticated user.
-		return true
-	}
-	resource := parts[3]
+	path := c.Request.URL.Path
 
-	switch resource {
-	case "admin":
-		// Protected (Admin): requires admin role.
+	// Protected (Admin): requires admin role.
+	if strings.HasPrefix(path, "/api/v1/admin/") || path == "/api/v1/admin" {
 		return slices.Contains(user.Role, "admin")
-	case "sellers":
-		// Protected (Seller): requires vendor role.
-		return slices.Contains(user.Role, "vendor")
-	default:
-		// Protected: any authenticated user (customer, vendor, admin, etc.)
-		return len(user.Role) > 0
 	}
+
+	// Protected (Seller): requires vendor role.
+	if strings.HasPrefix(path, "/api/v1/sellers/") || path == "/api/v1/sellers" {
+		return slices.Contains(user.Role, "vendor")
+	}
+
+	// Protected: any authenticated user (customer, vendor, admin, etc.)
+	return len(user.Role) > 0
 }
 
 func (m *ManagerMiddleware) unauthorized(c *gin.Context, code int, message string) {
 	helper.Error(c, code, message, errors.New(message))
 }
 
-//func logoutResponse() func(c *gin.Context) {
-//	return func(c *gin.Context) {
-//		// This demonstrates that claims are now accessible during logout
-//		claims := jwt.ExtractClaims(c)
-//		user, exists := c.Get(identityKey)
-//
-//		response := gin.H{
-//			"code":    http.StatusOK,
-//			"message": "Successfully logged out",
-//		}
-//
-//		// Show that we can access user information during logout
-//		if len(claims) > 0 {
-//			response["logged_out_user"] = claims[identityKey]
-//		}
-//		if exists {
-//			response["user_info"] = user.(*User).UserName
-//		}
-//
-//		c.JSON(http.StatusOK, response)
-//	}
-//}
+func (m *ManagerMiddleware) logoutResponse(c *gin.Context) {
+	// This demonstrates that claims are accessible during logout
+	claims := jwt.ExtractClaims(c)
+	var username string
+	if val, ok := claims["username"].(string); ok {
+		username = val
+	}
+
+	// // Clear the refresh token cookie
+	c.SetCookie("refresh_token", "", -1, "/api/auth/refresh", "", true, true)
+
+	helper.Success(c, http.StatusOK, "Successfully logged out", gin.H{
+		"logged_out_user": username,
+	})
+}

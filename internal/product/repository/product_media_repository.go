@@ -28,7 +28,7 @@ func (p *ProductMediaRepository) CreateProductMedia(ctx context.Context, product
 
 func (p *ProductMediaRepository) UpdateProductMedia(ctx context.Context, product *domain.ProductMedia) (*domain.ProductMedia, error) {
 	tx := p.DB.WithContext(ctx)
-	if result := tx.Save(&product); result.Error != nil {
+	if result := tx.Model(&domain.ProductMedia{}).Where("media_id = ?", product.MediaID).Updates(&product); result.Error != nil {
 		return nil, result.Error
 	}
 

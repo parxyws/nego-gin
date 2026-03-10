@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/minio/minio-go/v7"
 	"github.com/parxyws/nego-gin/config"
-	"github.com/redis/go-redis/v9"
+	"github.com/parxyws/nego-gin/pkg/database/rds"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/gomail.v2"
 	"gorm.io/gorm"
@@ -29,7 +29,7 @@ type ServerConfig struct {
 	Cfg       *config.Config
 	Db        *gorm.DB
 	AwsClient *minio.Client
-	Rds       *redis.Client
+	Rds       *rds.RedisClient
 	Logger    *logrus.Logger
 	Mail      *gomail.Dialer
 }
@@ -39,7 +39,7 @@ type Server struct {
 	app       *gin.Engine
 	db        *gorm.DB
 	awsClient *minio.Client
-	rds       *redis.Client
+	rds       *rds.RedisClient
 	logger    *logrus.Logger
 	mail      *gomail.Dialer
 }

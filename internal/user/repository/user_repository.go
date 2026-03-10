@@ -22,12 +22,12 @@ func (repo *UserRepository) CreateUser(ctx context.Context, user *domain.User) (
 	dbTx := repo.DB.WithContext(ctx)
 	dbRes := dbTx.Where("email = ?", user.Email).Omit("avatar_url", "phone_num").FirstOrCreate(user)
 
-	if dbRes.RowsAffected == 0 {
-		return nil, gorm.ErrRegistered
-	}
-
 	if dbRes.Error != nil {
 		return nil, fmt.Errorf("UserRepository.CreateUser - %w", dbRes.Error)
+	}
+
+	if dbRes.RowsAffected == 0 {
+		return nil, gorm.ErrRegistered // Indicates user already exists
 	}
 
 	return user, nil
@@ -37,12 +37,12 @@ func (repo *UserRepository) UpdateUser(ctx context.Context, user *domain.User) (
 	dbTx := repo.DB.WithContext(ctx)
 	dbRes := dbTx.Model(&domain.User{}).Where("user_id = ?", user.UserID).Updates(user)
 
-	if dbRes.RowsAffected == 0 {
-		return nil, gorm.ErrInvalidData
-	}
-
 	if dbRes.Error != nil {
 		return nil, fmt.Errorf("UserRepository.UpdateUser - %w", dbRes.Error)
+	}
+
+	if dbRes.RowsAffected == 0 {
+		return nil, gorm.ErrInvalidData // Or ErrRecordNotFound if user doesn't exist
 	}
 
 	return user, nil
@@ -51,12 +51,13 @@ func (repo *UserRepository) UpdateUser(ctx context.Context, user *domain.User) (
 func (repo *UserRepository) UpdateSingleColumnUser(ctx context.Context, entity *domain.User, column string) (*domain.User, error) {
 	dbTx := repo.DB.WithContext(ctx)
 	dbRes := dbTx.Model(&domain.User{}).Where("user_id = ?", entity.UserID).Update(column, entity.LastLogin)
-	if dbRes.RowsAffected == 0 {
-		return nil, gorm.ErrRecordNotFound
-	}
 
 	if dbRes.Error != nil {
 		return nil, fmt.Errorf("UserRepository.UpdateSingleColumnUser - %w", dbRes.Error)
+	}
+
+	if dbRes.RowsAffected == 0 {
+		return nil, gorm.ErrRecordNotFound
 	}
 
 	return entity, nil
@@ -125,10 +126,13 @@ func (repo *UserRepository) ReadAllByRoles(ctx context.Context, userID string, s
 	query := dbTx.Model(&domain.User{}).Where("is_verified IS NOT NULL").Clauses(orderPattern)
 
 	if createdAt != "" {
-		query = query.Where(`
-			(created_at < ?)
-			OR (created_at = ? AND user_id < ?)
-		`, createdAt, createdAt, userID)
+		op := "<"
+		if !sortOrderDesc {
+			op = ">"
+		}
+
+		queryString := fmt.Sprintf("(created_at %[1]s ?) OR (created_at = ? AND user_id %[1]s ?)", op)
+		query = query.Where(queryString, createdAt, createdAt, userID)
 	}
 
 	if err := query.Limit(limit).Find(&users).Error; err != nil {

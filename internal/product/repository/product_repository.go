@@ -29,7 +29,7 @@ func (p *ProductRepository) CreateProduct(ctx context.Context, product *domain.P
 func (p *ProductRepository) UpdateProduct(ctx context.Context, product *domain.Product) (*domain.Product, error) {
 	tx := p.DB.WithContext(ctx)
 
-	if result := tx.Save(product); result.Error != nil {
+	if result := tx.Model(&domain.Product{}).Where("product_id = ?", product.ProductID).Updates(product); result.Error != nil {
 		return nil, result.Error
 	}
 
